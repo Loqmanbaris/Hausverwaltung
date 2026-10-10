@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Sicherungs-Werkzeug</title>
+<style>
+:root{--ink:#15222e;--muted:#56667a;--line:#d3d9e0;--primary:#1e3d63;--warn-bg:#fbf1dc;--warn:#5c3b08;--ok-bg:#e1f2e8;--ok:#12432b;--err-bg:#fbe6e1;--err:#9c2d1b}
+*{box-sizing:border-box}
+body{margin:0;background:#eceff2;color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+main{max-width:760px;margin:0 auto;padding:1.5rem 1rem 3rem}
+h1{font-size:1.6rem;margin:0 0 .4rem}
+h2{font-size:1.2rem;margin:0 0 .6rem}
+.card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:1.2rem;margin-top:1rem}
+.muted{color:var(--muted)}
+.box{border-radius:6px;padding:.8rem 1rem;margin:.8rem 0;border:1px solid}
+.box.warn{background:var(--warn-bg);border-color:#e6cf9d;color:var(--warn)}
+.box.ok{background:var(--ok-bg);border-color:#a9d6bd;color:var(--ok)}
+.box.err{background:var(--err-bg);border-color:#efb7ab;color:var(--err)}
+button,.btn{display:inline-block;padding:.6rem 1.1rem;border-radius:6px;border:1px solid var(--primary);background:var(--primary);color:#fff;font:inherit;font-weight:600;cursor:pointer;text-decoration:none}
+button.sec,.btn.sec{background:#fff;color:var(--primary)}
+button:disabled{opacity:.5;cursor:not-allowed}
+textarea{width:100%;font:13px/1.4 ui-monospace,Consolas,Menlo,monospace;padding:.6rem;border:1px solid #9fabb9;border-radius:6px;background:#fff;color:var(--ink)}
+label{display:block;font-weight:600;margin:.8rem 0 .25rem}
+input[type=file]{display:block;margin:.2rem 0 .4rem}
+.mono{font-family:ui-monospace,Consolas,Menlo,monospace}
+.row{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0}
+progress{width:100%;height:1rem}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <h1>Sicherungs-Werkzeug</h1>
+  <p class="muted">Dieses Werkzeug läuft nur in deinem Browser. Es sendet nichts ins Internet und braucht keine Installation. Speichere die Datei an einem sicheren Ort (zum Beispiel auch auf einem USB-Stick im Notfallumschlag), damit du sie im Notfall wieder hast.</p>
+  <div id="unsupported" class="box err" hidden>Dieser Browser kann die nötige Verschlüsselung nicht. Bitte aktuelle Versionen von Edge, Chrome, Firefox oder Safari verwenden und die Datei direkt von der Festplatte öffnen.</div>
+
+  <section class="card">
+    <h2>1. Schlüsselpaar erzeugen</h2>
+    <p>Das brauchst du nur einmal. Es entstehen zwei Schlüssel: der <strong>öffentliche</strong> kommt in das System und verschlüsselt die Sicherungen. Der <strong>private</strong> öffnet sie wieder.</p>
+    <div class="box warn"><strong>Wichtig:</strong> Ohne den privaten Schlüssel sind alle Sicherungen für immer unlesbar. Es gibt keine Möglichkeit, ihn nachträglich zu erzeugen. Speichere ihn an mindestens zwei sicheren Orten, drucke ihn für den Notfallumschlag aus und gib ihn nie in das System oder an Dritte.</div>
+    <div class="row"><button id="gen">Schlüsselpaar erzeugen</button></div>
+    <p id="genBusy" class="muted" hidden>Der Schlüssel wird erzeugt. Das kann bis zu einer Minute dauern. Bitte das Fenster nicht schließen.</p>
+    <div id="genError" class="box err" hidden></div>
+
+    <div id="genResult" hidden>
+      <div class="box ok">Das Schlüsselpaar wurde erzeugt. Fingerabdruck zum Vergleichen: <strong class="mono" id="fp"></strong></div>
+
+      <label for="pub">Öffentlicher Schlüssel (kommt in das System unter „Sicherungen“)</label>
+      <textarea id="pub" rows="8" readonly></textarea>
+      <div class="row"><button class="sec" id="copyPub">Kopieren</button></div>
+
+      <label for="priv">Privater Schlüssel (geheim halten)</label>
+      <textarea id="priv" rows="10" readonly></textarea>
+      <div class="row">
+        <button id="savePriv">Privaten Schlüssel als Datei speichern</button>
+        <button class="sec" id="printPriv">Zum Ausdrucken öffnen</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>2. Sicherung öffnen</h2>
+    <p>Damit entschlüsselst du eine heruntergeladene Sicherung (Datei mit der Endung .bkp). Heraus kommt ein Archiv, das du wie gewohnt entpacken kannst.</p>
+
+    <label for="bkp">Sicherungsdatei (.bkp)</label>
+    <input type="file" id="bkp" accept=".bkp">
+
+    <label for="keyfile">Privater Schlüssel als Datei</label>
+    <input type="file" id="keyfile" accept=".pem,.txt">
+    <label for="keytext">oder den Text des privaten Schlüssels einfügen</label>
+    <textarea id="keytext" rows="5" spellcheck="false" placeholder="-----BEGIN PRIVATE KEY-----"></textarea>
+
+    <div class="row"><button id="open">Sicherung öffnen</button></div>
+    <progress id="prog" max="1" value="0" hidden></progress>
+    <div id="openError" class="box err" hidden></div>
+    <div id="openResult" class="box ok" hidden>
+      Fertig. <a class="btn" id="dl" href="#" download>Entschlüsseltes Archiv speichern</a>
+      <p class="muted" style="margin:.6rem 0 0">Das Archiv enthält die Datenbank (datenbank.sql), die Dateien des Systems und eine Anleitung (LIESMICH.txt). Es ist nicht mehr verschlüsselt. Bewahre es nur kurz auf und lösche es nach der Wiederherstellung.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+// Kern des Sicherungs-Werkzeugs. Läuft komplett im Browser, nichts wird gesendet.
+// Dateiformat: siehe app/Support/Backup/Crypto.php
+
+function pemToDer(pem) {
+  const b64 = pem.replace(/-----[A-Z0-9 ]+-----/g, '').replace(/\s+/g, '');
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes.buffer;
+}
+
+function derToPem(buffer, label) {
+  const bytes = new Uint8Array(buffer);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  const lines = btoa(bin).match(/.{1,64}/g).join('\n');
+  return '-----BEGIN ' + label + '-----\n' + lines + '\n-----END ' + label + '-----\n';
+}
+
+async function fingerprint(spkiBuffer) {
+  const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', spkiBuffer));
+  const hex = Array.from(hash).map(b => b.toString(16).padStart(2, '0')).join('');
+  return hex.slice(0, 32).toUpperCase().match(/.{1,4}/g).join(' ');
+}
+
+async function generateKeyPair() {
+  const pair = await crypto.subtle.generateKey(
+    { name: 'RSA-OAEP', modulusLength: 4096, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-1' },
+    true,
+    ['encrypt', 'decrypt']
+  );
+  const spki = await crypto.subtle.exportKey('spki', pair.publicKey);
+  const pkcs8 = await crypto.subtle.exportKey('pkcs8', pair.privateKey);
+  return {
+    publicPem: derToPem(spki, 'PUBLIC KEY'),
+    privatePem: derToPem(pkcs8, 'PRIVATE KEY'),
+    fingerprint: await fingerprint(spki),
+  };
+}
+
+function readUint(bytes, offset, length) {
+  let value = 0;
+  for (let i = 0; i < length; i++) value = value * 256 + bytes[offset + i];
+  return value;
+}
+
+// blob: Datei oder Blob mit der verschlüsselten Sicherung, privatePem: privater Schlüssel als Text
+async function decryptBackup(blob, privatePem, onProgress) {
+  const head = new Uint8Array(await blob.slice(0, 1200).arrayBuffer());
+  const magic = String.fromCharCode(head[0], head[1], head[2], head[3]);
+  if (magic !== 'BKP1') throw new Error('Das ist keine Sicherungsdatei dieses Systems.');
+
+  let pos = 4;
+  const extLength = head[pos]; pos += 1;
+  const extension = String.fromCharCode(...head.slice(pos, pos + extLength)); pos += extLength;
+  const wrappedLength = readUint(head, pos, 2); pos += 2;
+  const wrapped = head.slice(pos, pos + wrappedLength); pos += wrappedLength;
+  const base = head.slice(pos, pos + 8); pos += 8;
+  const chunkSize = readUint(head, pos, 4); pos += 4;
+
+  let privateKey;
+  try {
+    privateKey = await crypto.subtle.importKey('pkcs8', pemToDer(privatePem), { name: 'RSA-OAEP', hash: 'SHA-1' }, false, ['decrypt']);
+  } catch (e) {
+    throw new Error('Der private Schlüssel konnte nicht gelesen werden. Bitte die ganze Datei oder den ganzen Text verwenden.');
+  }
+
+  let aesRaw;
+  try {
+    aesRaw = await crypto.subtle.decrypt({ name: 'RSA-OAEP' }, privateKey, wrapped);
+  } catch (e) {
+    throw new Error('Dieser Schlüssel passt nicht zu der Sicherung.');
+  }
+  const aesKey = await crypto.subtle.importKey('raw', aesRaw, { name: 'AES-GCM' }, false, ['decrypt']);
+
+  const total = chunkSize + 16;
+  const dataLength = blob.size - pos;
+  const count = Math.max(1, Math.ceil(dataLength / total));
+  const parts = [];
+
+  for (let i = 0; i < count; i++) {
+    const start = pos + i * total;
+    const chunk = await blob.slice(start, Math.min(start + total, blob.size)).arrayBuffer();
+    const iv = new Uint8Array(12);
+    iv.set(base, 0);
+    new DataView(iv.buffer).setUint32(8, i, false);
+    const last = i === count - 1;
+    try {
+      parts.push(await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv: iv, additionalData: new Uint8Array([last ? 1 : 0]), tagLength: 128 },
+        aesKey,
+        chunk
+      ));
+    } catch (e) {
+      throw new Error('Die Sicherung ist beschädigt oder unvollständig (Block ' + (i + 1) + ' von ' + count + ').');
+    }
+    if (onProgress) onProgress((i + 1) / count);
+  }
+
+  return { blob: new Blob(parts), extension: extension };
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { generateKeyPair, decryptBackup, pemToDer, derToPem, fingerprint };
+}
+
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+
+  if (!window.crypto || !crypto.subtle) {
+    $('unsupported').hidden = false;
+    $('gen').disabled = true;
+    $('open').disabled = true;
+    return;
+  }
+
+  function showError(el, message) { el.textContent = message; el.hidden = false; }
+
+  function saveText(text, filename) {
+    var url = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+
+  $('gen').addEventListener('click', async function () {
+    $('genError').hidden = true;
+    $('genResult').hidden = true;
+    $('gen').disabled = true;
+    $('genBusy').hidden = false;
+    try {
+      var keys = await generateKeyPair();
+      $('pub').value = keys.publicPem;
+      $('priv').value = keys.privatePem;
+      $('fp').textContent = keys.fingerprint;
+      $('genResult').hidden = false;
+    } catch (e) {
+      showError($('genError'), 'Der Schlüssel konnte nicht erzeugt werden: ' + e.message);
+    } finally {
+      $('genBusy').hidden = true;
+      $('gen').disabled = false;
+    }
+  });
+
+  $('copyPub').addEventListener('click', async function () {
+    try {
+      await navigator.clipboard.writeText($('pub').value);
+      $('copyPub').textContent = 'Kopiert';
+    } catch (e) {
+      $('pub').select();
+      document.execCommand('copy');
+      $('copyPub').textContent = 'Kopiert';
+    }
+  });
+
+  $('savePriv').addEventListener('click', function () {
+    saveText($('priv').value, 'sicherungs-schluessel-PRIVAT.pem');
+  });
+
+  $('printPriv').addEventListener('click', function () {
+    var w = window.open('', '_blank');
+    if (!w) { alert('Das Fenster wurde vom Browser blockiert. Bitte Pop-ups für diese Seite erlauben.'); return; }
+    var esc = function (s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+    w.document.write('<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Privater Schlüssel</title></head><body style="font-family:sans-serif">'
+      + '<h2>Privater Schlüssel für die Sicherungen</h2>'
+      + '<p>Fingerabdruck des zugehörigen öffentlichen Schlüssels: <b>' + esc($('fp').textContent) + '</b></p>'
+      + '<p>Geheim halten. Gehört in den versiegelten Notfallumschlag.</p>'
+      + '<pre style="font-size:11px;border:1px solid #000;padding:8px;white-space:pre-wrap;word-break:break-all">' + esc($('priv').value) + '</pre>'
+      + '</body></html>');
+    w.document.close();
+    w.focus();
+    w.print();
+  });
+
+  $('keyfile').addEventListener('change', async function () {
+    var f = $('keyfile').files[0];
+    if (f) { $('keytext').value = await f.text(); }
+  });
+
+  $('open').addEventListener('click', async function () {
+    $('openError').hidden = true;
+    $('openResult').hidden = true;
+    var file = $('bkp').files[0];
+    var key = $('keytext').value.trim();
+    if (!file) { showError($('openError'), 'Bitte die Sicherungsdatei (.bkp) auswählen.'); return; }
+    if (!key) { showError($('openError'), 'Bitte den privaten Schlüssel als Datei auswählen oder als Text einfügen.'); return; }
+
+    $('open').disabled = true;
+    $('prog').value = 0;
+    $('prog').hidden = false;
+    try {
+      var result = await decryptBackup(file, key, function (p) { $('prog').value = p; });
+      var base = file.name.replace(/\.bkp$/i, '') || 'sicherung';
+      var url = URL.createObjectURL(result.blob);
+      $('dl').href = url;
+      $('dl').setAttribute('download', base + '.' + result.extension);
+      $('openResult').hidden = false;
+    } catch (e) {
+      showError($('openError'), e.message);
+    } finally {
+      $('open').disabled = false;
+      $('prog').hidden = true;
+    }
+  });
+})();
+</script>
+</body>
+</html>
