@@ -2,6 +2,7 @@
 # ------------------------------------------------------------------
 # Neuen Stand von GitHub holen und einspielen.
 # Aufruf auf dem Server, im Ordner app:   bash deploy.sh
+# Nur Selbsttests:                         bash deploy.sh --selbsttest
 #
 # Ablauf: Prüfen -> Sicherung -> Wartungsmodus -> Code holen ->
 #         Datenbank umstellen -> Caches leeren -> Selbsttests -> online
@@ -9,7 +10,14 @@
 # Protokoll: storage/logs/deploy-JJJJ-MM-TT.log
 # ------------------------------------------------------------------
 set -uo pipefail
-cd "$(dirname "$0")" || exit 1
+# Als Kopie ausführen: deploy.sh darf sich beim Update selbst ändern.
+if [ -z "${DEPLOY_DIR:-}" ]; then
+  DEPLOY_DIR=$(cd "$(dirname "$0")" && pwd) || exit 1
+  KOPIE=$(mktemp) && cp "$0" "$KOPIE" || exit 1
+  DEPLOY_DIR="$DEPLOY_DIR" exec bash "$KOPIE" "$@"
+fi
+trap 'rm -f "$0"' EXIT
+cd "$DEPLOY_DIR" || exit 1
 mkdir -p storage/logs
 exec > >(tee -a "storage/logs/deploy-$(date +%F).log") 2>&1
 echo
@@ -21,6 +29,27 @@ for c in php8.4-cli /usr/bin/php8.4-cli php-cli; do
   if command -v "$c" >/dev/null 2>&1; then PHP="$c"; break; fi
 done
 if [ -z "$PHP" ]; then echo "FEHLER: php8.4-cli nicht gefunden. Nichts geändert."; exit 1; fi
+
+selbsttests() {
+  echo
+  echo "Selbsttests ..."
+  FEHLER=""
+  for t in $("$PHP" artisan list --raw | awk '{print $1}' | grep ':selbsttest$'); do
+    if "$PHP" artisan "$t" >/tmp/selbsttest.$$ 2>&1; then
+      echo "  OK      $t"
+    else
+      echo "  FEHLER  $t"; sed 's/^/          /' /tmp/selbsttest.$$
+      FEHLER="$FEHLER $t"
+    fi
+  done
+  rm -f /tmp/selbsttest.$$
+}
+
+if [ "${1:-}" = "--selbsttest" ]; then
+  selbsttests
+  if [ -n "$FEHLER" ]; then echo; echo "FEHLER bei:$FEHLER"; exit 1; fi
+  echo; echo "Alle Selbsttests OK."; exit 0
+fi
 
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "Zweig: $BRANCH"
@@ -89,7 +118,7 @@ zurueck() {
 echo
 echo "Wartungsmodus an ..."
 "$PHP" artisan down --retry=30 >/dev/null 2>&1
-trap 'online' EXIT
+trap 'online; rm -f "$0"' EXIT
 
 echo "Code übernehmen ..."
 git merge -q --ff-only "$NEW" || zurueck "Code konnte nicht übernommen werden."
@@ -105,18 +134,7 @@ echo "Datenbank umstellen ..."
 clear_caches
 
 # --- 4. Selbsttests ---
-echo
-echo "Selbsttests ..."
-FEHLER=""
-for t in $("$PHP" artisan list --raw | awk '{print $1}' | grep ':selbsttest$'); do
-  if "$PHP" artisan "$t" >/tmp/selbsttest.$$ 2>&1; then
-    echo "  OK      $t"
-  else
-    echo "  FEHLER  $t"; sed 's/^/          /' /tmp/selbsttest.$$
-    FEHLER="$FEHLER $t"
-  fi
-done
-rm -f /tmp/selbsttest.$$
+selbsttests
 [ -n "$FEHLER" ] && zurueck "Selbsttest fehlgeschlagen:$FEHLER"
 
 online
