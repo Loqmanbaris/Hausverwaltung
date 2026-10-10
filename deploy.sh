@@ -91,8 +91,8 @@ echo "Sicherung der Datenbank ..."
 if ! "$PHP" artisan backup:run --ohne-aufraeumen; then
   echo
   echo "WARNUNG: Die Sicherung hat nicht geklappt (z. B. Sicherungsschlüssel fehlt)."
-  read -r -p "Trotzdem weitermachen? (ja/nein) " ANTWORT
-  if [ "$ANTWORT" != "ja" ]; then echo "Abgebrochen. Nichts geändert."; exit 1; fi
+  read -r -p "Trotzdem weitermachen? (ja/nein) " ANTWORT || ANTWORT=""
+  if [ "${ANTWORT:-}" != "ja" ]; then echo "Abgebrochen. Nichts geändert."; exit 1; fi
 fi
 
 # --- 3. Einspielen ---
