@@ -1,0 +1,47 @@
+Ergebnis: OK (10.10.2026 23:40)
+Server:  /kunden/homepages/30/d765185880/htdocs/crm-test/app
+Zweig:   test
+Ziel:    4f8b6a5 README: Ablauf für Updates
+
+=================== 10.10.2026 23:40:02 ===================
+Zweig: test
+Hole Stand von GitHub ...
+
+Neu auf GitHub:
+  - README: Ablauf für Updates
+
+Sicherung der Datenbank ...
+Sicherung erstellt: sicherung-2026-10-10-2340.bkp (1,7 MB, 70 Tabellen, 220 Zeilen)
+
+Wartungsmodus an ...
+Code übernehmen ...
+Datenbank umstellen ...
+
+   INFO  Nothing to migrate.  
+
+
+Selbsttests ...
+  OK      anpassen:selbsttest
+  OK      ausgaben:selbsttest
+  OK      design:selbsttest
+  OK      dokumente:selbsttest
+  OK      einrichtung:selbsttest
+  OK      email:selbsttest
+  OK      farben:selbsttest
+  OK      finanzierung:selbsttest
+  OK      heizung:selbsttest
+  OK      import:selbsttest
+  OK      mahnwesen:selbsttest
+  OK      mieten:selbsttest
+  OK      nk:selbsttest
+  OK      seite:selbsttest
+  OK      steuer:selbsttest
+  OK      technik:selbsttest
+  OK      uebergabe:selbsttest
+  OK      uebersicht:selbsttest
+  OK      updates:selbsttest
+  OK      vertraege:selbsttest
+  OK      webseite:selbsttest
+  OK      zinsen:selbsttest
+
+FERTIG: Neuer Stand 4f8b6a5 – README: Ablauf für Updates ist online.
