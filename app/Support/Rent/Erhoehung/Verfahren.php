@@ -156,7 +156,9 @@ class Verfahren
                 $costsStr = Money::parse($in['costs'] ?? null);
                 $subStr = Money::parse($in['subsidies'] ?? null);
                 $upkeep = (float) str_replace(',', '.', (string) ($in['upkeep_percent'] ?? '0'));
-                $heating = ! empty($in['heating']);
+                $heatingType = in_array((string) ($in['heating_type'] ?? ''), ['waermepumpe', 'erneuerbar', 'fossil'], true) ? (string) $in['heating_type'] : '';
+                $pumpProof = in_array((string) ($in['pump_proof'] ?? ''), ['nachweis', 'ausnahme'], true) ? (string) $in['pump_proof'] : '';
+                $heating = ! empty($in['heating']) || $heatingType !== '';
                 $simplified = ! empty($in['simplified']);
                 $delayed = ! empty($in['delayed']);
                 $prior = self::priorModernisation($lease, $notice);
@@ -169,6 +171,8 @@ class Verfahren
                     'upkeep_percent' => $upkeep,
                     'subsidies' => $subStr !== null ? Regeln::cents($subStr) : 0,
                     'heating' => $heating,
+                    'heating_type' => $heatingType,
+                    'pump_proof' => $pumpProof,
                     'simplified' => $simplified,
                     'delayed' => $delayed,
                     'prior_monthly' => $prior['all'],
@@ -188,6 +192,8 @@ class Verfahren
                     'upkeep_percent' => $res['upkeep_percent'],
                     'subsidies' => $subStr ?? '0.00',
                     'heating' => $heating,
+                    'heating_type' => $heatingType,
+                    'pump_proof' => $pumpProof,
                     'simplified' => $simplified,
                     'delayed' => $delayed,
                     'announced_on' => self::date($in['announced_on'] ?? null),
@@ -393,7 +399,7 @@ class Verfahren
         $in = ['notice_on' => $inc->notice_on->format('Y-m-d'), 'note' => (string) $inc->note];
         $keep = match ($inc->kind) {
             'vergleich' => ['cap_percent', 'comparable_sqm', 'basis_type', 'source_name', 'source_detail', 'range_from', 'range_to', 'comparables'],
-            'modernisierung' => ['measure', 'costs', 'upkeep_percent', 'subsidies', 'heating', 'simplified', 'delayed', 'announced_on', 'completed_on'],
+            'modernisierung' => ['measure', 'costs', 'upkeep_percent', 'subsidies', 'heating', 'heating_type', 'pump_proof', 'simplified', 'delayed', 'announced_on', 'completed_on'],
             'index' => ['new_index', 'index_month'],
             'staffel' => ['lease_rent_id'],
             default => [],

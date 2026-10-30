@@ -125,6 +125,7 @@ tr{page-break-inside:avoid}
     <table>
       <tbody>
         <tr><td>Für Ihre Wohnung aufgewendete Kosten</td><td class="n">{{ $eur(($mc['costs'] ?? 0) / 100) }}</td></tr>
+        @if (! empty($mc['halved']))<tr><td>abzüglich der Hälfte der Kosten, weil für die Wärmepumpe kein Nachweis einer Jahresarbeitszahl von mindestens 2,5 vorliegt (§ 559f Abs. 2 BGB)</td><td class="n">− {{ $eur(($mc['halved_amount'] ?? 0) / 100) }}</td></tr>@endif
         <tr><td>abzüglich Anteil für ohnehin fällige Instandhaltung ({{ $num($mc['upkeep_percent'] ?? 0, 0) }} %)</td><td class="n">− {{ $eur(($mc['upkeep'] ?? 0) / 100) }}</td></tr>
         @if ($hasSubsidies)<tr><td>abzüglich Fördermittel und Zuschüsse (§ 559a BGB)</td><td class="n">− {{ $eur($mc['subsidies'] / 100) }}</td></tr>@endif
         <tr><td>umlagefähige Kosten</td><td class="n">{{ $eur(($mc['base'] ?? 0) / 100) }}</td></tr>

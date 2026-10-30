@@ -89,11 +89,30 @@
       </div>
       <div class="sd-grid">
         @include('partials.sd-field', ['name' => 'costs', 'label' => 'Kosten für diese Wohnung (€, brutto)', 'inputmode' => 'decimal', 'value' => $v('costs'), 'required' => true, 'hint' => 'Der auf die Wohnung entfallende Anteil der Gesamtkosten.'])
-        @include('partials.sd-field', ['name' => 'upkeep_percent', 'label' => 'Anteil für ohnehin nötige Instandhaltung (%)', 'inputmode' => 'decimal', 'value' => $v('upkeep_percent', '30'), 'hint' => 'Wird von den Kosten abgezogen. Beim vereinfachten Verfahren immer 30 %.'])
+        @include('partials.sd-field', ['name' => 'upkeep_percent', 'label' => 'Anteil für ohnehin nötige Instandhaltung (%)', 'inputmode' => 'decimal', 'value' => $v('upkeep_percent', '30'), 'hint' => 'Wird von den Kosten abgezogen. Vereinfachtes Verfahren: immer 30 %. Geförderte Heizung (nicht Gas oder Öl): immer 15 %. Sonst die tatsächlich ersparten Kosten.'])
         @include('partials.sd-field', ['name' => 'subsidies', 'label' => 'Fördermittel und Zuschüsse (€)', 'inputmode' => 'decimal', 'value' => $v('subsidies'), 'hint' => 'In Anspruch genommene Drittmittel werden abgezogen (§ 559a BGB).'])
       </div>
+      <div class="sd-grid">
+        <div class="sd-field">
+          <label for="f-heating_type">Einbau oder Aufstellung einer Heizungsanlage (§§ 559e, 559f BGB)</label>
+          <select id="f-heating_type" name="heating_type" style="{{ $input }}">
+            <option value="">Keine Heizungsanlage</option>
+            <option value="waermepumpe" @selected($v('heating_type') === 'waermepumpe')>Wärmepumpe</option>
+            <option value="erneuerbar" @selected($v('heating_type') === 'erneuerbar')>Fernwärme, Biomasse oder andere erneuerbare Anlage</option>
+            <option value="fossil" @selected($v('heating_type') === 'fossil')>Gas- oder Ölheizung (§ 43 GModG)</option>
+          </select>
+          <small class="sd-muted">Mit Förderung: 10 % statt 8 %, höchstens 0,50 € je m² in sechs Jahren, pauschal 15 % Erhaltungsanteil (nicht bei Gas oder Öl).</small>
+        </div>
+        <div class="sd-field">
+          <label for="f-pump_proof">Nur bei Wärmepumpe: Nachweis Jahresarbeitszahl</label>
+          <select id="f-pump_proof" name="pump_proof" style="{{ $input }}">
+            <option value="">Kein Nachweis (nur die halben Kosten zählen)</option>
+            <option value="nachweis" @selected($v('pump_proof') === 'nachweis')>Nachweis von mindestens 2,5 durch Fachunternehmer liegt vor</option>
+            <option value="ausnahme" @selected($v('pump_proof') === 'ausnahme')>Ausnahme: Gebäude nach 1996, WSVO 1994, Sanierung nach § 38 GModG oder höchstens 55 °C Vorlauf</option>
+          </select>
+        </div>
+      </div>
       <div style="display:grid;gap:.5rem;margin:.6rem 0">
-        <label><input type="checkbox" name="heating" value="1" @checked($v('heating'))> Einbau oder Aufstellung einer Heizungsanlage (§ 559e BGB: 10 % bei Förderung, höchstens 0,50 € je m² in sechs Jahren)</label>
         <label><input type="checkbox" name="simplified" value="1" @checked($v('simplified'))> Vereinfachtes Verfahren (§ 559c BGB, Kosten bis 10.000 €, pauschal 30 % Instandhaltung, kein Härteeinwand)</label>
         <label><input type="checkbox" name="delayed" value="1" @checked($v('delayed'))> Die Maßnahme wurde nicht oder zu spät angekündigt, oder die Erhöhung übersteigt die Ankündigung um mehr als 10 % (Wirkung sechs Monate später)</label>
       </div>
@@ -160,7 +179,7 @@
         @endif
         @if (! empty($calc['data']['calc']))
           @php($mc = $calc['data']['calc'])
-          <dt>Rechenweg</dt><dd>Kosten {{ Regeln::eur($mc['costs']) }} − Instandhaltung {{ Regeln::eur($mc['upkeep']) }} − Förderung {{ Regeln::eur($mc['subsidies']) }} = {{ Regeln::eur($mc['base']) }}; × {{ $mc['percent'] }} % = {{ Regeln::eur($mc['yearly']) }} im Jahr = {{ Regeln::eur($mc['monthly']) }} im Monat{{ $mc['limited'] ? ', begrenzt auf '.Regeln::eur($mc['allowed']) : '' }}</dd>
+          <dt>Rechenweg</dt><dd>Kosten {{ Regeln::eur($mc['costs']) }}@if (! empty($mc['halved'])) − Hälfte nach § 559f BGB {{ Regeln::eur($mc['halved_amount']) }}@endif − Instandhaltung {{ Regeln::eur($mc['upkeep']) }} − Förderung {{ Regeln::eur($mc['subsidies']) }} = {{ Regeln::eur($mc['base']) }}; × {{ $mc['percent'] }} % = {{ Regeln::eur($mc['yearly']) }} im Jahr = {{ Regeln::eur($mc['monthly']) }} im Monat{{ $mc['limited'] ? ', begrenzt auf '.Regeln::eur($mc['allowed']) : '' }}</dd>
         @endif
       </dl>
     @endif

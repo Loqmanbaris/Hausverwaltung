@@ -299,13 +299,25 @@ class Regeln
         $area = $in['area_sqm'];
         $costs = max(0, (int) $in['costs']);
         $subsidies = max(0, (int) $in['subsidies']);
-        $heating = (bool) $in['heating'];
+        $type = (string) ($in['heating_type'] ?? '');
+        $heating = (bool) ($in['heating'] ?? false) || $type !== '';
+        if ($heating && $type === '') {
+            $type = 'alt'; // ältere Erfassung ohne Angabe der Heizungsart: Erhaltungsanteil wie eingetragen
+        }
         $simplified = (bool) $in['simplified'];
-        $upkeepPercent = $simplified ? self::SIMPLE_UPKEEP : max(0.0, min(100.0, (float) $in['upkeep_percent']));
-        $upkeep = (int) round($costs * $upkeepPercent / 100);
-        $base = max(0, $costs - $upkeep - $subsidies);
+        $subsidized = $heating && $subsidies > 0;
+        $pump = $type === 'waermepumpe';
+        $proof = (string) ($in['pump_proof'] ?? '');
+        // § 559f Abs. 2 BGB: Wärmepumpe ohne Nachweis (Jahresarbeitszahl mindestens 2,5) oder Ausnahme: nur die Hälfte der Kosten
+        $halved = $pump && ! in_array($proof, ['nachweis', 'ausnahme'], true);
+        $costsBase = $halved ? intdiv($costs, 2) : $costs;
+        // § 559e Abs. 2 BGB: bei geförderter Heizung pauschal 15 % Erhaltungsanteil, außer bei Gas- und Ölheizung (§ 43 GModG)
+        $flatUpkeep = ! $simplified && $subsidized && in_array($type, ['waermepumpe', 'erneuerbar'], true);
+        $upkeepPercent = $simplified ? self::SIMPLE_UPKEEP : ($flatUpkeep ? (float) self::HEATING_UPKEEP : max(0.0, min(100.0, (float) $in['upkeep_percent'])));
+        $upkeep = (int) round($costsBase * $upkeepPercent / 100);
+        $base = max(0, $costsBase - $upkeep - $subsidies);
 
-        $percent = ($heating && $subsidies > 0) ? self::HEATING_PERCENT : self::MOD_PERCENT;
+        $percent = $subsidized ? self::HEATING_PERCENT : self::MOD_PERCENT;
         $yearly = intdiv($base * $percent, 100);
         $monthly = intdiv($yearly, 12);
 
@@ -352,7 +364,23 @@ class Regeln
             $add('warn', 'Beim Heizungstausch gilt der Satz von 10 % (§ 559e BGB) nur, wenn Sie Fördermittel in Anspruch genommen haben. Ohne Förderung wird mit 8 % gerechnet.');
         }
         if ($heating) {
-            $add('ok', 'Heizungstausch: Erhöhung höchstens '.self::eur(self::HEATING_CAP_CENTS).' je m² in sechs Jahren (§ 559e Abs. 3 BGB), gerechnet innerhalb der allgemeinen Grenze. Der Erhaltungsanteil beträgt pauschal '.self::HEATING_UPKEEP.' %, das entfällt aber, soweit die Kosten durch den Einbau einer Heizungsanlage nach § 43 GModG entstanden sind (§ 559e Abs. 2 BGB, Stand 29.07.2026).');
+            $add('ok', 'Heizungstausch: Erhöhung höchstens '.self::eur(self::HEATING_CAP_CENTS).' je m² in sechs Jahren (§ 559e Abs. 3 BGB), gerechnet innerhalb der allgemeinen Grenze.');
+            if ($flatUpkeep) {
+                $add('ok', 'Der Erhaltungsanteil beträgt pauschal '.self::HEATING_UPKEEP.' % (§ 559e Abs. 2 Satz 1 BGB).');
+            } elseif ($type === 'fossil' && ! $simplified) {
+                $add('warn', 'Gas- oder Ölheizung (§ 43 GModG): Der pauschale Abzug von '.self::HEATING_UPKEEP.' % entfällt (§ 559e Abs. 2 Satz 2 BGB, Stand 29.07.2026). Bitte den Anteil der tatsächlich ersparten Erhaltungskosten eintragen.');
+            } elseif (! $subsidized && ! $simplified) {
+                $add('warn', 'Ohne Förderung gilt der Erhaltungsanteil nach § 559 BGB. Bitte den Anteil der tatsächlich ersparten Erhaltungskosten eintragen.');
+            }
+        }
+        if ($pump) {
+            if ($halved) {
+                $add('warn', 'Wärmepumpe (§ 559f BGB): Ohne Nachweis einer Jahresarbeitszahl von mindestens 2,5 durch einen Fachunternehmer und ohne Ausnahme zählt nur die Hälfte der Kosten. Angesetzt werden '.self::eur($costsBase).' statt '.self::eur($costs).'. Die Fördermittel werden in voller Höhe abgezogen (vorsichtige Auslegung).');
+            } elseif ($proof === 'nachweis') {
+                $add('ok', 'Wärmepumpe: Der Nachweis der Jahresarbeitszahl (mindestens 2,5, nach VDI 4650, durch einen Fachunternehmer) muss vorliegen. Bitte dem Schreiben beifügen.');
+            } else {
+                $add('ok', 'Wärmepumpe: Ausnahme nach § 559f Abs. 1 Satz 2 BGB (Gebäude nach 1996 errichtet, Wärmeschutzverordnung 1994, Sanierung nach § 38 GModG oder Vorlauftemperatur höchstens 55 °C). Bitte halten Sie den Beleg bereit.');
+            }
         }
         if ($limited === 'kappung') {
             $add('warn', 'Die Erhöhung wird durch die Kappungsgrenze von '.self::eur((int) $capSqm).' je m² in sechs Jahren begrenzt. Die Maßnahme erlaubt rechnerisch '.self::eur($monthly).' im Monat, zulässig sind '.self::eur($allowed).'.');
@@ -374,6 +402,12 @@ class Regeln
             'checks' => $checks,
             'ok' => self::noErrors($checks),
             'costs' => $costs,
+            'costs_base' => $costsBase,
+            'halved' => $halved,
+            'halved_amount' => $costs - $costsBase,
+            'heating_type' => $type,
+            'pump_proof' => $proof,
+            'flat_upkeep' => $flatUpkeep,
             'upkeep_percent' => $upkeepPercent,
             'upkeep' => $upkeep,
             'subsidies' => $subsidies,
