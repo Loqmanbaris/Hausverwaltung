@@ -21,3 +21,6 @@ Thumbs.db
 *.tar.gz
 *.sql
 *.crmupdate
+update-private*
+*.pem
+*.key
