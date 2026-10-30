@@ -14,6 +14,10 @@
 .rc-item button{margin-top:.35rem}
 .rc-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rc-hide{display:none}
+.rc-tools{margin:.5rem 0}
+.rc-check{display:flex;gap:.5rem;align-items:center;margin:.2rem 0}
+.rc-ocr-status{font-size:.9rem;color:#374151;margin-top:.3rem}
+.rc-ocr{background:#ecfdf5 !important;border-color:#34d399 !important}
 </style>
 
 @php
@@ -62,6 +66,15 @@
       <input type="file" id="rc-gallery" accept="image/*,application/pdf" multiple class="rc-hide">
       <input type="file" id="rc-real" name="files[]" accept="image/*,application/pdf" multiple>
       <div class="rc-list" id="rc-list" aria-live="polite"></div>
+      <div class="rc-tools rc-hide" id="rc-tools">
+        <label class="rc-check"><input type="checkbox" id="rc-auto" checked> Nach dem Zuschneiden automatisch Text erkennen</label>
+        <label class="rc-check"><input type="checkbox" id="rc-pdf" checked> Seiten beim Speichern zu einer PDF zusammenfassen</label>
+        <div class="rc-take" style="margin:.2rem 0">
+          <button type="button" class="sd-btn sec" id="rc-ocr">Text erkennen (OCR)</button>
+          <button type="button" class="sd-btn sec" id="rc-merge">Jetzt als PDF zusammenfassen</button>
+        </div>
+        <div class="rc-ocr-status" id="rc-ocr-status" aria-live="polite"></div>
+      </div>
       <small class="sd-muted" id="rc-hint">Mehrere Seiten sind möglich (bis zu {{ \App\Support\Documents\UploadInspector::MAX_FILES }}). Erlaubt sind Fotos und PDF, höchstens 10 MB je Datei.</small>
     </div>
   </div>
@@ -155,6 +168,11 @@
         </datalist>
         <small class="sd-muted">Vorhandene Namen erscheinen zur Auswahl. Ein neuer Name legt den Lieferanten automatisch an.</small>
       </div>
+      <div class="sd-field">
+        <label for="f-invoice_number">Rechnungsnummer (freiwillig)</label>
+        <input id="f-invoice_number" name="invoice_number" type="text" autocomplete="off" maxlength="80" value="{{ old('invoice_number', $receipt->invoice_number) }}">
+        <small class="sd-muted">Steht im DATEV-Export als Belegnummer.</small>
+      </div>
     </div>
     @include('partials.sd-textarea', ['name' => 'note', 'label' => 'Notiz', 'value' => $receipt->note])
     <p class="sd-muted" style="margin:.2rem 0 0">Fehlende Angaben kannst du später am Computer nachtragen. Der Beleg erscheint dann in der Liste „unvollständig“.</p>
@@ -170,6 +188,7 @@
 </form>
 @endif
 
+<script src="{{ route('scan.asset', 'scanner.js', false) }}?v={{ \App\Http\Controllers\ScanAssetController::stamp('scanner.js') }}"></script>
 <script>
 (function () {
   var form = document.getElementById('rc-form');
@@ -272,8 +291,40 @@
 
   document.getElementById('rc-take').addEventListener('click', function () { cam.click(); });
   document.getElementById('rc-pick').addEventListener('click', function () { gallery.click(); });
-  cam.addEventListener('change', function () { add(cam.files); cam.value = ''; });
-  gallery.addEventListener('change', function () { add(gallery.files); gallery.value = ''; });
+  var canvasOf = typeof WeakMap === 'function' ? new WeakMap() : null;
+  var ocrPromise = null;
+  var tools = document.getElementById('rc-tools');
+  var ocrBtn = document.getElementById('rc-ocr');
+  var mergeBtn = document.getElementById('rc-merge');
+  var ocrStatus = document.getElementById('rc-ocr-status');
+  var autoBox = document.getElementById('rc-auto');
+  var pdfBox = document.getElementById('rc-pdf');
+
+  /* Fotos zuerst zuschneiden (Beleg-Scanner). Ohne Scanner oder bei Abbruch geht es wie bisher. */
+  function prepare(fileList) {
+    var arr = Array.prototype.slice.call(fileList);
+    if (!window.BelegScanner || !canvasOf) { return Promise.resolve(arr); }
+    var out = [];
+    var chain = Promise.resolve();
+    arr.forEach(function (f) {
+      chain = chain.then(function () {
+        if (f.type.indexOf('image/') !== 0) { out.push(f); return null; }
+        return window.BelegScanner.edit(f).then(function (r) {
+          if (r) { canvasOf.set(r.file, r.canvas); out.push(r.file); }
+        }, function () { out.push(f); });
+      });
+    });
+    return chain.then(function () { return out; });
+  }
+  function takeIn(input) {
+    var copy = Array.prototype.slice.call(input.files);
+    input.value = '';
+    prepare(copy).then(function (r) { return add(r); }).then(function () {
+      if (autoBox && autoBox.checked && items.some(function (i) { return i.canvas && !i.ocr; })) { runOcr(); }
+    });
+  }
+  cam.addEventListener('change', function () { takeIn(cam); });
+  gallery.addEventListener('change', function () { takeIn(gallery); });
 
   function shrink(file) {
     if (file.type.indexOf('image/') !== 0) { return Promise.resolve(file); }
@@ -315,12 +366,12 @@
     setBusy(true);
     var chain = Promise.resolve();
     arr.forEach(function (f) {
-      chain = chain.then(function () { return shrink(f); }).then(function (g) {
+      chain = chain.then(function () { return canvasOf && canvasOf.has(f) ? f : shrink(f); }).then(function (g) {
         if (items.length >= MAX) { hint.textContent = 'Es sind höchstens ' + MAX + ' Dateien pro Beleg möglich.'; return; }
-        items.push({ file: g, url: g.type.indexOf('image/') === 0 ? URL.createObjectURL(g) : null });
+        items.push({ file: g, url: g.type.indexOf('image/') === 0 ? URL.createObjectURL(g) : null, canvas: canvasOf && canvasOf.get(g) || null, ocr: null, pages: 0 });
       });
     });
-    chain.then(function () {
+    return chain.then(function () {
       pending -= 1;
       sync();
       render();
@@ -350,7 +401,7 @@
       }
       var label = document.createElement('span');
       label.className = 'rc-name';
-      label.textContent = 'Seite ' + (idx + 1) + ' · ' + Math.max(1, Math.round(it.file.size / 1024)) + ' KB';
+      label.textContent = (it.pages ? 'PDF mit ' + it.pages + (it.pages === 1 ? ' Seite' : ' Seiten') : 'Seite ' + (idx + 1)) + ' · ' + Math.max(1, Math.round(it.file.size / 1024)) + ' KB';
       box.appendChild(label);
       var rm = document.createElement('button');
       rm.type = 'button'; rm.className = 'sd-btn danger small'; rm.textContent = 'Entfernen';
@@ -364,7 +415,94 @@
       list.appendChild(box);
     });
     document.getElementById('rc-take').textContent = items.length ? 'Weitere Seite aufnehmen' : 'Foto aufnehmen';
+    var scanned = items.some(function (i) { return i.canvas; });
+    if (tools) { tools.classList.toggle('rc-hide', !(window.BelegScanner && scanned)); }
   }
+
+  /* Texterkennung: füllt leere Felder, überschreibt nichts */
+  function setField(id, value) {
+    var f = document.getElementById(id);
+    if (!f || !value || f.value.trim() !== '') { return false; }
+    f.value = value;
+    f.classList.add('rc-ocr');
+    f.dispatchEvent(new Event('change', { bubbles: true }));
+    f.addEventListener('input', function () { f.classList.remove('rc-ocr'); }, { once: true });
+    return true;
+  }
+
+  function fillFromOcr() {
+    var done = items.filter(function (i) { return i.ocr; });
+    if (!done.length) { return; }
+    var text = done.map(function (i) { return i.ocr.text; }).join('\n');
+    if (!text.trim()) { ocrStatus.textContent = 'Es wurde kein Text erkannt. Bitte neu fotografieren oder die Angaben von Hand eintragen.'; return; }
+    var vendors = Array.prototype.map.call(document.querySelectorAll('#rc-vendors option'), function (o) { return o.value; });
+    var r = window.BelegScanner.parseReceipt(text, vendors, new Date());
+    var got = [];
+    if (setField('f-vendor_name', r.vendor)) { got.push('Lieferant ' + r.vendor); }
+    if (setField('f-receipt_date', r.date)) { got.push('Datum ' + r.date.split('-').reverse().join('.')); }
+    if (setField('f-amount_gross', r.amount)) { got.push('Betrag ' + r.amount + ' €' + (r.amountSure ? '' : ' (unsicher)')); }
+    if (setField('f-invoice_number', r.invoice)) { got.push('Rechnungsnummer ' + r.invoice); }
+    ocrStatus.textContent = got.length ? 'Erkannt und eingetragen (grün markiert, bitte prüfen): ' + got.join(', ') + '.' : 'Es wurde nichts Neues erkannt. Die Felder sind schon ausgefüllt oder der Text war nicht lesbar.';
+  }
+
+  function runOcr() {
+    if (ocrPromise) { return ocrPromise; }
+    var todo = items.filter(function (i) { return i.canvas && !i.ocr; });
+    if (!todo.length) { fillFromOcr(); return Promise.resolve(); }
+    if (ocrBtn) { ocrBtn.disabled = true; }
+    ocrStatus.textContent = 'Texterkennung wird gestartet …';
+    ocrPromise = window.BelegScanner.ocr(todo.map(function (i) { return i.canvas; }), function (t, p) {
+      ocrStatus.textContent = t + ' · ' + Math.round(p * 100) + ' %';
+    }).then(function (res) {
+      res.forEach(function (r, k) { todo[k].ocr = r; });
+      fillFromOcr();
+    }).catch(function (e) {
+      ocrStatus.textContent = 'Texterkennung nicht möglich: ' + (e && e.message ? e.message : 'unbekannter Fehler') + '. Du kannst die Angaben von Hand eintragen.';
+    }).then(function () { ocrPromise = null; if (ocrBtn) { ocrBtn.disabled = false; } });
+    return ocrPromise;
+  }
+
+  /* Gescannte Seiten zu einer PDF zusammenfassen (mit unsichtbarem Text, wenn die Texterkennung gelaufen ist) */
+  function mergeToPdf() {
+    var pages = items.filter(function (i) { return i.canvas; });
+    if (!pages.length || !window.BelegScanner) { return Promise.resolve(false); }
+    return (ocrPromise || Promise.resolve()).then(function () {
+      return window.BelegScanner.buildPdf(pages.map(function (i) { return { canvas: i.canvas, words: i.ocr ? i.ocr.words : null }; }));
+    }).then(function (blob) {
+      var d = new Date();
+      var stamp = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+      var file = new File([blob], 'Beleg-' + stamp + '.pdf', { type: 'application/pdf' });
+      var rest = items.filter(function (i) { return !i.canvas; });
+      items.forEach(function (i) { if (i.url) { URL.revokeObjectURL(i.url); } });
+      items = rest;
+      items.unshift({ file: file, url: null, canvas: null, ocr: null, pages: pages.length });
+      sync(); render();
+      return true;
+    });
+  }
+
+  if (ocrBtn) { ocrBtn.addEventListener('click', function () { runOcr(); }); }
+  if (mergeBtn) {
+    mergeBtn.addEventListener('click', function () {
+      mergeBtn.disabled = true;
+      mergeToPdf().then(function (done) { if (done) { ocrStatus.textContent = 'Die Seiten sind jetzt eine PDF.'; } }).then(function () { mergeBtn.disabled = false; });
+    });
+  }
+  /* Beim Speichern zuerst zur PDF zusammenfassen, dann erneut absenden */
+  form.addEventListener('submit', function (ev) {
+    if (!pdfBox || !pdfBox.checked || !window.BelegScanner || !items.some(function (i) { return i.canvas; })) { return; }
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+    var submitter = ev.submitter;
+    setBusy(true);
+    mergeToPdf().then(function () {
+      setBusy(false);
+      if (typeof form.requestSubmit === 'function') { form.requestSubmit(submitter || undefined); } else { form.submit(); }
+    }, function () {
+      setBusy(false);
+      alert('Die PDF konnte nicht erstellt werden. Bitte entferne den Haken bei „zu einer PDF zusammenfassen“ und speichere erneut.');
+    });
+  }, true);
 })();
 </script>
 @endsection

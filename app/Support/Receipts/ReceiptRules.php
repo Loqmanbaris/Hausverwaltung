@@ -31,6 +31,7 @@ class ReceiptRules
             'amount_gross' => ['nullable', self::amountRule()],
             'cost_category' => ['nullable', Rule::in(Kostenarten::allowed($currentCategory))],
             'vendor_name' => ['nullable', 'string', 'max:190'],
+            'invoice_number' => ['nullable', 'string', 'max:80'],
             'note' => ['nullable', 'string', 'max:5000'],
         ];
 
@@ -63,6 +64,7 @@ class ReceiptRules
             'amount_gross' => 'Betrag',
             'cost_category' => 'Kostenart',
             'vendor_name' => 'Lieferant',
+            'invoice_number' => 'Rechnungsnummer',
             'note' => 'Notiz',
             'property_id' => 'Objekt',
             'unit_id' => 'Einheit',
@@ -100,7 +102,7 @@ class ReceiptRules
             }
         }
 
-        return [
+        $out = [
             'owner_id' => $ownerId,
             'owner_level' => $ownerLevel,
             'property_id' => $propertyId ?: null,
@@ -111,6 +113,12 @@ class ReceiptRules
             'vendor_name' => self::blank($data['vendor_name'] ?? null),
             'note' => self::blank($data['note'] ?? null),
         ];
+        // Die Rechnungsnummer nur übernehmen, wenn das Formular sie mitschickt. So bleibt eine vorhandene Nummer (z. B. aus einer E-Rechnung) erhalten.
+        if (array_key_exists('invoice_number', $data)) {
+            $out['invoice_number'] = self::blank($data['invoice_number']);
+        }
+
+        return $out;
     }
 
     private static function blank(mixed $value): ?string

@@ -100,3 +100,4 @@ require __DIR__ . '/onedrive-sicherung.php';
 require __DIR__ . '/meintag.php';
 require __DIR__ . '/pwa.php';
 require __DIR__ . '/rechnungen.php';
+require __DIR__ . '/scan.php';
