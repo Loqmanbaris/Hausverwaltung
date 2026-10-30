@@ -60,7 +60,7 @@ class Ics
             } else {
                 $utc = new DateTimeZone('UTC');
                 $lines[] = 'DTSTART:'.$e['start']->setTimezone($utc)->format('Ymd\THis\Z');
-                $lines[] = 'DTEND:'.$e['start']->modify('+1 hour')->setTimezone($utc)->format('Ymd\THis\Z');
+                $lines[] = 'DTEND:'.($e['end'] ?? $e['start']->modify('+1 hour'))->setTimezone($utc)->format('Ymd\THis\Z');
             }
             $lines[] = 'SUMMARY:'.self::esc($e['summary']);
             if ($e['description'] !== '') {
@@ -71,7 +71,13 @@ class Ics
             }
             $lines[] = 'CATEGORIES:'.self::esc($e['category']);
             $lines[] = 'STATUS:CONFIRMED';
-            if ($e['warn']) {
+            if (! empty($e['alarm'])) {
+                $lines[] = 'BEGIN:VALARM';
+                $lines[] = 'ACTION:DISPLAY';
+                $lines[] = 'DESCRIPTION:'.self::esc($e['summary']);
+                $lines[] = 'TRIGGER:'.$e['alarm'];
+                $lines[] = 'END:VALARM';
+            } elseif ($e['warn']) {
                 foreach ($e['all_day'] ? ['-P6DT15H', '-PT15H'] : ['-P1D', '-PT1H'] as $trigger) {
                     $lines[] = 'BEGIN:VALARM';
                     $lines[] = 'ACTION:DISPLAY';

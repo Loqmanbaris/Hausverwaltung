@@ -24,6 +24,7 @@ class Kalender
         'finanzen' => 'Darlehen, Basiszins und Nebenkostenabrechnung',
         'dokumente' => 'Ablaufende Dokumente',
         'interessenten' => 'Besichtigungen',
+        'eigene' => 'Meine Termine und To-dos',
     ];
 
     /** Art des Termins aus dem Link, auf den er zeigt. */
@@ -37,6 +38,7 @@ class Kalender
             '#^/mahnwesen#' => str_contains($url, '#basiszins') ? 'finanzen' : 'miete',
             '#^/dokumente#' => 'dokumente',
             '#^/interessenten#' => 'interessenten',
+            '#^/mein-tag#' => 'eigene',
         ];
         foreach ($map as $re => $cat) {
             if (preg_match($re, $path)) {
@@ -51,7 +53,7 @@ class Kalender
      * @param  ?array<int, string>  $categories  null oder leer = alle
      * @return array<int, array{uid: string, summary: string, description: string, url: string, start: DateTimeImmutable, all_day: bool, warn: bool, category: string}>
      */
-    public static function events(User $user, ?array $categories = null, ?string $today = null): array
+    public static function events(User $user, ?array $categories = null, ?string $today = null, bool $personal = true): array
     {
         $today ??= date('Y-m-d');
         $from = date('Y-m-d', strtotime($today.' -7 days'));
@@ -89,6 +91,15 @@ class Kalender
                 'warn' => ($r['tone'] ?? 'info') === 'warn',
                 'category' => self::CATEGORIES[$cat] ?? $cat,
             ];
+        }
+        if ($personal && ($categories === null || $categories === [] || in_array('eigene', $categories, true))) {
+            try {
+                foreach (\App\Support\Tag\MeinTag::feedEvents($user, $today) as $e) {
+                    $out[] = $e;
+                }
+            } catch (\Throwable $e) {
+                report($e);
+            }
         }
         usort($out, fn ($a, $b) => $a['start'] <=> $b['start']);
 

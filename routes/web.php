@@ -97,3 +97,4 @@ require __DIR__ . '/loeschfristen.php';
 require __DIR__ . '/mieterportal.php';
 require __DIR__ . '/ausgangsrechnung.php';
 require __DIR__ . '/onedrive-sicherung.php';
+require __DIR__ . '/meintag.php';

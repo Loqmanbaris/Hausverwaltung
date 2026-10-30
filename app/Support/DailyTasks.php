@@ -57,6 +57,14 @@ class DailyTasks
             }
         }
 
+        // „Mein Tag“ morgens per E-Mail (Paket 42)
+        if (\Illuminate\Support\Facades\Schema::hasTable('personal_items')) {
+            $n = \App\Support\Tag\MeinTag::sendDayMails();
+            if ($n > 0) {
+                $lines[] = 'Mein Tag: '.$n.' E-Mail(s) gesendet';
+            }
+        }
+
         // Erinnerung an ablaufende Dokumente per E-Mail (Paket 22)
         if (\Illuminate\Support\Facades\Schema::hasTable('documents')) {
             $n = \App\Support\Ablage\Ablage::sendReminders();

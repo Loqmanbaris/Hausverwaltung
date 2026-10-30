@@ -10,11 +10,13 @@
       'maint' => $cnt(fn () => \App\Models\MaintenanceTask::visibleTo($u)->where('active', true)->where('next_due', '<', date('Y-m-d'))->count()),
       'setup' => $u?->isAdmin() ? $cnt(fn () => \App\Support\Setup\Einrichtung::summary()['open']) : 0,
       'heat' => $cnt(fn () => \App\Support\Nk\Verbrauchsinfo::open($u)->count() + \App\Models\Co2Claim::visibleTo($u)->where('status', 'offen')->count()),
+      'day' => $cnt(fn () => \App\Support\Tag\MeinTag::openCount($u)),
       'docs' => $cnt(fn () => \App\Models\Document::visibleTo($u)->where('archived', false)->whereNotNull('expires_on')->where('expires_on', '<', date('Y-m-d'))->count()),
   ];
   // [Bezeichnung, Route, aktiv bei, Badge, nur Admin]
   $groups = [
       '' => [
+          ['Mein Tag', 'tag.index', ['tag.*'], $badge['day'] ?? 0, false],
           ['Suche', 'search', ['search'], 0, false],
           ['E-Mails', 'mail.index', ['mail.index', 'mail.compose'], 0, false],
       ],
@@ -76,9 +78,14 @@
           ['Protokoll', 'audit.index', ['audit.*'], 0, true],
       ],
   ];
+  // Ansicht: „Alltag“ zeigt nur, was täglich gebraucht wird; „Verwaltung“ zeigt alles. Die Wahl wird pro Gerät gemerkt.
+  $mode = request()->cookie('nav_mode') === 'verwaltung' ? 'verwaltung' : 'alltag';
+  $daily = ['tag.index', 'search', 'mail.index', 'tenants.index', 'leases.index', 'applicants.index', 'rent.month', 'rent.open', 'dunning.index',
+      'bank.transactions', 'receipts.index', 'bank.expenses', 'workorders.index', 'inquiries.index', 'documents.index'];
   $menu = [];
   foreach ($groups as $title => $items) {
-      $visible = array_values(array_filter($items, fn ($i) => (! $i[4] || $admin) && \Illuminate\Support\Facades\Route::has($i[1])));
+      $visible = array_values(array_filter($items, fn ($i) => (! $i[4] || $admin) && \Illuminate\Support\Facades\Route::has($i[1])
+          && ($mode === 'verwaltung' || in_array($i[1], $daily, true) || request()->routeIs(...$i[2]))));
       if ($visible === []) {
           continue;
       }
@@ -91,6 +98,16 @@
       ];
   }
 @endphp
+<style>
+  .sb-mode{display:flex;gap:.25rem;margin:.2rem 0 .6rem;padding:.2rem;background:rgba(127,127,127,.15);border-radius:.5rem}
+  .sb-mode button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:.85rem;padding:.35rem .4rem;border-radius:.4rem;cursor:pointer}
+  .sb-mode button.on{background:#fff;color:#111827;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+</style>
+<form method="POST" action="{{ route('nav.mode') }}" class="sb-mode">
+  @csrf
+  <button type="submit" name="mode" value="alltag" @class(['on' => $mode === 'alltag'])>Alltag</button>
+  <button type="submit" name="mode" value="verwaltung" @class(['on' => $mode === 'verwaltung'])>Verwaltung</button>
+</form>
 @foreach ($menu as $g)
   @if ($g['title'] === '')
     <div class="sb-group sb-top">
