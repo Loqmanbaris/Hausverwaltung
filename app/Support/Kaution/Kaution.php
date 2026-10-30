@@ -140,12 +140,12 @@ class Kaution
             foreach ($withholdings as $w) {
                 $take = min($w['cents'], max(0, $left));
                 if ($take > 0) {
-                    $d->entries()->create(['entry_on' => $on, 'kind' => 'einbehalt', 'amount' => Regeln::euro($take), 'note' => mb_substr($w['reason'], 0, 190), 'created_by' => $user->id]);
+                    $d->entries()->create(['entry_on' => $on, 'kind' => 'einbehalt', 'amount' => Regeln::euro($take), 'note' => mb_substr($w['reason'], 0, 190), 'settlement' => true, 'created_by' => $user->id]);
                     $left -= $take;
                 }
             }
             if ($res['payout'] > 0) {
-                $d->entries()->create(['entry_on' => $on, 'kind' => 'rueckzahlung', 'amount' => Regeln::euro($res['payout']), 'note' => 'Auszahlung an den Mieter', 'created_by' => $user->id]);
+                $d->entries()->create(['entry_on' => $on, 'kind' => 'rueckzahlung', 'amount' => Regeln::euro($res['payout']), 'note' => 'Auszahlung an den Mieter', 'settlement' => true, 'created_by' => $user->id]);
             }
             $d->update(['status' => 'abgerechnet', 'settled_on' => $on, 'claim' => Regeln::euro($res['claim'])]);
             Audit::log('deposit.settled', $d, 'Kaution abgerechnet: Auszahlung '.Regeln::eur($res['payout']).', Einbehalt '.Regeln::eur($res['withheld']).($res['claim'] > 0 ? ', Nachforderung '.Regeln::eur($res['claim']) : ''));
@@ -160,7 +160,14 @@ class Kaution
             throw new RuntimeException('Die Kaution ist nicht abgerechnet.');
         }
         DB::transaction(function () use ($d) {
-            $d->entries()->whereIn('kind', ['einbehalt', 'rueckzahlung'])->whereDate('entry_on', $d->settled_on?->format('Y-m-d'))->delete();
+            // Nur Buchungen aus der Abrechnung entfernen. Von Hand gebuchte Einbehalte oder Auszahlungen bleiben stehen.
+            // Ältere Abrechnungen (vor Paket 40) haben keine Kennzeichnung; dort gilt wie bisher das Abrechnungsdatum.
+            $marked = $d->entries()->where('settlement', true);
+            if ($marked->exists()) {
+                $marked->delete();
+            } else {
+                $d->entries()->whereIn('kind', ['einbehalt', 'rueckzahlung'])->whereDate('entry_on', $d->settled_on?->format('Y-m-d'))->delete();
+            }
             $d->update(['status' => 'offen', 'settled_on' => null, 'claim' => 0]);
         });
         Audit::log('deposit.reopened', $d, 'Kautionsabrechnung zurückgenommen: '.$d->lease?->title());

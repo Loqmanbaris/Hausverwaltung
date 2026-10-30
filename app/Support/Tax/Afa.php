@@ -5,6 +5,7 @@ namespace App\Support\Tax;
 use App\Models\PropertyAfa;
 use App\Models\PropertyAfaYear;
 use App\Models\PropertyValue;
+use App\Models\Receipt;
 
 /**
  * Gebäude-AfA für die Anlage V (Paket 29). Gerechnet wird nur die lineare AfA (§ 7 Abs. 4 EStG):
@@ -95,5 +96,46 @@ class Afa
             : 'AfA Gebäude (linear '.$rate.' % von '.$eur($basis).($row['months'] < 12 ? ', '.$row['months'].' Monate' : '').')';
 
         return $row + ['basis' => $basis, 'rate' => (float) $a->rate, 'label' => $label];
+    }
+
+    /**
+     * Grenze für anschaffungsnahe Herstellungskosten (§ 6 Abs. 1 Nr. 1a EStG): Übersteigen die Aufwendungen für Instandsetzung und
+     * Modernisierung in den ersten drei Jahren nach der Anschaffung 15 % der Anschaffungskosten des Gebäudes (ohne Umsatzsteuer),
+     * zählen sie nicht als Werbungskosten, sondern erhöhen die AfA-Grundlage.
+     *
+     * @return array{sum: int, limit: int, percent: float, status: string}  status: ok | nah | ueber
+     */
+    public static function nearPurchaseStatus(int $sumCents, int $basisCents): array
+    {
+        $limit = (int) round($basisCents * 0.15);
+        $percent = $basisCents > 0 ? round($sumCents / $basisCents * 100, 1) : 0.0;
+        $status = $sumCents > $limit ? 'ueber' : ($sumCents > (int) round($limit * 0.7) ? 'nah' : 'ok');
+
+        return ['sum' => $sumCents, 'limit' => $limit, 'percent' => $percent, 'status' => $status];
+    }
+
+    /**
+     * Prüft die Belege eines Objekts (Erhaltung und Modernisierung) in den ersten drei Jahren nach dem Kauf gegen die 15-%-Grenze.
+     * Null, wenn Kaufdatum oder Grundlage fehlen oder der Dreijahreszeitraum vor den erfassten Belegen liegt.
+     *
+     * @return ?array{sum: int, limit: int, percent: float, status: string, from: string, to: string, count: int}
+     */
+    public static function nearPurchase(int $propertyId, ?string $purchaseDate, ?int $basisCents): ?array
+    {
+        if ($purchaseDate === null || $basisCents === null || $basisCents <= 0) {
+            return null;
+        }
+        $to = date('Y-m-d', strtotime($purchaseDate.' +3 years -1 day'));
+        $rows = Receipt::query()->where('property_id', $propertyId)->whereBetween('receipt_date', [$purchaseDate, $to])->get(['cost_category', 'amount_gross']);
+        $sum = 0;
+        $count = 0;
+        foreach ($rows as $r) {
+            if (in_array(AnlageV::costGroup((string) $r->cost_category), ['erhaltung', 'modernisierung'], true)) {
+                $sum += (int) round((float) $r->amount_gross * 100);
+                $count++;
+            }
+        }
+
+        return self::nearPurchaseStatus($sum, $basisCents) + ['from' => $purchaseDate, 'to' => $to, 'count' => $count];
     }
 }

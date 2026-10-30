@@ -33,6 +33,7 @@ class AfaController extends Controller
 
         return view('afa.edit', [
             'property' => $property, 'a' => $a, 'v' => $v, 'start' => $start, 'basis' => $basis, 'years' => $years,
+            'near' => Afa::nearPurchase((int) $property->id, $v?->purchase_date?->format('Y-m-d'), $basis),
             'overrides' => PropertyAfaYear::query()->where('property_id', $property->id)->orderBy('year')->get(),
         ]);
     }

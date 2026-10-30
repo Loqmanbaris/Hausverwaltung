@@ -53,6 +53,20 @@
   <button class="sd-btn" type="submit">Speichern</button>
 </form>
 
+@if (! empty($near) && $near['count'] > 0)
+<div class="sd-card" style="border-left:4px solid {{ $near['status'] === 'ueber' ? '#c0392b' : ($near['status'] === 'nah' ? '#e67e22' : '#2e8b57') }}">
+  <h2>Anschaffungsnahe Herstellungskosten (15-%-Grenze)</h2>
+  <p style="margin:.2rem 0">Instandsetzungs- und Modernisierungsbelege in den ersten drei Jahren nach dem Kauf ({{ date('d.m.Y', strtotime($near['from'])) }} bis {{ date('d.m.Y', strtotime($near['to'])) }}): <strong>{{ $eur($near['sum']) }}</strong> ({{ number_format($near['percent'], 1, ',', '.') }} % der Grundlage). Grenze: {{ $eur($near['limit']) }}.</p>
+  @if ($near['status'] === 'ueber')
+  <p style="margin:.2rem 0"><strong>Die Grenze ist überschritten.</strong> Diese Aufwendungen sind dann steuerlich keine sofort abziehbaren Erhaltungskosten, sondern erhöhen die Grundlage der AfA. Das CRM zieht sie in der Anlage V derzeit trotzdem bei den Erhaltungsaufwendungen ab. Bitte mit dem Steuerberater klären, ob du sie stattdessen bei „Zusätzliche Grundlage“ eintragen musst.</p>
+  @elseif ($near['status'] === 'nah')
+  <p style="margin:.2rem 0">Du näherst dich der Grenze. Weitere Maßnahmen in diesem Zeitraum können sie überschreiten. Sprich vorher mit dem Steuerberater.</p>
+  @else
+  <p style="margin:.2rem 0" class="sd-muted">Die Grenze ist nicht erreicht. Rechnerische Prüfung nach Belegdatum, ohne Gewähr (Umsatzsteuer und regelmäßig wiederkehrende Arbeiten sind bei der Grenze anders zu behandeln).</p>
+  @endif
+</div>
+@endif
+
 <div class="sd-card">
   <h2>AfA je Jahr</h2>
   @if ($basis === null || $start === null)
