@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1b2338">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/app-icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Verwaltung">
 <title>@yield('title', 'Übersicht') – {{ config('app.name') }}</title>
 @include('partials.styles')
 @php
@@ -82,7 +88,7 @@ body{min-height:100vh}
     <button class="menu-btn sb-close" type="button" onclick="document.body.classList.remove('nav-open')">Schließen ✕</button>
     <a class="sb-brand" href="{{ route('dashboard') }}">@if ($logo)<img src="{{ $logo->url() }}" alt="{{ config('app.name') }}">@else<span class="dot"></span>{{ config('app.name') }}@endif</a>
     <nav>@include('partials.nav-main')</nav>
-    <div class="sb-foot"><a href="{{ route('home') }}" target="_blank" rel="noopener">Webseite ansehen ↗</a></div>
+    <div class="sb-foot"><a href="#" data-install>App installieren</a><br><a href="{{ route('home') }}" target="_blank" rel="noopener">Webseite ansehen ↗</a></div>
   </aside>
   <div class="sb-shade" onclick="document.body.classList.remove('nav-open')"></div>
   <div class="mainwrap">
@@ -120,6 +126,25 @@ body{min-height:100vh}
     d.addEventListener('toggle',function(){
       st[g]=d.open?1:0;
       try{localStorage.setItem(K,JSON.stringify(st));}catch(e){}
+    });
+  });
+})();
+</script>
+<script>
+(function(){
+  if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(function(){});});}
+  var standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+  var deferred=null;
+  var hide=function(){document.querySelectorAll('[data-install]').forEach(function(el){el.hidden=true;});};
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;});
+  window.addEventListener('appinstalled',function(){deferred=null;hide();});
+  if(standalone){hide();return;}
+  document.querySelectorAll('[data-install]').forEach(function(el){
+    el.addEventListener('click',function(ev){
+      ev.preventDefault();
+      if(deferred){deferred.prompt();deferred.userChoice.then(function(){deferred=null;});return;}
+      var ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+      alert(ios?'So installierst du die App: Tippe unten auf „Teilen“ und dann auf „Zum Home-Bildschirm“.':'So installierst du die App: Öffne das Browser-Menü (⋮ oben rechts) und wähle „App installieren“ oder „Zum Startbildschirm hinzufügen“.');
     });
   });
 })();

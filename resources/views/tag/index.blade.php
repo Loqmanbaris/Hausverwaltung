@@ -6,8 +6,10 @@
 @php
   use App\Support\Tag\MeinTag;
   $wd = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+  $months = ['', 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
   $label = fn ($d) => $wd[(int) date('w', strtotime($d))].', '.date('d.m.Y', strtotime($d));
-  $box = 'padding:.5rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;width:100%;box-sizing:border-box';
+  $long = fn ($d) => $wd[(int) date('w', strtotime($d))].', '.(int) date('j', strtotime($d)).'. '.$months[(int) date('n', strtotime($d))].' '.date('Y', strtotime($d));
+  $box = 'padding:.6rem;border:1px solid #c5ccd3;border-radius:.6rem;font:inherit;width:100%;box-sizing:border-box';
   $editing = $item !== null;
   $val = function (string $key, $default = '') use ($item, $editing) {
       if (! $editing) {
@@ -20,44 +22,114 @@
       return old($key, $current ?? $default);
   };
   $formDate = $editing ? $item->due_on->format('Y-m-d') : $date;
+  $todoTotal = 0;
+  $todoDone = 0;
+  foreach ($days as $dayRows) {
+      foreach ($dayRows as $dr) {
+          if ($dr['source'] === 'own' && $dr['kind'] === 'todo') {
+              $todoTotal++;
+              $todoDone += $dr['done'] ? 1 : 0;
+          }
+      }
+  }
+  $pct = $todoTotal > 0 ? (int) round($todoDone / $todoTotal * 100) : 0;
+  $userName = auth()->user()->name ?? '';
 @endphp
 <style>
-  .mt-bar{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.4rem 0 1rem}
-  .mt-bar .sd-btn{white-space:nowrap}
-  .mt-day{margin-bottom:1rem}
+  .mt-pills{display:flex;gap:.5rem;margin:0 0 1rem}
+  .mt-pills a,.mt-pills button{flex:1;text-align:center;padding:.8rem .4rem;background:#fff;border:1px solid var(--line);border-radius:14px;font:inherit;font-weight:700;color:var(--ink);text-decoration:none;cursor:pointer;white-space:nowrap}
+  .mt-pills .on{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
+  @@media (min-width:961px){.mt-pills .more{display:none}}
+  .mt-hero{background:linear-gradient(160deg,#141b2d 0%,#26345a 100%);color:#fff;border-radius:24px;padding:1.2rem 1.2rem 1.3rem;margin-bottom:1rem;box-shadow:0 8px 24px rgba(20,27,45,.25)}
+  .mt-hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;flex-wrap:wrap}
+  .mt-eyebrow{color:#e8b64c;font-weight:800;letter-spacing:.09em;text-transform:uppercase;font-size:.85rem}
+  .mt-hero h1{margin:.1rem 0 .2rem;font-size:2.5rem;line-height:1.05;color:#fff}
+  .mt-sub{color:#aab3c5;font-size:1.02rem}
+  .mt-ctrl{display:flex;gap:.45rem;align-items:center}
+  .mt-ctrl select,.mt-ctrl a{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:12px;padding:.55rem .8rem;font:inherit;font-weight:700;text-decoration:none;line-height:1.2}
+  .mt-ctrl select option{color:#111827}
+  .mt-ctrl a{min-width:2.5rem;text-align:center}
+  .mt-chips{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.1rem}
+  .mt-chip{display:flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:.55rem 1rem;font-size:1.05rem}
+  .mt-chip b{font-size:1.15rem}
+  .mt-ring{width:1.9rem;height:1.9rem;border-radius:50%;display:inline-block;background:conic-gradient(#34d399 calc(var(--p) * 1%),rgba(255,255,255,.2) 0);position:relative}
+  .mt-ring::after{content:"";position:absolute;inset:.32rem;border-radius:50%;background:#26345a}
+  .mt-install{display:inline-block;margin-top:.9rem;color:#aab3c5;font-size:.9rem}
+  .mt-tiles{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.2rem}
+  .mt-tile{display:block;border-radius:16px;padding:1rem 1.1rem 1.1rem;min-height:6.4rem;text-decoration:none;color:#fff;border:1px solid transparent}
+  .mt-tile b{display:block;font-size:2.7rem;line-height:1.1;font-weight:800}
+  .mt-tile span{display:block;font-size:1.08rem;margin-top:.15rem}
+  .mt-tile.green{background:#1e8a4c}.mt-tile.brown{background:#a8541b}.mt-tile.orange{background:#f47b14}
+  .mt-tile.purple{background:#6b42bd}.mt-tile.teal{background:#0f8b8d}.mt-tile.pink{background:#d614b5}
+  .mt-tile.white{background:#fff;color:#111827;border-color:var(--line)}
+  .mt-tile.zero{opacity:.82}
+  .mt-day{margin-bottom:1rem;border-radius:16px}
   .mt-day h2{margin:0 0 .5rem;font-size:1.05rem}
-  .mt-day.today h2{color:var(--brand,#1f6feb)}
-  .mt-row{display:flex;gap:.6rem;align-items:flex-start;padding:.55rem 0;border-top:1px solid #e5e8ec}
+  .mt-day.today h2{color:#1d4ed8}
+  .mt-row{display:flex;gap:.6rem;align-items:flex-start;padding:.6rem 0;border-top:1px solid #e5e8ec}
   .mt-row:first-of-type{border-top:0}
   .mt-time{min-width:3.6rem;font-variant-numeric:tabular-nums;color:#374151;font-weight:600}
   .mt-main{flex:1;min-width:0;overflow-wrap:anywhere}
   .mt-done .mt-title{text-decoration:line-through;color:#8a94a0}
-  .mt-tag{display:inline-block;font-size:.72rem;padding:.05rem .4rem;border-radius:1rem;background:#eef1f5;color:#4b5563;margin-right:.3rem}
+  .mt-tag{display:inline-block;font-size:.72rem;padding:.05rem .45rem;border-radius:1rem;background:#eef1f5;color:#4b5563;margin-right:.3rem}
   .mt-tag.warn{background:#fdecea;color:#b42318}
   .mt-tag.todo{background:#e8f1fe;color:#1d4ed8}
-  .mt-check{border:1px solid #c5ccd3;background:#fff;border-radius:.4rem;width:2.2rem;height:2.2rem;font-size:1.1rem;cursor:pointer}
-  .mt-banner{background:#fff7e6;border:1px solid #f5c26b;border-radius:.5rem;padding:.6rem .8rem;margin-bottom:1rem}
-  .mt-form{display:grid;gap:.7rem}
+  .mt-check{border:1px solid #c5ccd3;background:#fff;border-radius:.6rem;width:2.4rem;height:2.4rem;font-size:1.1rem;cursor:pointer}
+  .mt-banner{background:#fff7e6;border:1px solid #f5c26b;border-radius:14px;padding:.7rem .9rem;margin-bottom:1rem}
+  .mt-form{display:grid;gap:.8rem}
   .mt-two{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
   .mt-kind label{margin-right:1rem}
   .mt-link{font-size:.85rem}
+  .mt-fab{position:fixed;right:1.1rem;bottom:1.1rem;width:3.6rem;height:3.6rem;border-radius:50%;background:#1d4ed8;color:#fff;font-size:2rem;line-height:3.5rem;text-align:center;text-decoration:none;box-shadow:0 8px 20px rgba(29,78,216,.4);z-index:20}
+  @@media (min-width:700px){.mt-tiles{grid-template-columns:repeat(4,1fr)}}
 </style>
 
-<div class="sd-head">
-  <h1>@if ($editing) Eintrag bearbeiten @else Mein Tag @endif</h1>
-</div>
-
 @if ($editing)
+  <div class="sd-head"><h1>Eintrag bearbeiten</h1></div>
   <a class="sd-btn sec" href="{{ route('tag.index', ['datum' => $formDate]) }}">Zurück</a>
 @else
-  <div class="mt-bar">
-    <a class="sd-btn sec" href="{{ route('tag.index', ['datum' => $prev, 'ansicht' => $week ? 'woche' : null]) }}">‹</a>
-    <a class="sd-btn sec" href="{{ route('tag.index', ['ansicht' => $week ? 'woche' : null]) }}">Heute</a>
-    <a class="sd-btn sec" href="{{ route('tag.index', ['datum' => $next, 'ansicht' => $week ? 'woche' : null]) }}">›</a>
-    <a class="sd-btn {{ $week ? 'sec' : '' }}" href="{{ route('tag.index', ['datum' => $date]) }}">Tag</a>
-    <a class="sd-btn {{ $week ? '' : 'sec' }}" href="{{ route('tag.index', ['datum' => $date, 'ansicht' => 'woche']) }}">Woche</a>
+  <nav class="mt-pills" aria-label="Schnellwahl">
+    <a class="{{ ! $week ? 'on' : '' }}" href="{{ route('tag.index') }}">Mein Tag</a>
+    <a class="{{ $week ? 'on' : '' }}" href="{{ route('tag.index', ['ansicht' => 'woche']) }}">Kalender</a>
+    <a href="{{ route('workorders.index') }}">Aufträge</a>
+    <button type="button" class="more" onclick="document.body.classList.add('nav-open')">Mehr</button>
+  </nav>
+
+  <section class="mt-hero">
+    <div class="mt-hero-top">
+      <div>
+        <div class="mt-eyebrow">{{ $greeting }}, {{ $userName }}</div>
+        <h1>Mein Tag</h1>
+        <div class="mt-sub">@if ($week) Woche vom {{ date('d.m.', strtotime($from)) }} bis {{ date('d.m.Y', strtotime($to)) }} @else {{ $long($date) }} @endif · KW {{ date('W', strtotime($date)) }}</div>
+      </div>
+      <div class="mt-ctrl">
+        <form method="GET" action="{{ route('tag.index') }}" style="margin:0">
+          <input type="hidden" name="datum" value="{{ $date }}">
+          <select name="ansicht" onchange="this.form.submit()" aria-label="Ansicht">
+            <option value="tag" @selected(! $week)>Tag</option>
+            <option value="woche" @selected($week)>Woche</option>
+          </select>
+          <noscript><button type="submit">OK</button></noscript>
+        </form>
+        <a href="{{ route('tag.index', ['datum' => $prev, 'ansicht' => $week ? 'woche' : null]) }}" aria-label="Zurück">‹</a>
+        <a href="{{ route('tag.index', ['datum' => $next, 'ansicht' => $week ? 'woche' : null]) }}" aria-label="Weiter">›</a>
+      </div>
+    </div>
+    <div class="mt-chips">
+      <div class="mt-chip"><span class="mt-ring" style="--p:{{ $pct }}"></span><b>{{ $todoDone }}/{{ $todoTotal }}</b> erledigt</div>
+      <div class="mt-chip">☑ <b>{{ $openTodos }}</b> To-dos offen</div>
+    </div>
+    <a class="mt-install" href="#" data-install>⬇ App installieren</a>
+    @if ($date !== $today && ! $week)
+      <div style="margin-top:.6rem"><a class="mt-install" href="{{ route('tag.index') }}" style="margin:0">Zurück zu heute</a></div>
+    @endif
+  </section>
+
+  <div class="mt-tiles">
+    @foreach ($tiles as $t)
+      <a class="mt-tile {{ $t['color'] }} {{ $t['count'] === 0 ? 'zero' : '' }}" href="{{ $t['url'] }}"><b>{{ $t['count'] }}</b><span>{{ $t['label'] }}</span></a>
+    @endforeach
   </div>
-  <p class="sd-muted" style="margin-top:0">@if ($week) Woche vom {{ date('d.m.', strtotime($from)) }} bis {{ date('d.m.Y', strtotime($to)) }} @else {{ $label($date) }} @endif</p>
 
   @if (count($reminders) > 0)
     <div class="mt-banner">
@@ -95,14 +167,10 @@
       @if ($week)<h2><a href="{{ route('tag.index', ['datum' => $d]) }}" style="color:inherit;text-decoration:none">{{ $label($d) }}@if ($d === $today) (heute)@endif</a></h2>@endif
       @forelse ($rows as $r)
         <div class="mt-row {{ $r['done'] ? 'mt-done' : '' }}">
-          @if ($r['source'] === 'own')
-            @if ($r['kind'] === 'todo')
-              <form method="POST" action="{{ route('tag.done', $r['id']) }}">@csrf<button class="mt-check" type="submit" title="{{ $r['done'] ? 'Wieder öffnen' : 'Erledigt' }}">{{ $r['done'] ? '✓' : '○' }}</button></form>
-            @else
-              <div style="width:2.2rem"></div>
-            @endif
+          @if ($r['source'] === 'own' && $r['kind'] === 'todo')
+            <form method="POST" action="{{ route('tag.done', $r['id']) }}">@csrf<button class="mt-check" type="submit" title="{{ $r['done'] ? 'Wieder öffnen' : 'Erledigt' }}">{{ $r['done'] ? '✓' : '○' }}</button></form>
           @else
-            <div style="width:2.2rem"></div>
+            <div style="width:2.4rem"></div>
           @endif
           <div class="mt-time">{{ $r['time'] ?? 'ganztägig' }}@if ($r['end'])<br><span style="font-weight:400;color:#6b7280">bis {{ $r['end'] }}</span>@endif</div>
           <div class="mt-main">
@@ -122,7 +190,7 @@
   @endforeach
 @endif
 
-<div class="sd-card">
+<div class="sd-card" id="neu" style="border-radius:16px">
   <h2>@if ($editing) Eintrag ändern @else Neuer Eintrag @endif</h2>
   <form class="mt-form" method="POST" action="{{ $editing ? route('tag.update', $item->id) : route('tag.store') }}">
     @csrf
@@ -174,7 +242,7 @@
 </div>
 
 @unless ($editing)
-  <div class="sd-card">
+  <div class="sd-card" style="border-radius:16px">
     <h2>Erinnerungen aufs Handy</h2>
     <p class="sd-muted" style="margin-top:0">Eigene Einträge stehen auch im <a href="{{ route('calendar.index') }}">Kalender-Abo</a>. Dein Handy-Kalender löst dann den Alarm aus. Wie schnell neue Einträge dort erscheinen, bestimmt die Kalender-App, oft dauert es einige Stunden.</p>
     <form method="POST" action="{{ route('tag.mail') }}">
@@ -183,5 +251,6 @@
       <noscript><button class="sd-btn sec" type="submit">Speichern</button></noscript>
     </form>
   </div>
+  <a class="mt-fab" href="#neu" aria-label="Neuer Eintrag">+</a>
 @endunless
 @endsection

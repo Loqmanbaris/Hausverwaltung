@@ -34,6 +34,9 @@ class TagController extends Controller
             'reminders' => MeinTag::dueReminders($user),
             'dayMail' => (bool) $user->day_mail,
             'item' => null,
+            'greeting' => MeinTag::greeting(),
+            'tiles' => MeinTag::tiles($user, $today),
+            'openTodos' => MeinTag::openCount($user, $today),
         ]);
     }
 
@@ -54,6 +57,7 @@ class TagController extends Controller
             'week' => false, 'date' => $row->due_on->format('Y-m-d'), 'from' => $row->due_on->format('Y-m-d'), 'to' => $row->due_on->format('Y-m-d'),
             'prev' => null, 'next' => null, 'today' => $today, 'days' => [], 'overdue' => collect(), 'reminders' => [],
             'dayMail' => (bool) $request->user()->day_mail, 'item' => $row,
+            'greeting' => '', 'tiles' => [], 'openTodos' => 0,
         ]);
     }
 

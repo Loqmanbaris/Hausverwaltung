@@ -194,6 +194,53 @@ class MeinTag
         return $out;
     }
 
+    public static function greeting(?DateTimeImmutable $now = null): string
+    {
+        $h = (int) ($now ?? new DateTimeImmutable('now', self::tz()))->format('G');
+
+        return $h < 11 ? 'Guten Morgen' : ($h < 17 ? 'Guten Tag' : 'Guten Abend');
+    }
+
+    /**
+     * Zähl-Kacheln für „Mein Tag“. Jede Zahl ist einzeln abgesichert; fällt eine aus, zeigt die Kachel 0.
+     *
+     * @return array<int, array{label: string, count: int, color: string, url: string}>
+     */
+    public static function tiles(User $user, string $today): array
+    {
+        $safe = function (callable $f): int {
+            try {
+                return max(0, (int) $f());
+            } catch (\Throwable $e) {
+                report($e);
+
+                return 0;
+            }
+        };
+        $week = [];
+        try {
+            $week = self::entries($user, $today, date('Y-m-d', strtotime($today.' +6 days')));
+        } catch (\Throwable $e) {
+            report($e);
+        }
+        $count = fn (array $days, callable $keep) => array_sum(array_map(fn ($rows) => count(array_filter($rows, $keep)), $days));
+
+        return [
+            ['label' => 'Termine heute', 'color' => 'green', 'url' => route('tag.index'),
+                'count' => $count([$week[$today] ?? []], fn ($r) => $r['kind'] !== 'todo' && ! $r['done'])],
+            ['label' => 'To-dos offen', 'color' => 'brown', 'url' => route('tag.index'), 'count' => $safe(fn () => self::openCount($user, $today))],
+            ['label' => 'Fristen diese Woche', 'color' => 'white', 'url' => route('tag.index', ['ansicht' => 'woche']),
+                'count' => $count($week, fn ($r) => $r['source'] === 'frist')],
+            ['label' => 'Mahnungen vorgeschlagen', 'color' => 'orange', 'url' => route('dunning.index'),
+                'count' => $safe(fn () => \App\Support\Dunning\Mahnwesen::proposalCountFor($user))],
+            ['label' => 'Neue Anfragen', 'color' => 'purple', 'url' => route('inquiries.index'), 'count' => $safe(fn () => \App\Models\Inquiry::newCountFor($user))],
+            ['label' => 'Schäden gemeldet', 'color' => 'teal', 'url' => route('workorders.index'),
+                'count' => $safe(fn () => \App\Models\WorkOrder::visibleTo($user)->where('status', 'gemeldet')->count())],
+            ['label' => 'Kontoumsätze offen', 'color' => 'pink', 'url' => route('bank.transactions'),
+                'count' => $safe(fn () => \App\Support\Bank\BankService::openCountFor($user))],
+        ];
+    }
+
     // ------------------------------------------------------------------ E-Mail am Morgen
 
     public static function dayMailBody(User $user, string $today): ?string
