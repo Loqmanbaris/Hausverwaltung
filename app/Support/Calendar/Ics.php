@@ -62,6 +62,12 @@ class Ics
                 $lines[] = 'DTSTART:'.$e['start']->setTimezone($utc)->format('Ymd\THis\Z');
                 $lines[] = 'DTEND:'.($e['end'] ?? $e['start']->modify('+1 hour'))->setTimezone($utc)->format('Ymd\THis\Z');
             }
+            if (! empty($e['rrule'])) {
+                $lines[] = 'RRULE:'.$e['rrule'];
+                foreach ($e['exdates'] ?? [] as $x) {
+                    $lines[] = $e['all_day'] ? 'EXDATE;VALUE=DATE:'.$x->format('Ymd') : 'EXDATE:'.$x->setTimezone(new DateTimeZone('UTC'))->format('Ymd\THis\Z');
+                }
+            }
             $lines[] = 'SUMMARY:'.self::esc($e['summary']);
             if ($e['description'] !== '') {
                 $lines[] = 'DESCRIPTION:'.self::esc($e['description']);

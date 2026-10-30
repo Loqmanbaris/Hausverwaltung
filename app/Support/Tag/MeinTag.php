@@ -3,6 +3,7 @@
 namespace App\Support\Tag;
 
 use App\Models\PersonalItem;
+use App\Models\PersonalItemMark;
 use App\Models\User;
 use App\Support\Calendar\Kalender;
 use App\Support\Mail\MailService;
@@ -43,27 +44,147 @@ class MeinTag
         return $t !== null && preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $t) === 1;
     }
 
-    /** Beginn als Zeitpunkt; ohne Uhrzeit der Anfang des Tages. */
-    public static function startOf(PersonalItem $i): DateTimeImmutable
+    /** Wiederholung: Schlüssel => Bezeichnung (Regel:alle n). */
+    public const REPEATS = [
+        '' => 'Nicht wiederholen',
+        'weekly:1' => 'Jede Woche',
+        'weekly:2' => 'Alle 2 Wochen',
+        'monthly:1' => 'Jeden Monat (gleiches Datum)',
+        'nth:1' => 'Jeden Monat (gleicher Wochentag, z. B. 2. Montag)',
+        'nth:6' => 'Alle 6 Monate (gleicher Wochentag)',
+        'yearly:1' => 'Jedes Jahr',
+    ];
+
+    public const REPEATS_SHORT = [
+        'weekly:1' => 'jede Woche', 'weekly:2' => 'alle 2 Wochen', 'monthly:1' => 'jeden Monat', 'nth:1' => 'jeden Monat (Wochentag)',
+        'nth:6' => 'alle 6 Monate', 'yearly:1' => 'jedes Jahr',
+    ];
+
+    /** @return array{0: ?string, 1: int} Regel und Abstand aus dem Formularwert */
+    public static function parseRepeat(?string $v): array
+    {
+        if ($v === null || $v === '' || ! array_key_exists($v, self::REPEATS)) {
+            return [null, 1];
+        }
+        [$rule, $every] = explode(':', $v);
+
+        return [$rule, max(1, (int) $every)];
+    }
+
+    public static function isRecurring(PersonalItem $i): bool
+    {
+        return $i->repeat !== null && $i->repeat !== '';
+    }
+
+    public static function repeatKey(PersonalItem $i): string
+    {
+        return self::isRecurring($i) ? $i->repeat.':'.max(1, (int) $i->repeat_every) : '';
+    }
+
+    public static function repeatShort(PersonalItem $i): string
+    {
+        return self::REPEATS_SHORT[self::repeatKey($i)] ?? '';
+    }
+
+    /**
+     * Alle Tage einer Serie (oder der Einzeltermin) zwischen zwei Tagen, einschließlich.
+     *
+     * @return array<int, string> Tage als Y-m-d
+     */
+    public static function occurrences(PersonalItem $i, string $from, string $to): array
+    {
+        $start = $i->due_on->format('Y-m-d');
+        if (! self::isRecurring($i)) {
+            return $start >= $from && $start <= $to ? [$start] : [];
+        }
+        $until = $i->repeat_until?->format('Y-m-d');
+        $end = ($until !== null && $until < $to) ? $until : $to;
+        if ($start > $end) {
+            return [];
+        }
+        $n = max(1, (int) $i->repeat_every);
+        $utc = new DateTimeZone('UTC');
+        $out = [];
+        if ($i->repeat === 'weekly') {
+            $step = 7 * $n;
+            $s = new DateTimeImmutable($start, $utc);
+            $k = 0;
+            if ($from > $start) {
+                $gap = (int) $s->diff(new DateTimeImmutable($from, $utc))->days;
+                $k = intdiv($gap, $step);
+            }
+            for ($guard = 0; $guard < 2000; $guard++, $k++) {
+                $d = $s->modify('+'.($k * $step).' days')->format('Y-m-d');
+                if ($d > $end) {
+                    break;
+                }
+                if ($d >= $from) {
+                    $out[] = $d;
+                }
+            }
+
+            return $out;
+        }
+        $stepMonths = match ($i->repeat) {
+            'yearly' => 12 * $n,
+            default => $n, // monthly, nth
+        };
+        [$y, $m, $d] = array_map('intval', explode('-', $start));
+        $weekday = (int) date('w', mktime(0, 0, 0, $m, $d, $y));
+        $nth = intdiv($d - 1, 7) + 1;
+        $base = $y * 12 + ($m - 1);
+        $k = 0;
+        if ($from > $start) {
+            [$fy, $fm] = array_map('intval', explode('-', $from));
+            $k = max(0, intdiv(($fy * 12 + $fm - 1) - $base, $stepMonths) - 1);
+        }
+        for ($guard = 0; $guard < 2000; $guard++, $k++) {
+            $total = $base + $k * $stepMonths;
+            $yy = intdiv($total, 12);
+            $mm = $total % 12 + 1;
+            $dim = (int) date('t', mktime(0, 0, 0, $mm, 1, $yy));
+            if ($i->repeat === 'nth') {
+                $firstWeekday = (int) date('w', mktime(0, 0, 0, $mm, 1, $yy));
+                $dd = 1 + (($weekday - $firstWeekday + 7) % 7) + ($nth - 1) * 7;
+                if ($dd > $dim) {
+                    $dd -= 7; // gibt es den fünften Wochentag nicht, gilt der letzte
+                }
+            } else {
+                $dd = min($d, $dim); // 31. im Februar: letzter Tag des Monats
+            }
+            $day = sprintf('%04d-%02d-%02d', $yy, $mm, $dd);
+            if ($day > $end) {
+                break;
+            }
+            if ($day >= $from) {
+                $out[] = $day;
+            }
+        }
+
+        return $out;
+    }
+
+    /** Beginn als Zeitpunkt; ohne Uhrzeit der Anfang des Tages. $day = Tag einer Serie, sonst der Tag des Eintrags. */
+    public static function startOf(PersonalItem $i, ?string $day = null): DateTimeImmutable
     {
         $time = $i->start_time ?: '00:00';
 
-        return new DateTimeImmutable($i->due_on->format('Y-m-d').' '.$time, self::tz());
+        return new DateTimeImmutable(($day ?? $i->due_on->format('Y-m-d')).' '.$time, self::tz());
     }
 
     /** Zeitpunkt der Erinnerung oder null. Ohne Uhrzeit zählt jede Erinnerung als „am Morgen“. */
-    public static function remindAt(PersonalItem $i): ?DateTimeImmutable
+    public static function remindAt(PersonalItem $i, ?string $day = null): ?DateTimeImmutable
     {
         $r = (string) $i->remind;
         if ($r === '' || ! array_key_exists($r, self::REMINDERS)) {
             return null;
         }
-        $day = $i->due_on->format('Y-m-d');
+        $day ??= $i->due_on->format('Y-m-d');
         if ($r === 'morgen' || ! $i->start_time) {
             return new DateTimeImmutable($day.' '.self::MORNING, self::tz());
         }
 
-        return self::startOf($i)->modify('-'.(int) $r.' minutes');
+        return self::startOf($i, $day)->modify('-'.(int) $r.' minutes');
     }
 
     /** Alarm für das Kalender-Abo (iCalendar-TRIGGER). */
@@ -87,21 +208,61 @@ class MeinTag
         usort($rows, fn ($a, $b) => [$a['time'] === null ? 1 : 0, (string) $a['time'], $a['title']] <=> [$b['time'] === null ? 1 : 0, (string) $b['time'], $b['title']]);
     }
 
+    private static function plain($q)
+    {
+        return $q->where(fn ($w) => $w->whereNull('repeat')->orWhere('repeat', ''));
+    }
+
+    /** Einträge des Benutzers, die zwischen den Tagen vorkommen können: Einzeltermine im Zeitraum und Serien, die dann laufen. */
+    private static function itemsBetween(User $user, string $from, string $to)
+    {
+        return PersonalItem::query()->where('user_id', $user->id)->where(function ($q) use ($from, $to) {
+            $q->where(fn ($a) => self::plain($a)->whereDate('due_on', '>=', $from)->whereDate('due_on', '<=', $to))
+                ->orWhere(fn ($b) => $b->whereNotNull('repeat')->where('repeat', '!=', '')->whereDate('due_on', '<=', $to)
+                    ->where(fn ($c) => $c->whereNull('repeat_until')->orWhereDate('repeat_until', '>=', $from)));
+        })->get();
+    }
+
+    /** @return array<string, string> "id|Tag" => done|skip */
+    private static function marks($items, string $from, string $to): array
+    {
+        $ids = $items->filter(fn ($i) => self::isRecurring($i))->pluck('id')->all();
+        if ($ids === []) {
+            return [];
+        }
+        $out = [];
+        foreach (PersonalItemMark::query()->whereIn('personal_item_id', $ids)->whereDate('on_date', '>=', $from)->whereDate('on_date', '<=', $to)->get() as $m) {
+            $out[$m->personal_item_id.'|'.$m->on_date->format('Y-m-d')] = $m->kind;
+        }
+
+        return $out;
+    }
+
     /**
-     * Alles zwischen zwei Tagen: eigene Einträge und automatische Fristen.
+     * Alles zwischen zwei Tagen: eigene Einträge (auch Serien) und automatische Fristen.
      *
      * @return array<string, array<int, array<string, mixed>>> Tag => Zeilen
      */
     public static function entries(User $user, string $from, string $to): array
     {
         $days = [];
-        $items = PersonalItem::query()->where('user_id', $user->id)->whereDate('due_on', '>=', $from)->whereDate('due_on', '<=', $to)->get();
+        $items = self::itemsBetween($user, $from, $to);
+        $marks = self::marks($items, $from, $to);
         foreach ($items as $i) {
-            $days[$i->due_on->format('Y-m-d')][] = [
-                'source' => 'own', 'id' => $i->id, 'kind' => $i->kind, 'title' => $i->title, 'detail' => (string) $i->notes,
-                'time' => $i->start_time ?: null, 'end' => $i->end_time ?: null, 'done' => $i->done_at !== null,
-                'url' => '', 'tone' => 'info', 'remind' => (string) $i->remind,
-            ];
+            $recurring = self::isRecurring($i);
+            foreach (self::occurrences($i, $from, $to) as $d) {
+                $mark = $marks[$i->id.'|'.$d] ?? null;
+                if ($mark === 'skip') {
+                    continue;
+                }
+                $days[$d][] = [
+                    'source' => 'own', 'id' => $i->id, 'date' => $d, 'kind' => $i->kind, 'title' => $i->title, 'detail' => (string) $i->notes,
+                    'time' => $i->start_time ?: null, 'end' => $i->end_time ?: null,
+                    'done' => $recurring ? $mark === 'done' : $i->done_at !== null,
+                    'url' => '', 'tone' => 'info', 'remind' => (string) $i->remind,
+                    'recurring' => $recurring, 'repeat' => $recurring ? self::repeatShort($i) : '',
+                ];
+            }
         }
         foreach (Kalender::events($user, null, $from, false) as $e) {
             $d = $e['start']->format('Y-m-d');
@@ -109,9 +270,9 @@ class MeinTag
                 continue;
             }
             $days[$d][] = [
-                'source' => 'frist', 'id' => null, 'kind' => 'frist', 'title' => $e['summary'], 'detail' => '',
+                'source' => 'frist', 'id' => null, 'date' => $d, 'kind' => 'frist', 'title' => $e['summary'], 'detail' => '',
                 'time' => $e['all_day'] ? null : $e['start']->format('H:i'), 'end' => null, 'done' => false,
-                'url' => $e['url'], 'tone' => $e['warn'] ? 'warn' : 'info', 'remind' => '',
+                'url' => $e['url'], 'tone' => $e['warn'] ? 'warn' : 'info', 'remind' => '', 'recurring' => false, 'repeat' => '',
             ];
         }
         foreach ($days as &$rows) {
@@ -123,21 +284,30 @@ class MeinTag
         return $days;
     }
 
-    /** Offene To-dos aus der Vergangenheit. */
+    /** Offene einmalige To-dos aus der Vergangenheit. Serien zählen hier nicht: Ein verpasster Tag einer Serie wird nicht angehäuft. */
     public static function overdue(User $user, string $today)
     {
-        return PersonalItem::query()->where('user_id', $user->id)->where('kind', 'todo')->whereNull('done_at')->whereDate('due_on', '<', $today)->orderBy('due_on')->get();
+        return self::plain(PersonalItem::query()->where('user_id', $user->id)->where('kind', 'todo')->whereNull('done_at'))
+            ->whereDate('due_on', '<', $today)->orderBy('due_on')->get();
     }
 
-    /** Offene eigene To-dos für heute und früher (für die Zahl im Menü). */
+    /** Offene eigene To-dos für heute und früher (für die Zahl im Menü), Serien nur mit dem heutigen Tag. */
     public static function openCount(User $user, ?string $today = null): int
     {
         if (! Schema::hasTable('personal_items')) {
             return 0;
         }
         $today ??= date('Y-m-d');
+        $n = (int) self::plain(PersonalItem::query()->where('user_id', $user->id)->where('kind', 'todo')->whereNull('done_at'))->whereDate('due_on', '<=', $today)->count();
+        $series = PersonalItem::query()->where('user_id', $user->id)->where('kind', 'todo')->whereNotNull('repeat')->where('repeat', '!=', '')->whereDate('due_on', '<=', $today)->get();
+        $marks = self::marks($series, $today, $today);
+        foreach ($series as $i) {
+            if (self::occurrences($i, $today, $today) !== [] && ! isset($marks[$i->id.'|'.$today])) {
+                $n++;
+            }
+        }
 
-        return (int) PersonalItem::query()->where('user_id', $user->id)->where('kind', 'todo')->whereNull('done_at')->whereDate('due_on', '<=', $today)->count();
+        return $n;
     }
 
     /** Erinnerungen, die jetzt fällig sind: Zeitpunkt erreicht, Eintrag noch nicht vorbei und nicht erledigt. */
@@ -145,38 +315,84 @@ class MeinTag
     {
         $now ??= new DateTimeImmutable('now', self::tz());
         $today = $now->format('Y-m-d');
+        $to = date('Y-m-d', strtotime($today.' +2 days'));
         $out = [];
-        $items = PersonalItem::query()->where('user_id', $user->id)->whereNull('done_at')->whereNotNull('remind')->where('remind', '!=', '')
-            ->whereDate('due_on', '>=', $today)->whereDate('due_on', '<=', date('Y-m-d', strtotime($today.' +2 days')))->get();
+        $items = self::itemsBetween($user, $today, $to)->filter(fn ($i) => (string) $i->remind !== '' && $i->done_at === null);
+        $marks = self::marks($items, $today, $to);
         foreach ($items as $i) {
-            $at = self::remindAt($i);
-            if ($at === null || $at > $now) {
-                continue;
+            foreach (self::occurrences($i, $today, $to) as $d) {
+                if (isset($marks[$i->id.'|'.$d])) {
+                    continue;
+                }
+                $at = self::remindAt($i, $d);
+                if ($at === null || $at > $now) {
+                    continue;
+                }
+                $end = $i->start_time ? self::startOf($i, $d)->modify('+1 hour') : new DateTimeImmutable($d.' 23:59', self::tz());
+                if ($i->end_time) {
+                    $end = new DateTimeImmutable($d.' '.$i->end_time, self::tz());
+                }
+                if ($end < $now) {
+                    continue;
+                }
+                $c = $i->replicate();
+                $c->due_on = $d;
+                $out[] = $c;
             }
-            $end = $i->start_time ? self::startOf($i)->modify('+1 hour') : new DateTimeImmutable($today.' 23:59', self::tz());
-            if ($i->end_time) {
-                $end = new DateTimeImmutable($i->due_on->format('Y-m-d').' '.$i->end_time, self::tz());
-            }
-            if ($end < $now) {
-                continue;
-            }
-            $out[] = $i;
         }
         usort($out, fn ($a, $b) => self::startOf($a) <=> self::startOf($b));
 
         return $out;
     }
 
-    /** Eigene Einträge als Kalender-Abo-Termine. */
+    /** iCalendar-Regel einer Serie. */
+    public static function icsRule(PersonalItem $i): ?string
+    {
+        if (! self::isRecurring($i)) {
+            return null;
+        }
+        $n = max(1, (int) $i->repeat_every);
+        $rule = match ($i->repeat) {
+            'weekly' => 'FREQ=WEEKLY;INTERVAL='.$n,
+            'monthly' => 'FREQ=MONTHLY;INTERVAL='.$n,
+            'yearly' => 'FREQ=YEARLY;INTERVAL='.$n,
+            'nth' => (function () use ($i, $n) {
+                $d = (int) $i->due_on->format('j');
+                $nth = intdiv($d - 1, 7) + 1;
+                $code = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'][(int) $i->due_on->format('w')];
+
+                return 'FREQ=MONTHLY;INTERVAL='.$n.';BYDAY='.($nth >= 5 ? '-1' : (string) $nth).$code;
+            })(),
+            default => null,
+        };
+        if ($rule !== null && $i->repeat_until !== null) {
+            $until = $i->repeat_until->format('Y-m-d');
+            $rule .= ';UNTIL='.($i->start_time
+                ? (new DateTimeImmutable($until.' 23:59:59', self::tz()))->setTimezone(new DateTimeZone('UTC'))->format('Ymd\THis\Z')
+                : str_replace('-', '', $until));
+        }
+
+        return $rule;
+    }
+
+    /** Eigene Einträge als Kalender-Abo-Termine. Serien als ein Termin mit Wiederholung, ausgelassene und erledigte Tage als Ausnahme. */
     public static function feedEvents(User $user, string $today): array
     {
         $host = parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'crm';
         $out = [];
-        $items = PersonalItem::query()->where('user_id', $user->id)->whereNull('done_at')
-            ->whereDate('due_on', '>=', date('Y-m-d', strtotime($today.' -7 days')))->whereDate('due_on', '<=', date('Y-m-d', strtotime($today.' +'.Kalender::DAYS.' days')))->get();
+        $from = date('Y-m-d', strtotime($today.' -7 days'));
+        $to = date('Y-m-d', strtotime($today.' +'.Kalender::DAYS.' days'));
+        $items = self::itemsBetween($user, $from, $to)->filter(fn ($i) => self::isRecurring($i) || $i->done_at === null);
+        $marks = [];
+        foreach ($items->filter(fn ($i) => self::isRecurring($i)) as $i) {
+            foreach (PersonalItemMark::query()->where('personal_item_id', $i->id)->get() as $m) {
+                $marks[$i->id][] = $m->on_date->format('Y-m-d');
+            }
+        }
         foreach ($items as $i) {
             $start = self::startOf($i);
             $end = $i->end_time ? new DateTimeImmutable($i->due_on->format('Y-m-d').' '.$i->end_time, self::tz()) : null;
+            $exdates = array_map(fn ($d) => self::startOf($i, $d), $marks[$i->id] ?? []);
             $out[] = [
                 'uid' => 'tag-'.$i->id.'@'.$host,
                 'summary' => ($i->kind === 'todo' ? 'To-do: ' : '').$i->title,
@@ -187,6 +403,8 @@ class MeinTag
                 'all_day' => ! $i->start_time,
                 'warn' => false,
                 'alarm' => self::icsTrigger($i),
+                'rrule' => self::icsRule($i),
+                'exdates' => $exdates,
                 'category' => Kalender::CATEGORIES['eigene'],
             ];
         }

@@ -17,6 +17,8 @@
       }
       $current = match ($key) {
           'due_on' => $item->due_on->format('Y-m-d'),
+          'repeat_rule' => MeinTag::repeatKey($item),
+          'repeat_until' => $item->repeat_until?->format('Y-m-d'),
           default => $item->{$key},
       };
       return old($key, $current ?? $default);
@@ -168,18 +170,22 @@
       @forelse ($rows as $r)
         <div class="mt-row {{ $r['done'] ? 'mt-done' : '' }}">
           @if ($r['source'] === 'own' && $r['kind'] === 'todo')
-            <form method="POST" action="{{ route('tag.done', $r['id']) }}">@csrf<button class="mt-check" type="submit" title="{{ $r['done'] ? 'Wieder öffnen' : 'Erledigt' }}">{{ $r['done'] ? '✓' : '○' }}</button></form>
+            <form method="POST" action="{{ route('tag.done', $r['id']) }}">@csrf<input type="hidden" name="datum" value="{{ $r['date'] }}"><button class="mt-check" type="submit" title="{{ $r['done'] ? 'Wieder öffnen' : 'Erledigt' }}">{{ $r['done'] ? '✓' : '○' }}</button></form>
           @else
             <div style="width:2.4rem"></div>
           @endif
           <div class="mt-time">{{ $r['time'] ?? 'ganztägig' }}@if ($r['end'])<br><span style="font-weight:400;color:#6b7280">bis {{ $r['end'] }}</span>@endif</div>
           <div class="mt-main">
+            @if ($r['source'] === 'own' && ! empty($r['recurring']))<span class="mt-tag">↻ {{ $r['repeat'] }}</span>@endif
             @if ($r['source'] === 'frist')<span class="mt-tag {{ $r['tone'] === 'warn' ? 'warn' : '' }}">Frist</span>@elseif ($r['kind'] === 'todo')<span class="mt-tag todo">To-do</span>@else<span class="mt-tag">Termin</span>@endif
             @if ($r['source'] === 'frist' && $r['url'] !== '')<a class="mt-title" href="{{ $r['url'] }}">{{ $r['title'] }}</a>@else<span class="mt-title">{{ $r['title'] }}</span>@endif
             @if ($r['detail'] !== '')<div class="sd-muted">{{ $r['detail'] }}</div>@endif
             @if ($r['source'] === 'own')
               @if ($r['remind'] !== '')<div class="sd-muted">Erinnerung: {{ MeinTag::REMINDERS[$r['remind']] ?? '' }}</div>@endif
-              <a class="mt-link" href="{{ route('tag.edit', $r['id']) }}">bearbeiten</a>
+              <a class="mt-link" href="{{ route('tag.edit', $r['id']) }}">bearbeiten{{ ! empty($r['recurring']) ? ' (ganze Serie)' : '' }}</a>
+              @if (! empty($r['recurring']))
+                <form method="POST" action="{{ route('tag.skip', $r['id']) }}" style="display:inline" onsubmit="return confirm('Nur diesen Tag auslassen?')">@csrf<input type="hidden" name="datum" value="{{ $r['date'] }}"><button type="submit" class="mt-link" style="background:none;border:0;padding:0 0 0 .6rem;color:#4b5563;text-decoration:underline;cursor:pointer;font:inherit;font-size:.85rem">diesen Tag auslassen</button></form>
+              @endif
             @endif
           </div>
         </div>
@@ -230,6 +236,21 @@
       </select>
       <small class="sd-muted">Die Erinnerung kommt als Alarm in dein Handy, wenn du das Kalender-Abo eingerichtet hast. Zusätzlich erscheint sie hier.</small>
     </div>
+    <div class="mt-two">
+      <div>
+        <label for="mt-repeat">Wiederholen</label>
+        <select id="mt-repeat" name="repeat_rule" style="{{ $box }}">
+          @foreach (MeinTag::REPEATS as $k => $text)
+            <option value="{{ $k }}" @selected((string) $val('repeat_rule', '') === (string) $k)>{{ $text }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div>
+        <label for="mt-until">Wiederholen bis (freiwillig)</label>
+        <input id="mt-until" name="repeat_until" type="date" value="{{ $val('repeat_until') }}" style="{{ $box }}">
+      </div>
+    </div>
+    @if ($editing && $item->repeat)<small class="sd-muted">Änderungen gelten für die ganze Serie. Einzelne Tage kannst du in der Liste auslassen.</small>@endif
     <div>
       <label for="mt-notes">Notiz (freiwillig)</label>
       <textarea id="mt-notes" name="notes" rows="3" maxlength="2000" style="{{ $box }}">{{ $val('notes') }}</textarea>

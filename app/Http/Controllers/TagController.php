@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PersonalItem;
+use App\Models\PersonalItemMark;
 use App\Support\Tag\MeinTag;
 use DateTimeImmutable;
 use Illuminate\Http\Request;
@@ -72,9 +73,40 @@ class TagController extends Controller
     public function done(Request $request, int $item)
     {
         $row = $this->own($request, $item);
+        if (MeinTag::isRecurring($row)) {
+            $day = $this->occurrence($request, $row);
+            $mark = PersonalItemMark::query()->where('personal_item_id', $row->id)->whereDate('on_date', $day)->first();
+            if ($mark !== null && $mark->kind === 'done') {
+                $mark->delete();
+            } else {
+                PersonalItemMark::query()->updateOrCreate(['personal_item_id' => $row->id, 'on_date' => $day], ['kind' => 'done']);
+            }
+
+            return redirect()->back();
+        }
         $row->update(['done_at' => $row->done_at === null ? now() : null]);
 
         return redirect()->back();
+    }
+
+    /** Einen einzelnen Tag einer Serie auslassen. */
+    public function skip(Request $request, int $item)
+    {
+        $row = $this->own($request, $item);
+        abort_unless(MeinTag::isRecurring($row), 404);
+        $day = $this->occurrence($request, $row);
+        PersonalItemMark::query()->updateOrCreate(['personal_item_id' => $row->id, 'on_date' => $day], ['kind' => 'skip']);
+
+        return redirect()->back()->with('status', 'Dieser Tag wurde ausgelassen. Die Serie läuft weiter.');
+    }
+
+    /** Der Tag aus dem Formular muss ein Tag der Serie sein. */
+    private function occurrence(Request $request, PersonalItem $row): string
+    {
+        $day = (string) $request->input('datum');
+        abort_unless(preg_match('/^\d{4}-\d{2}-\d{2}$/', $day) === 1 && MeinTag::occurrences($row, $day, $day) !== [], 404);
+
+        return $day;
     }
 
     public function destroy(Request $request, int $item)
@@ -123,6 +155,8 @@ class TagController extends Controller
             'start_time' => ['nullable', 'regex:/^([01]\d|2[0-3]):[0-5]\d$/'],
             'end_time' => ['nullable', 'regex:/^([01]\d|2[0-3]):[0-5]\d$/'],
             'remind' => ['nullable', 'in:morgen,0,15,60,1440'],
+            'repeat_rule' => ['nullable', 'in:'.implode(',', array_filter(array_keys(MeinTag::REPEATS)))],
+            'repeat_until' => ['nullable', 'date_format:Y-m-d'],
         ], [
             'title.required' => 'Bitte einen Titel eingeben.',
             'due_on.required' => 'Bitte einen Tag wählen.',
@@ -136,6 +170,12 @@ class TagController extends Controller
         }
         $data['remind'] = ($data['remind'] ?? '') === '' ? null : $data['remind'];
         $data['notes'] = trim((string) ($data['notes'] ?? '')) ?: null;
+        [$rule, $every] = MeinTag::parseRepeat($data['repeat_rule'] ?? null);
+        $until = $data['repeat_until'] ?? null;
+        $data['repeat'] = $rule;
+        $data['repeat_every'] = $every;
+        $data['repeat_until'] = ($rule !== null && $until !== null && $until >= $data['due_on']) ? $until : null;
+        unset($data['repeat_rule']);
 
         return $data;
     }

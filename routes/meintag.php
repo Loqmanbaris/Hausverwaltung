@@ -14,6 +14,7 @@ Route::middleware([SecurityHeaders::class, 'auth', EnsureTwoFactor::class])->gro
     Route::get('/mein-tag/eintraege/{item}/bearbeiten', [TagController::class, 'edit'])->name('tag.edit');
     Route::put('/mein-tag/eintraege/{item}', [TagController::class, 'update'])->name('tag.update');
     Route::post('/mein-tag/eintraege/{item}/erledigt', [TagController::class, 'done'])->name('tag.done');
+    Route::post('/mein-tag/eintraege/{item}/auslassen', [TagController::class, 'skip'])->name('tag.skip');
     Route::delete('/mein-tag/eintraege/{item}', [TagController::class, 'destroy'])->name('tag.destroy');
     Route::post('/mein-tag/mail', [TagController::class, 'mail'])->name('tag.mail');
     Route::post('/menue-ansicht', [TagController::class, 'mode'])->name('nav.mode');
