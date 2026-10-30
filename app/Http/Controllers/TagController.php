@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PersonalItem;
 use App\Models\PersonalItemMark;
 use App\Support\Tag\MeinTag;
+use App\Support\Tag\Vorlagen;
 use DateTimeImmutable;
 use Illuminate\Http\Request;
 
@@ -38,6 +39,7 @@ class TagController extends Controller
             'greeting' => MeinTag::greeting(),
             'tiles' => MeinTag::tiles($user, $today),
             'openTodos' => MeinTag::openCount($user, $today),
+            'templates' => Vorlagen::TEMPLATES,
         ]);
     }
 
@@ -58,7 +60,7 @@ class TagController extends Controller
             'week' => false, 'date' => $row->due_on->format('Y-m-d'), 'from' => $row->due_on->format('Y-m-d'), 'to' => $row->due_on->format('Y-m-d'),
             'prev' => null, 'next' => null, 'today' => $today, 'days' => [], 'overdue' => collect(), 'reminders' => [],
             'dayMail' => (bool) $request->user()->day_mail, 'item' => $row,
-            'greeting' => '', 'tiles' => [], 'openTodos' => 0,
+            'greeting' => '', 'tiles' => [], 'openTodos' => 0, 'templates' => [],
         ]);
     }
 
@@ -116,6 +118,22 @@ class TagController extends Controller
         $row->delete();
 
         return redirect()->route('tag.index', ['datum' => $day])->with('status', 'Gelöscht.');
+    }
+
+    /** Eine Planvorlage in den eigenen Plan übernehmen. */
+    public function template(Request $request, string $key)
+    {
+        abort_unless(array_key_exists($key, Vorlagen::TEMPLATES), 404);
+        $r = Vorlagen::apply($request->user(), $key);
+        $parts = [$r['created'].' '.($r['created'] === 1 ? 'Eintrag' : 'Einträge').' angelegt'];
+        if ($r['existing'] > 0) {
+            $parts[] = $r['existing'].' gab es schon';
+        }
+        if ($r['past'] > 0) {
+            $parts[] = $r['past'].' liegen in der Vergangenheit und wurden übersprungen';
+        }
+
+        return redirect()->route('tag.index', ['ansicht' => 'woche'])->with('status', Vorlagen::TEMPLATES[$key]['title'].': '.implode(', ', $parts).'.');
     }
 
     /** E-Mail am Morgen ein- oder ausschalten. */

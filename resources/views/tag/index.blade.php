@@ -264,6 +264,20 @@
 
 @unless ($editing)
   <div class="sd-card" style="border-radius:16px">
+    <h2>Vorlagen für deinen Plan</h2>
+    <p class="sd-muted" style="margin-top:0">Fertige Listen, die du mit einem Tipp in „Mein Tag“ übernimmst. Was es schon gibt, wird nicht doppelt angelegt.</p>
+    @foreach ($templates as $tkey => $tpl)
+      <details style="border-top:1px solid #e5e8ec;padding:.6rem 0">
+        <summary style="cursor:pointer;font-weight:700">{{ $tpl['title'] }} <span class="sd-muted" style="font-weight:400">({{ count($tpl['entries']) }} Einträge)</span></summary>
+        <p class="sd-muted" style="margin:.4rem 0">{{ $tpl['text'] }}</p>
+        <ul style="margin:.2rem 0 .6rem 1.1rem;padding:0">
+          @foreach ($tpl['entries'] as $te)<li>{{ $te['title'] }}@if (! empty($te['time'])) <span class="sd-muted">· {{ $te['time'] }} Uhr</span>@endif @if (! empty($te['repeat']))<span class="sd-muted">· ↻ {{ MeinTag::REPEATS_SHORT[$te['repeat']] ?? '' }}</span>@endif</li>@endforeach
+        </ul>
+        <form method="POST" action="{{ route('tag.template', $tkey) }}">@csrf<button class="sd-btn" type="submit">In meinen Plan übernehmen</button></form>
+      </details>
+    @endforeach
+  </div>
+  <div class="sd-card" style="border-radius:16px">
     <h2>Erinnerungen aufs Handy</h2>
     <p class="sd-muted" style="margin-top:0">Eigene Einträge stehen auch im <a href="{{ route('calendar.index') }}">Kalender-Abo</a>. Dein Handy-Kalender löst dann den Alarm aus. Wie schnell neue Einträge dort erscheinen, bestimmt die Kalender-App, oft dauert es einige Stunden.</p>
     <form method="POST" action="{{ route('tag.mail') }}">
