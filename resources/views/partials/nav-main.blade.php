@@ -38,7 +38,8 @@
           ['Offene Posten', 'rent.open', ['rent.open'], 0, false],
           ['Mahnwesen', 'dunning.index', ['dunning.*'], 0, false],
           ['Kontoauszüge', 'bank.transactions', ['bank.index', 'bank.transactions'], $badge['bank'], false],
-          ['E-Rechnung ausstellen', 'erechnung.index', ['erechnung.*'], 0, false],
+          ['Rechnungen schreiben', 'invoices.index', ['invoices.*'], 0, true],
+          ['E-Rechnung (Mieten)', 'erechnung.index', ['erechnung.*'], 0, false],
       ],
       'Kosten' => [
           ['Belege', 'receipts.index', ['receipts.*', 'einvoice.*'], 0, false],
@@ -81,7 +82,7 @@
   // Ansicht: „Alltag“ zeigt nur, was täglich gebraucht wird; „Verwaltung“ zeigt alles. Die Wahl wird pro Gerät gemerkt.
   $mode = request()->cookie('nav_mode') === 'verwaltung' ? 'verwaltung' : 'alltag';
   $daily = ['tag.index', 'search', 'mail.index', 'tenants.index', 'leases.index', 'applicants.index', 'rent.month', 'rent.open', 'dunning.index',
-      'bank.transactions', 'receipts.index', 'bank.expenses', 'workorders.index', 'inquiries.index', 'documents.index'];
+      'bank.transactions', 'invoices.index', 'receipts.index', 'bank.expenses', 'workorders.index', 'inquiries.index', 'documents.index'];
   $menu = [];
   foreach ($groups as $title => $items) {
       $visible = array_values(array_filter($items, fn ($i) => (! $i[4] || $admin) && \Illuminate\Support\Facades\Route::has($i[1])
