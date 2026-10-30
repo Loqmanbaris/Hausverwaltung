@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
  * Zusammenstellung für die Anlage V (Einkünfte aus Vermietung und Verpachtung) je Eigentümer, Objekt und Jahr.
  *
  * Einnahmen nach Zufluss: Zahlungseingänge im Jahr, aufgeteilt nach den Monaten, die sie bezahlen, und deren Bestandteilen.
- * Werbungskosten nach Belegdatum (vereinfachend als Zahlungsdatum). AfA ist nicht enthalten.
+ * Werbungskosten nach Belegdatum (vereinfachend als Zahlungsdatum). Die Gebäude-AfA kommt aus Support/Tax/Afa (je Objekt hinterlegt).
  * Das Ergebnis ist eine Arbeitshilfe für den Steuerberater, keine fertige Steuererklärung.
  */
 class AnlageV
@@ -37,6 +37,7 @@ class AnlageV
         'erhaltung' => 'Erhaltungsaufwendungen (Reparaturen)',
         'modernisierung' => 'Modernisierung und Anschaffungen (mit Steuerberater klären: sofort, verteilt oder AfA)',
         'zinsen' => 'Schuldzinsen',
+        'afa' => 'Absetzung für Abnutzung (AfA) Gebäude',
         'verwaltung' => 'Verwaltungskosten (Steuerberatung, Bankgebühren)',
         'sonstige' => 'Sonstige Werbungskosten',
     ];
@@ -153,6 +154,18 @@ class AnlageV
             }
         }
 
+        // Gebäude-AfA je Objekt (Paket 29)
+        if (\Illuminate\Support\Facades\Schema::hasTable('property_afa')) {
+            foreach ($out as $pid => &$o) {
+                $afa = Afa::forYear((int) $pid, $year);
+                if ($afa !== null && $afa['cents'] > 0) {
+                    $o['costs']['afa'] += $afa['cents'];
+                    $o['cost_details']['afa'][$afa['label']] = $afa['cents'];
+                }
+            }
+            unset($o);
+        }
+
         $totals = ['income' => 0, 'costs' => 0];
         foreach ($out as &$o) {
             $o['income_total'] = array_sum($o['income']) - $o['income']['verzugszinsen'];
@@ -167,7 +180,7 @@ class AnlageV
         $totals['result'] = $totals['income'] - $totals['costs'];
 
         // Objekte ohne Bewegung im Jahr weglassen
-        $out = array_filter($out, fn ($o) => $o['payments'] > 0 || $o['receipts'] > 0 || ($o['loans'] ?? 0) > 0);
+        $out = array_filter($out, fn ($o) => $o['payments'] > 0 || $o['receipts'] > 0 || ($o['loans'] ?? 0) > 0 || $o['costs']['afa'] > 0);
 
         return ['properties' => $out, 'unassigned' => $unassigned, 'totals' => $totals];
     }
@@ -252,7 +265,7 @@ class AnlageV
                     $rows[] = [$cell($name), $cell('Werbungskosten'), $cell($label), $cell($eur($o['costs'][$k]))];
                 }
             }
-            $rows[] = [$cell($name), $cell('Ergebnis'), $cell('Überschuss (ohne AfA)'), $cell($eur($o['result']))];
+            $rows[] = [$cell($name), $cell('Ergebnis'), $cell('Überschuss (nach AfA)'), $cell($eur($o['result']))];
         }
         foreach (self::COSTS as $k => $label) {
             if ($data['unassigned']['costs'][$k] !== 0) {

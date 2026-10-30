@@ -99,4 +99,5 @@
     <button class="sd-btn" type="submit">Schlüssel speichern</button>
   </form>
 </div>
+@include('backups.onedrive')
 @endsection

@@ -91,6 +91,8 @@
   </details>
 </div>
 
+@include('portal.admin-card', ['tenant' => $tenant])
+
 @include('documents.panel', ['docType' => 'tenant', 'docId' => $tenant->id])
 
 @php($mails = \Illuminate\Support\Facades\Schema::hasTable('sent_emails') ? \App\Models\SentEmail::query()->where('tenant_id', $tenant->id)->orderByDesc('id')->limit(10)->get() : collect())

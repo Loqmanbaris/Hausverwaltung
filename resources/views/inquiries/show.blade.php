@@ -10,6 +10,7 @@
   <div class="sd-actions">
     @if (\Illuminate\Support\Facades\Schema::hasTable('work_orders') && ($wo = \App\Models\WorkOrder::query()->where('inquiry_id', $inquiry->id)->first()))<a class="sd-btn" href="{{ route('workorders.show', $wo) }}">Schadensfall {{ $wo->number() }}</a>@endif
     @if ($inquiry->email)<a class="sd-btn" href="{{ route('mail.compose', ['art' => 'anfrage', 'ids' => $inquiry->id]) }}">Per E-Mail antworten</a>@endif
+    @if ($inquiry->topic !== 'schaden')<form method="POST" action="{{ route('applicants.from_inquiry', $inquiry) }}" style="display:inline">@csrf<button class="sd-btn sec" type="submit">Als Interessent übernehmen</button></form>@endif
     <a class="sd-btn sec" href="{{ route('inquiries.index') }}">Alle Anfragen</a>
   </div>
 </div>

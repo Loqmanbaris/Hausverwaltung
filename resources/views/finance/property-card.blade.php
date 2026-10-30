@@ -29,6 +29,7 @@
   <div class="sd-actions">
     <a class="sd-btn sec small" href="{{ route('loans.create', ['objekt' => $property->id]) }}">Darlehen anlegen</a>
     <a class="sd-btn sec small" href="{{ route('properties.values', $property) }}">Kaufpreis und Wert</a>
+    <a class="sd-btn sec small" href="{{ route('afa.edit', $property) }}">AfA</a>
     <a class="sd-btn sec small" href="{{ route('finance.index') }}">Alle Objekte</a>
   </div>
 </div>

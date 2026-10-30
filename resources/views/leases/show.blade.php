@@ -91,6 +91,38 @@
   @endif
 </div>
 
+<div class="sd-card" id="kaution">
+  <h2>Kaution</h2>
+  <p style="margin:0 0 .6rem">{{ $lease->depositLabel() }}</p>
+  <a class="sd-btn small" href="{{ route('deposit.show', $lease) }}">Kaution verwalten</a>
+</div>
+
+<div class="sd-card" id="mieterhoehung">
+  <h2>Mieterhöhung</h2>
+  @php($rIncs = \App\Models\RentIncrease::query()->where('lease_id', $lease->id)->orderByDesc('id')->get())
+  @if ($rIncs->isEmpty())
+    <p class="sd-muted" style="margin-top:0">Noch keine Mieterhöhung vorbereitet. Das System prüft Fristen, Kappungsgrenze und Vergleichsmiete und erstellt das Schreiben.</p>
+  @else
+    <div class="sd-table-wrap">
+      <table class="sd">
+        <thead><tr><th>Art</th><th>Gilt ab</th><th class="rt-num">Kaltmiete</th><th>Stand</th><th></th></tr></thead>
+        <tbody>
+          @foreach ($rIncs as $ri)
+            <tr>
+              <td>{{ $ri->kindLabel() }}</td>
+              <td>{{ $ri->effective_from->format('d.m.Y') }}</td>
+              <td class="rt-num">{{ Money::format($ri->old_cold) }} → {{ Money::format($ri->new_cold) }}</td>
+              <td>{{ $ri->statusLabel() }}</td>
+              <td><a class="sd-btn sec small" href="{{ route('rent_increase.show', $ri) }}">Öffnen</a></td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+  @endif
+  <p style="margin:.8rem 0 0"><a class="sd-btn small" href="{{ route('rent_increase.create', $lease) }}">Mieterhöhung vorbereiten</a></p>
+</div>
+
 <div class="sd-card" id="zahlung">
   <h2>Zahlung erfassen</h2>
   <form method="POST" action="{{ route('leases.payments.store', $lease) }}">

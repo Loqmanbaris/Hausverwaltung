@@ -209,8 +209,8 @@ class Importer
             foreach (['rent_cold' => 'kaltmiete', 'prepay_operating' => 'nebenkosten', 'prepay_heating' => 'heizkosten', 'parking' => 'stellplatz', 'garage' => 'garage', 'furniture' => 'moebel'] as $col => $f) {
                 $comp[$col] = $this->money($r[$f], fn ($m) => $e(Vorlage::SHEETS['Mietverträge'][$f][0].': '.$m)) ?? '0.00';
             }
-            if ((float) $comp['rent_cold'] <= 0) {
-                $e('Kaltmiete fehlt.');
+            if (array_sum(array_map('floatval', $comp)) <= 0) {
+                $e('Kaltmiete fehlt (bei reinen Stellplatz- oder Garagenverträgen bitte den Betrag bei Stellplatz bzw. Garage eintragen).');
             }
             $vat = $r['ust'] === '' ? '0' : str_replace([',', '%', ' '], ['.', '', ''], $r['ust']);
             if (! in_array((string) (float) $vat, ['0', '7', '19'], true)) {

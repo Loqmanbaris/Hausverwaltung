@@ -24,6 +24,12 @@
 </div>
 
 <div class="sd-card">
+  <h2>Von GitHub holen</h2>
+  <p class="sd-muted" style="margin-top:0">Statt die Datei hochzuladen, holt das CRM neue Pakete aus deinem GitHub-Repository. Die Prüfung der Unterschrift und das Einspielen laufen wie gewohnt.</p>
+  <a class="sd-btn sec" href="{{ route('updates.github') }}">Nach Updates suchen</a>
+</div>
+
+<div class="sd-card">
   <h2>Programmstand für Claude</h2>
   <p class="sd-muted" style="margin-top:0">Für eine neue Unterhaltung mit Claude: Diese Datei enthält nur den Programmcode, keine Passwörter, keine Belege und keine Mieterdaten. Herunterladen und im Chat hochladen.</p>
   <a class="sd-btn sec" href="{{ route('updates.source') }}">Programmstand herunterladen</a>

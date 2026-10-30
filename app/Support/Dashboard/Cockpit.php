@@ -223,6 +223,62 @@ class Cockpit
         $ending = self::safe(fn () => \App\Support\Finance\Kennzahlen::fixedEnding($user, 12, $ownerId, $today), collect());
         $add('Anschlussfinanzierung planen (Zinsbindung endet)', $ending->count(), $ending->count() === 1 ? route('loans.show', $ending->first()) : route('finance.index'), $ending->contains(fn ($l) => $l->fixed_until->format('Y-m-d') <= date('Y-m-d', strtotime($today.' +6 months'))) ? 'warn' : 'info');
 
+        // E-Rechnung: Monatsrechnungen noch nicht erstellt, ab 2027 (Paket 37)
+        if ($today >= '2027-01-01') {
+            $pend = self::safe(fn () => \App\Support\ERechnung\Rechnungen::pending($user, $today, 30, 10)->filter(fn ($c) => ! $ownerId || (int) $c->owner_id === $ownerId)->count(), 0);
+            $add('E-Rechnung: Rechnungen noch nicht erstellt', $pend, route('erechnung.index'), 'warn');
+        }
+
+        // Löschfristen ehemaliger Mieter, nur für den Administrator (Paket 35)
+        if ($user->isAdmin()) {
+            $ret = self::safe(fn () => array_filter(\App\Support\Datenschutz\Loeschfristen::due($user, $today), fn ($p) => $p['blocked'] === []), []);
+            $add('Löschfristen: ehemalige Mieter bereinigen', count($ret), route('retention.index'));
+        }
+
+        // Kautionen (Paket 34)
+        $deps = self::safe(fn () => \App\Models\Lease::visibleTo($user)->where('deposit_amount', '>', 0)->when($ownerId, fn ($q) => $q->where('leases.owner_id', $ownerId))->with('deposit')->get(), collect());
+        $depUrl = route('deposit.index');
+        $overdueDep = 0;
+        $returnDep = 0;
+        foreach ($deps as $l) {
+            $st = \App\Support\Kaution\Kaution::state($l, $l->deposit, $today);
+            if ($st['settled']) {
+                continue;
+            }
+            if ($l->end_date !== null && $l->end_date->format('Y-m-d') < $today) {
+                $returnDep++;
+            } elseif ($st['overdue'] > 0) {
+                $overdueDep++;
+            }
+        }
+        $add('Kaution: Rate überfällig', $overdueDep, $depUrl, 'warn');
+        $add('Kaution: Abrechnung nach Auszug offen', $returnDep, $depUrl);
+
+        // Laufende Verträge: Kündigungsfristen (Paket 32)
+        $svc = self::safe(fn () => \App\Support\Vertraege\Vertraege::attention($user, $ownerId, $today), []);
+        $svcUrl = route('svc.index');
+        $add('Vertrag: Kündigungsfrist in den nächsten Tagen', count(array_filter($svc, fn ($x) => $x['info']['state'] === 'dringend')), $svcUrl, 'warn');
+        $add('Vertrag: Kündigungsfrist oder Ablauf bald', count(array_filter($svc, fn ($x) => $x['info']['state'] === 'bald')), $svcUrl);
+        $add('Vertrag: Laufzeit abgelaufen, bitte klären', count(array_filter($svc, fn ($x) => $x['info']['state'] === 'abgelaufen')), $svcUrl, 'warn');
+
+        // Interessenten (Paket 31)
+        $apps = self::safe(fn () => \App\Models\Applicant::query()->visibleTo($user)->whereIn('status', \App\Models\Applicant::OPEN)
+            ->when($ownerId, fn ($q) => $q->where('applicants.owner_id', $ownerId))->with('disclosure')->get(), collect());
+        $appUrl = route('applicants.index');
+        $add('Interessenten: neue Anfragen beantworten', $apps->where('status', 'neu')->count(), $appUrl, 'warn');
+        $add('Interessenten: Selbstauskunft prüfen', $apps->filter(fn ($a) => $a->status === 'selbstauskunft' && $a->disclosure?->isFilled())->count(), $appUrl);
+        $add('Interessenten: Webseiten-Anfragen noch nicht übernommen', self::safe(fn () => \App\Models\Inquiry::query()->visibleTo($user)->whereIn('status', ['neu', 'in_bearbeitung'])
+            ->where(fn ($q) => $q->whereNull('topic')->orWhere('topic', '!=', 'schaden'))->whereNotNull('listing_id')
+            ->whereNotIn('id', \App\Models\Applicant::query()->whereNotNull('inquiry_id')->select('inquiry_id'))->count(), 0), $appUrl);
+
+        // Mieterhöhungen (Paket 27)
+        $incs = self::safe(fn () => \App\Models\RentIncrease::query()->visibleTo($user)->whereIn('status', ['entwurf', 'erklaert', 'abgelehnt'])
+            ->when($ownerId, fn ($q) => $q->where('rent_increases.owner_id', $ownerId))->get(), collect());
+        $incUrl = route('rent_increase.index');
+        $add('Mieterhöhung: Zustimmungsfrist abgelaufen', $incs->filter(fn ($i) => $i->status === 'erklaert' && $i->needsConsent() && $i->consent_until && $i->consent_until->format('Y-m-d') < $today)->count(), $incUrl, 'warn');
+        $add('Mieterhöhung gilt jetzt: in den Mietstand übernehmen', $incs->filter(fn ($i) => $i->status === 'erklaert' && ! $i->needsConsent() && $i->kind !== 'staffel' && $i->effective_from->format('Y-m-d') <= $today)->count(), $incUrl, 'warn');
+        $add('Mieterhöhung: Schreiben noch nicht versendet', $incs->filter(fn ($i) => $i->status === 'entwurf')->count(), $incUrl);
+
         // Zähler, CO2 und Verbrauchsinformation (Paket 26)
         $meters = self::safe(fn () => self::meters($user, $ownerId), collect());
         $notRemote = $meters->filter(fn ($m) => $m->isHeat() && ! $m->remote);
@@ -333,9 +389,15 @@ class Cockpit
     }
 
     /** Termine der nächsten Tage, nach Datum sortiert: [date, label, detail, url, tone]. */
-    private static function dates(User $user, ?int $ownerId, string $today, ?array $rd): array
+    /** Alle anstehenden Termine für den Kalender-Abo-Feed (Paket 33), mit frei wählbarem Zeitraum. */
+    public static function events(User $user, ?int $ownerId, string $today, int $days): array
     {
-        $ahead = (new DateTimeImmutable($today))->modify('+'.self::DAYS_AHEAD.' days')->format('Y-m-d');
+        return self::dates($user, $ownerId, $today, null, $days);
+    }
+
+    private static function dates(User $user, ?int $ownerId, string $today, ?array $rd, int $days = self::DAYS_AHEAD): array
+    {
+        $ahead = (new DateTimeImmutable($today))->modify('+'.$days.' days')->format('Y-m-d');
         $out = [];
         $push = function ($date, string $label, string $detail, string $url, string $tone = 'info') use (&$out) {
             $d = $date instanceof \DateTimeInterface ? DateTimeImmutable::createFromInterface($date) : new DateTimeImmutable((string) $date);
@@ -352,6 +414,36 @@ class Cockpit
             foreach ($rd['index_due'] as $i) {
                 $due = $i['since']->copy()->addYear();
                 $push($due->format('Y-m-d') < $today ? $today : $due, 'Indexanpassung möglich', $i['lease']->unit?->label.' – '.$i['lease']->tenant?->display_name, route('leases.show', $i['lease']));
+            }
+        }
+
+        // Laufende Verträge: Kündigungstermine und Vertragsenden (Paket 32)
+        foreach (self::safe(fn () => \App\Support\Vertraege\Vertraege::upcoming($user, $ownerId, $days, $today), []) as $x) {
+            $c = $x['contract'];
+            $push(\Carbon\Carbon::parse($x['info']['action_date']), $c->auto_renew ? 'Kündigungsfrist endet' : 'Vertrag endet', $c->title.' – '.$c->place(), route('svc.show', $c), $x['info']['state'] === 'dringend' ? 'warn' : 'info');
+        }
+
+        // Besichtigungen (Paket 31)
+        $views = self::safe(fn () => \App\Models\ApplicantViewing::query()->where('status', 'geplant')->whereBetween('starts_at', [$today.' 00:00:00', $ahead.' 23:59:59'])
+            ->whereHas('applicant', fn ($q) => $q->visibleTo($user)->when($ownerId, fn ($w) => $w->where('applicants.owner_id', $ownerId)))->with('applicant.unit')->get(), collect());
+        foreach ($views as $v) {
+            $push($v->starts_at, 'Besichtigung '.$v->starts_at->format('H:i').' Uhr', $v->applicant?->name().' – '.($v->applicant?->unit?->label ?? 'Wohnung'), route('applicants.show', $v->applicant_id));
+        }
+
+        // Mieterhöhungen (Paket 27)
+        $incs = self::safe(fn () => \App\Models\RentIncrease::query()->visibleTo($user)->whereIn('status', ['erklaert', 'abgelehnt'])
+            ->when($ownerId, fn ($q) => $q->where('rent_increases.owner_id', $ownerId))->with('lease.unit', 'lease.tenant')->get(), collect());
+        foreach ($incs as $i) {
+            $who = $i->lease?->unit?->label.' – '.$i->lease?->tenant?->display_name;
+            $url = route('rent_increase.show', $i);
+            if ($i->status === 'erklaert' && $i->needsConsent() && $i->consent_until && $i->consent_until->format('Y-m-d') >= $today && $i->consent_until->format('Y-m-d') <= $ahead) {
+                $push($i->consent_until, 'Zustimmungsfrist Mieterhöhung', $who, $url, 'warn');
+            }
+            if ($i->status === 'abgelehnt' && $i->suit_until && $i->suit_until->format('Y-m-d') >= $today && $i->suit_until->format('Y-m-d') <= $ahead) {
+                $push($i->suit_until, 'Klagefrist Mieterhöhung endet', $who, $url, 'warn');
+            }
+            if ($i->status === 'erklaert' && $i->effective_from->format('Y-m-d') >= $today && $i->effective_from->format('Y-m-d') <= $ahead) {
+                $push($i->effective_from, 'Mieterhöhung wird wirksam', $who, $url);
             }
         }
 
@@ -403,7 +495,7 @@ class Cockpit
         }
 
         // Dokumente mit Ablaufdatum (Paket 22)
-        foreach (self::safe(fn () => \App\Support\Ablage\Ablage::expiring($user, $ownerId, $today, self::DAYS_AHEAD), collect()) as $doc) {
+        foreach (self::safe(fn () => \App\Support\Ablage\Ablage::expiring($user, $ownerId, $today, $days), collect()) as $doc) {
             if ($doc->expires_on->format('Y-m-d') < $today) {
                 continue;
             }
@@ -412,7 +504,7 @@ class Cockpit
         }
 
         // Wartungen und Handwerkertermine (Paket 24)
-        foreach (self::safe(fn () => \App\Support\Technik\Wartung::due($user, $ownerId, $today, self::DAYS_AHEAD), collect()) as $t) {
+        foreach (self::safe(fn () => \App\Support\Technik\Wartung::due($user, $ownerId, $today, $days), collect()) as $t) {
             if ($t->next_due->format('Y-m-d') >= $today) {
                 $push($t->next_due, 'Wartung: '.$t->title, $t->place(), route('maintenance.index', ['objekt' => $t->property_id]));
             }

@@ -16,7 +16,13 @@ class Tenant extends Model
     protected $fillable = [
         'owner_id', 'type', 'display_name', 'company_name', 'first_name', 'last_name',
         'vat_id', 'street', 'zip', 'city', 'email', 'phone', 'notes',
+        'retention_hold', 'hold_reason', 'contact_cleaned_at', 'erased_at',
     ];
+
+    protected function casts(): array
+    {
+        return ['retention_hold' => 'boolean', 'contact_cleaned_at' => 'datetime', 'erased_at' => 'datetime'];
+    }
 
     public function owner(): BelongsTo
     {

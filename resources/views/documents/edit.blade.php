@@ -28,6 +28,9 @@
     <div><label for="d-exp">Gültig bis / Frist</label><input id="d-exp" type="date" name="expires_on" value="{{ old('expires_on', $doc->expires_on?->format('Y-m-d')) }}"></div>
     <div><label for="d-rem">Erinnern … Tage vorher</label><input id="d-rem" type="number" min="1" max="365" name="remind_days" value="{{ old('remind_days', $doc->remind_days) }}"></div>
     <div style="grid-column:1/-1"><label for="d-note">Notiz</label><textarea id="d-note" name="note" rows="3" maxlength="2000">{{ old('note', $doc->note) }}</textarea></div>
+    @if (in_array($doc->attach_type, ['tenant', 'lease'], true))
+      <label style="display:flex;gap:.5rem;align-items:center;font-weight:500;grid-column:1/-1"><input type="checkbox" name="shared_with_tenant" value="1" style="width:auto" @checked(old('shared_with_tenant', $doc->shared_with_tenant))> Im Mieterportal für den Mieter sichtbar</label>
+    @endif
     <label style="display:flex;gap:.5rem;align-items:center;font-weight:500;grid-column:1/-1"><input type="checkbox" name="archived" value="1" style="width:auto" @checked(old('archived', $doc->archived))> Archiviert (erscheint nicht mehr bei den Fristen)</label>
   </div>
   <div style="margin-top:.8rem"><button class="sd-btn" type="submit">Speichern</button></div>

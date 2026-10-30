@@ -38,6 +38,13 @@
   <p>Sie haben das Recht auf Auskunft über die zu Ihrer Person gespeicherten Daten (Art. 15 DSGVO), auf Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch gegen die Verarbeitung (Art. 21). Wenden Sie sich dazu an die oben genannte Adresse.</p>
   <p>Außerdem können Sie sich bei einer Datenschutz-Aufsichtsbehörde beschweren, zum Beispiel bei der Behörde, die für Ihren Wohnort oder für den Sitz des Verantwortlichen zuständig ist.</p>
 
+  <h2>8. Mietinteressenten und Selbstauskunft</h2>
+  <p>Wenn Sie sich für eine Wohnung interessieren, speichern wir Ihre Kontaktdaten, Ihre Nachricht, Besichtigungstermine und, wenn Sie sie angeben, Ihre freiwillige Selbstauskunft (zum Beispiel Personenzahl, Beruf, Nettoeinkommen, Haustiere). Wir verwenden die Angaben nur, um über die Vermietung zu entscheiden (Art. 6 Abs. 1 Buchst. b DSGVO, auf Ihre Anfrage hin). Die Angaben der Selbstauskunft liegen verschlüsselt in unserer Datenbank. Wir geben sie nicht weiter.</p>
+  <p>Wir löschen Ihre Angaben spätestens drei Monate nach einer Absage oder dem Abschluss des Mietvertrags, bei einem noch offenen Verfahren nach sechs Monaten. Bei einem Mietvertrag übernehmen wir nur die für das Mietverhältnis nötigen Daten.</p>
+
+  <h2>9. Mieterportal</h2>
+  <p>Wenn Sie als Mieter das Mieterportal nutzen, melden Sie sich mit einem Link an, den wir an Ihre E-Mail-Adresse senden. Wir speichern dafür Ihre E-Mail-Adresse und den Zeitpunkt der letzten Anmeldung. Über das Portal sehen Sie Ihr Mieterkonto und Dokumente, die wir für Sie freigeben, und Sie können Zählerstände und Schäden melden. Diese Meldungen speichern wir in unserer Verwaltung. Rechtsgrundlage ist die Durchführung des Mietvertrags (Art. 6 Abs. 1 Buchst. b DSGVO). Die Anmelde-Links gelten 20 Minuten und werden nur einmal benutzt, die Sitzung endet nach zwei Stunden ohne Aktivität.</p>
+
   <p class="muted" style="margin-top:1.6rem">Stand: Oktober 2026</p>
 </div>
 @endsection

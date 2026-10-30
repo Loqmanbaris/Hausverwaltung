@@ -20,6 +20,6 @@
     <div><label for="v-mvd">Stand der Schätzung</label><input id="v-mvd" type="date" name="market_value_date" value="{{ old('market_value_date', $v->market_value_date?->format('Y-m-d')) }}"></div>
     <div style="grid-column:1/-1"><label for="v-note">Notiz</label><textarea id="v-note" name="note" rows="2" maxlength="2000">{{ old('note', $v->note) }}</textarea></div>
   </div>
-  <div style="margin-top:.8rem"><button class="sd-btn" type="submit">Speichern</button></div>
+  <div style="margin-top:.8rem"><button class="sd-btn" type="submit">Speichern</button> <a class="sd-btn sec" href="{{ route('afa.edit', $property) }}">AfA (Abschreibung) einstellen</a></div>
 </form>
 @endsection

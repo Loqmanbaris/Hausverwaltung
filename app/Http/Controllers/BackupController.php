@@ -44,7 +44,18 @@ class BackupController extends Controller
             return redirect()->route('backups.index')->withErrors(['backup' => 'Die Sicherung ist fehlgeschlagen: '.$e->getMessage()]);
         }
 
-        return redirect()->route('backups.index')->with('status', 'Sicherung erstellt: '.$result['file'].' ('.BackupService::formatSize($result['size']).').');
+        $msg = 'Sicherung erstellt: '.$result['file'].' ('.BackupService::formatSize($result['size']).').';
+        $od = \App\Support\Backup\OneDrive::config();
+        if ($od !== null && $od['auto']) {
+            try {
+                \App\Support\Backup\OneDrive::syncPending();
+                $msg .= ' Bei OneDrive abgelegt.';
+            } catch (Throwable $e) {
+                return redirect()->route('backups.index')->with('status', $msg)->withErrors(['onedrive' => 'Der Upload zu OneDrive ist fehlgeschlagen: '.$e->getMessage()]);
+            }
+        }
+
+        return redirect()->route('backups.index')->with('status', $msg);
     }
 
     public function saveKey(Request $request)

@@ -31,10 +31,10 @@ td{padding:1.1mm 1.4mm;border-bottom:.3pt solid #ccc;vertical-align:top}
 <div class="page">
   <h1>Anlage V {{ $year }} – Zusammenstellung</h1>
   <div>{{ $owner->name }}@if ($owner->street), {{ $owner->street }}, {{ trim($owner->zip.' '.$owner->city) }}@endif</div>
-  <p class="small">Arbeitshilfe für den Steuerberater, erstellt am {{ now()->timezone('Europe/Berlin')->format('d.m.Y') }}. Einnahmen nach Zahlungseingang ({{ $year }}), aufgeteilt nach den bezahlten Monaten und deren Bestandteilen. Werbungskosten nach Belegdatum. Ohne AfA.</p>
+  <p class="small">Arbeitshilfe für den Steuerberater, erstellt am {{ now()->timezone('Europe/Berlin')->format('d.m.Y') }}. Einnahmen nach Zahlungseingang ({{ $year }}), aufgeteilt nach den bezahlten Monaten und deren Bestandteilen. Werbungskosten nach Belegdatum. Gebäude-AfA laut Angaben beim Objekt, ohne Fahrtkosten.</p>
   <table><tbody>
     <tr><td>Einnahmen gesamt</td><td class="n">{{ $eur($data['totals']['income']) }}</td></tr>
-    <tr><td>Werbungskosten gesamt (ohne AfA)</td><td class="n">{{ $eur($data['totals']['costs']) }}</td></tr>
+    <tr><td>Werbungskosten gesamt (einschließlich AfA)</td><td class="n">{{ $eur($data['totals']['costs']) }}</td></tr>
     <tr class="s"><td>Überschuss</td><td class="n">{{ $eur($data['totals']['result']) }}</td></tr>
   </tbody></table>
 
@@ -49,7 +49,7 @@ td{padding:1.1mm 1.4mm;border-bottom:.3pt solid #ccc;vertical-align:top}
         @if ($o['costs'][$k] !== 0)<tr><td>{{ $label }}<br><span class="small">@foreach ($o['cost_details'][$k] ?? [] as $l => $c){{ $l }} {{ $eur($c) }}{{ $loop->last ? '' : ' · ' }}@endforeach</span></td><td class="n">{{ $eur($o['costs'][$k]) }}</td></tr>@endif
       @endforeach
       <tr class="s"><td>Summe Werbungskosten</td><td class="n">{{ $eur($o['cost_total']) }}</td></tr>
-      <tr class="s"><td>Überschuss (ohne AfA)</td><td class="n">{{ $eur($o['result']) }}</td></tr>
+      <tr class="s"><td>Überschuss (nach AfA)</td><td class="n">{{ $eur($o['result']) }}</td></tr>
     </tbody></table>
   @endforeach
 

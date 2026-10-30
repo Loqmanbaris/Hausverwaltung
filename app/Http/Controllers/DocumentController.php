@@ -136,6 +136,7 @@ class DocumentController extends Controller
             'remind_days' => ['nullable', 'integer', 'between:1,365'],
             'note' => ['nullable', 'string', 'max:2000'],
             'archived' => ['nullable', 'in:1'],
+            'shared_with_tenant' => ['nullable', 'in:1'],
         ]);
         $newExpiry = $data['expires_on'] ?? null;
         $old = $document->expires_on?->format('Y-m-d');
@@ -143,6 +144,7 @@ class DocumentController extends Controller
             'category' => $data['category'], 'title' => $data['title'], 'doc_date' => $data['doc_date'] ?? null,
             'expires_on' => $newExpiry, 'remind_days' => (int) ($data['remind_days'] ?? 30) ?: 30, 'note' => $data['note'] ?? null,
             'archived' => isset($data['archived']),
+            'shared_with_tenant' => isset($data['shared_with_tenant']) && in_array($document->attach_type, ['tenant', 'lease'], true),
         ]);
         if ($old !== ($newExpiry ? date('Y-m-d', strtotime($newExpiry)) : null) || $document->isDirty('remind_days')) {
             $document->reminded_at = null;

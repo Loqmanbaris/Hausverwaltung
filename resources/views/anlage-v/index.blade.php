@@ -17,7 +17,7 @@
     </div>
   @endif
 </div>
-<p class="sd-muted">Arbeitshilfe für die Steuererklärung: Einnahmen nach Zahlungseingang im Jahr, aufgeteilt nach Miete, Garagen und Umlagen; Werbungskosten aus den Belegen nach Belegdatum. Abschreibung (AfA) und Fahrtkosten sind nicht enthalten. Bitte vom Steuerberater prüfen lassen.</p>
+<p class="sd-muted">Arbeitshilfe für die Steuererklärung: Einnahmen nach Zahlungseingang im Jahr, aufgeteilt nach Miete, Garagen und Umlagen; Werbungskosten aus den Belegen nach Belegdatum. Die Gebäude-AfA kommt aus den Angaben beim Objekt (lineare AfA, andere Beträge vom Steuerberater). Fahrtkosten sind nicht enthalten. Bitte vom Steuerberater prüfen lassen.</p>
 
 <form class="rt-filter" method="GET" action="{{ route('anlage-v.index') }}">
   <select name="eigentuemer" aria-label="Eigentümer" required>
@@ -37,7 +37,7 @@
 @if ($owner && $data)
   <div class="rt-stats">
     <div class="rt-stat"><strong>{{ $eur($data['totals']['income']) }}</strong><span>Einnahmen</span></div>
-    <div class="rt-stat"><strong>{{ $eur($data['totals']['costs']) }}</strong><span>Werbungskosten (ohne AfA)</span></div>
+    <div class="rt-stat"><strong>{{ $eur($data['totals']['costs']) }}</strong><span>Werbungskosten (einschließlich AfA)</span></div>
     <div class="rt-stat"><strong @class(['rt-late' => $data['totals']['result'] < 0])>{{ $eur($data['totals']['result']) }}</strong><span>Überschuss</span></div>
   </div>
 
@@ -65,7 +65,7 @@
               @endif
             @endforeach
             <tr class="rt-sum"><td>Summe Werbungskosten</td><td class="rt-num">{{ $eur($o['cost_total']) }}</td></tr>
-            <tr class="rt-sum"><td>Überschuss (ohne AfA)</td><td class="rt-num">{{ $eur($o['result']) }}</td></tr>
+            <tr class="rt-sum"><td>Überschuss (nach AfA)</td><td class="rt-num">{{ $eur($o['result']) }}</td></tr>
           </tbody>
         </table>
       </div>

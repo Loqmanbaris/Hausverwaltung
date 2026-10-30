@@ -66,7 +66,7 @@ class Kennzahlen
 
         $av = self::anlageV((int) $p->owner_id, $year)['properties'][$p->id] ?? null;
         $income = $av ? $av['income_total'] / 100 : 0.0;
-        $costsNoInterest = $av ? ($av['cost_total'] - $av['costs']['zinsen']) / 100 : 0.0;
+        $costsNoInterest = $av ? ($av['cost_total'] - $av['costs']['zinsen'] - $av['costs']['afa']) / 100 : 0.0;
         $nonAllocatable = $av ? ($av['costs']['erhaltung'] + $av['costs']['verwaltung'] + $av['costs']['sonstige']) / 100 : 0.0;
         $cashflow = round($income - $costsNoInterest - $yearLoan['payment'], 2);
 

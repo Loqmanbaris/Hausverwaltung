@@ -37,4 +37,24 @@ class Notify
             report($e);
         }
     }
+
+    /** Allgemeiner Hinweis an die Verwaltung (zum Beispiel: Selbstauskunft eingegangen), wenn Hinweise eingeschaltet sind. */
+    public static function message(string $subject, string $text, ?int $ownerId = null): void
+    {
+        try {
+            if (MailService::$fake === null && ! MailSettings::configured()) {
+                return;
+            }
+            if (MailSettings::get('mail_notify') !== '1') {
+                return;
+            }
+            $to = MailSettings::copyAddress();
+            if (! MailService::validAddress($to)) {
+                return;
+            }
+            MailService::send([$to], $subject, $text, [], ['kind' => 'hinweis', 'owner_id' => $ownerId], null, false);
+        } catch (Throwable $e) {
+            report($e);
+        }
+    }
 }

@@ -28,7 +28,7 @@ use Illuminate\Support\Str;
  */
 class Outbox
 {
-    public const KINDS = ['mahnung', 'nk', 'vertrag', 'uebergabe', 'raten', 'anfrage', 'rundschreiben', 'verbrauch'];
+    public const KINDS = ['mahnung', 'nk', 'vertrag', 'uebergabe', 'raten', 'erhoehung', 'jahresbericht', 'erechnung', 'int_selbstauskunft', 'int_termin', 'int_zusage', 'int_absage', 'anfrage', 'rundschreiben', 'verbrauch'];
 
     /**
      * @return array{kind: string, title: string, back: string, subject: string, body: string, placeholders: array, items: array<int, array>, upload: bool}
@@ -48,6 +48,13 @@ class Outbox
             'vertrag' => self::vertrag($idList[0], $user),
             'uebergabe' => self::uebergabe($idList[0], $user),
             'raten' => self::raten($idList[0], $user),
+            'erhoehung' => self::erhoehung($idList[0], $user),
+            'jahresbericht' => self::jahresbericht($idList[0], (int) ($idList[1] ?? 0), $user),
+            'erechnung' => self::erechnung($idList[0], $user),
+            'int_selbstauskunft' => self::interessent('selbstauskunft', $idList[0], null, $user),
+            'int_termin' => self::interessent('termin', $idList[0], $idList[1] ?? null, $user),
+            'int_zusage' => self::interessent('zusage', $idList[0], null, $user),
+            'int_absage' => self::interessent('absage', $idList[0], null, $user),
             'anfrage' => self::anfrage($idList[0], $user),
             'rundschreiben' => self::rundschreiben($idList[0], $user),
             'verbrauch' => self::verbrauch($idList[0], (string) ($idList[1] ?? 0), $user, $idList[2] ?? null),
@@ -340,6 +347,179 @@ class Outbox
             'subject' => 'Ratenzahlungsvereinbarung – [Einheit]',
             'body' => "[Anrede]\n\nwie besprochen erhalten Sie im Anhang die Ratenzahlungsvereinbarung vom [Datum] über [Betrag] in [Raten] Raten. Bitte senden Sie uns ein unterschriebenes Exemplar zurück und denken Sie daran, die laufende Miete weiterhin pünktlich zu zahlen.\n\n".self::closing(),
             'placeholders' => ['Anrede', 'Datum', 'Betrag', 'Raten', 'Einheit', 'Mieter', 'Absender'],
+            'items' => [$item],
+            'upload' => false,
+        ];
+    }
+
+    private static function erhoehung(int $id, User $user): array
+    {
+        $inc = \App\Models\RentIncrease::query()->visibleTo($user)->with(['lease.unit.property', 'lease.tenant.contacts', 'lease.owner'])->findOrFail($id);
+        if (in_array($inc->status, ['wirksam', 'zurueckgezogen', 'abgelehnt'], true) && $inc->kind !== 'staffel') {
+            throw new MailError('Zu dieser Mieterhöhung kann kein Schreiben mehr versendet werden (Stand: '.$inc->statusLabel().').');
+        }
+        if ($inc->isDraft()) {
+            $today = date('Y-m-d');
+            $notice = $inc->notice_on->format('Y-m-d');
+            if ($notice > $today) {
+                throw new MailError('Das Schreiben ist auf den '.$inc->notice_on->format('d.m.Y').' datiert. Bitte erst an diesem Tag senden oder das Datum im Verfahren ändern.');
+            }
+            if ($notice < $today) {
+                try {
+                    $inc = \App\Support\Rent\Erhoehung\Verfahren::redate($inc, $today, $user);
+                } catch (\RuntimeException $e) {
+                    throw new MailError($e->getMessage());
+                }
+            }
+        }
+        $item = self::leaseItem($inc->lease, [
+            'ref_id' => $inc->id,
+            'pdf' => fn () => self::pdfFromView('rentincrease.print', \App\Support\Rent\Erhoehung\Schreiben::data($inc), \App\Support\Rent\Erhoehung\Schreiben::title($inc)),
+            'pdf_name' => \App\Support\Rent\Erhoehung\Schreiben::pdfName($inc),
+        ]);
+        $item['vars']['Datum'] = $inc->effective_from->format('d.m.Y');
+        $item['vars']['Betreff'] = \App\Support\Rent\Erhoehung\Schreiben::title($inc);
+        $item['vars']['Betrag'] = Money::format($inc->new_cold);
+
+        return [
+            'kind' => 'erhoehung',
+            'title' => 'Mieterhöhung per E-Mail senden',
+            'back' => route('rent_increase.show', $inc),
+            'subject' => '[Betreff] – [Einheit]',
+            'body' => "[Anrede]\n\nim Anhang erhalten Sie unser Schreiben zur Anpassung der Miete ab dem [Datum] (neue Kaltmiete [Betrag]). Bitte lesen Sie auch die Hinweise zu Fristen im Schreiben.\n\n".self::closing(),
+            'placeholders' => ['Anrede', 'Betreff', 'Datum', 'Betrag', 'Einheit', 'Mieter', 'Absender'],
+            'items' => [$item],
+            'upload' => false,
+        ];
+    }
+
+    private static function jahresbericht(int $ownerId, int $year, User $user): array
+    {
+        $owner = Owner::visibleTo($user)->findOrFail($ownerId);
+        if ($year < 2000 || $year > (int) date('Y')) {
+            throw new MailError('Das Jahr für den Bericht fehlt.');
+        }
+        $addresses = array_values(array_filter([trim((string) $owner->email)], fn ($a) => $a !== '' && MailService::validAddress($a)));
+        $item = [
+            'key' => (string) $owner->id,
+            'label' => $owner->name,
+            'owner_id' => (int) $owner->id,
+            'tenant_id' => null,
+            'lease_id' => null,
+            'ref_id' => $year,
+            'addresses' => $addresses,
+            'vars' => ['Anrede' => 'Guten Tag,', 'Absender' => MailSettings::fromName(), 'Jahr' => (string) $year, 'Eigentümer' => $owner->name],
+            'pdf' => fn () => HtmlPdf::render(view('report.print', ['data' => \App\Support\Report\Jahresbericht::build($owner, $year)])->render(), 'Jahresbericht '.$year),
+            'pdf_name' => \App\Support\Report\Jahresbericht::pdfName($owner, $year),
+        ];
+
+        return [
+            'kind' => 'jahresbericht',
+            'title' => 'Jahresbericht '.$year.' per E-Mail senden',
+            'back' => route('report.index', ['eigentuemer' => $owner->id, 'jahr' => $year]),
+            'subject' => 'Jahresbericht [Jahr] – [Eigentümer]',
+            'body' => "[Anrede]\n\nim Anhang erhalten Sie den Jahresbericht [Jahr] für [Eigentümer] mit Ergebnis, Vermietung, Mieteingang, Nebenkosten, Darlehen und Instandhaltung. Bei Fragen melden Sie sich gern.\n\n".self::closing(),
+            'placeholders' => ['Anrede', 'Jahr', 'Eigentümer', 'Absender'],
+            'items' => [$item],
+            'upload' => false,
+        ];
+    }
+
+    /** E-Mails an Mietinteressenten: Selbstauskunft-Link, Besichtigungstermin, Zusage und Absage (Paket 31). */
+    private static function interessent(string $art, int $id, ?int $viewingId, User $user): array
+    {
+        $a = \App\Models\Applicant::query()->visibleTo($user)->with(['unit.property', 'owner', 'listing', 'disclosure'])->findOrFail($id);
+        $sender = $a->owner?->name ?? MailSettings::fromName();
+        $unitText = trim(($a->unit?->label ?? '').($a->unit?->property ? ', '.$a->unit->property->addressLine() : ''));
+        $item = [
+            'key' => (string) $a->id,
+            'label' => $a->name(),
+            'owner_id' => (int) $a->owner_id,
+            'tenant_id' => null,
+            'lease_id' => null,
+            'ref_id' => $a->id,
+            'addresses' => MailService::validAddress((string) $a->email) ? [(string) $a->email] : [],
+            'vars' => ['Anrede' => $a->first_name ? 'Guten Tag '.$a->name().',' : 'Guten Tag '.$a->last_name.',', 'Absender' => $sender, 'Einheit' => $unitText !== '' ? $unitText : 'die Wohnung'],
+            'pdf' => null,
+            'pdf_name' => null,
+        ];
+        $box = ['kind' => 'int_'.$art, 'back' => route('applicants.show', $a), 'items' => [$item], 'upload' => false];
+
+        if ($art === 'selbstauskunft') {
+            try {
+                [$d, $token] = \App\Support\Interessenten\Interessenten::requestDisclosure($a);
+            } catch (\RuntimeException $e) {
+                throw new MailError($e->getMessage());
+            }
+            $box['items'][0]['vars']['Link'] = \App\Support\Interessenten\Interessenten::link($token);
+            $box['items'][0]['vars']['Frist'] = $d->token_expires_at?->timezone('Europe/Berlin')->format('d.m.Y') ?? '';
+
+            return $box + [
+                'title' => 'Selbstauskunft per E-Mail anfordern',
+                'subject' => 'Selbstauskunft für [Einheit]',
+                'body' => "[Anrede]\n\nvielen Dank für Ihr Interesse an [Einheit]. Damit wir über die Vermietung entscheiden können, bitten wir Sie um eine kurze Selbstauskunft. Alle Angaben sind freiwillig. Sie können sie hier online ausfüllen:\n\n[Link]\n\nDer Link gilt bis [Frist]. Wenn Sie lieber ein Formular zum Ausdrucken haben, antworten Sie einfach auf diese E-Mail.\n\n".self::closing(),
+                'placeholders' => ['Anrede', 'Einheit', 'Link', 'Frist', 'Absender'],
+            ];
+        }
+
+        if ($art === 'termin') {
+            $v = $viewingId ? $a->viewings()->whereKey($viewingId)->first() : $a->viewings()->where('status', 'geplant')->orderBy('starts_at')->first();
+            if ($v === null) {
+                throw new MailError('Es gibt keinen Besichtigungstermin zum Versenden.');
+            }
+            $box['items'][0]['vars']['Datum'] = $v->starts_at->format('d.m.Y');
+            $box['items'][0]['vars']['Uhrzeit'] = $v->starts_at->format('H:i');
+            $box['items'][0]['vars']['Treffpunkt'] = (string) ($v->place ?: $unitText);
+
+            return $box + [
+                'title' => 'Besichtigungstermin per E-Mail senden',
+                'subject' => 'Besichtigung am [Datum] um [Uhrzeit] Uhr',
+                'body' => "[Anrede]\n\nwir bestätigen Ihnen den Besichtigungstermin für [Einheit]:\n\n[Datum] um [Uhrzeit] Uhr\nTreffpunkt: [Treffpunkt]\n\nBitte geben Sie uns kurz Bescheid, wenn Sie den Termin nicht wahrnehmen können.\n\n".self::closing(),
+                'placeholders' => ['Anrede', 'Einheit', 'Datum', 'Uhrzeit', 'Treffpunkt', 'Absender'],
+            ];
+        }
+
+        // Zusage und Absage mit Schreiben als PDF
+        $data = \App\Support\Interessenten\Letters::data($a, $art);
+        $box['items'][0]['pdf'] = fn () => self::pdfFromView('applicants.letter', $data, \App\Support\Interessenten\Letters::title($art));
+        $box['items'][0]['pdf_name'] = \App\Support\Interessenten\Letters::pdfName($a, $art);
+
+        return $box + [
+            'title' => ($art === 'zusage' ? 'Zusage' : 'Absage').' per E-Mail senden',
+            'subject' => ($art === 'zusage' ? 'Zusage' : 'Absage').' zu [Einheit]',
+            'body' => $art === 'zusage'
+                ? "[Anrede]\n\nwir freuen uns, Ihnen die Wohnung [Einheit] anbieten zu können. Alle Einzelheiten finden Sie im Schreiben im Anhang. Bitte melden Sie sich innerhalb einer Woche bei uns.\n\n".self::closing()
+                : "[Anrede]\n\nvielen Dank für Ihr Interesse an [Einheit]. Leider können wir Ihnen die Wohnung nicht anbieten. Das Schreiben finden Sie im Anhang. Wir wünschen Ihnen viel Erfolg bei der Suche.\n\n".self::closing(),
+            'placeholders' => ['Anrede', 'Einheit', 'Absender'],
+        ];
+    }
+
+    /** E-Rechnung per E-Mail: XML als eigentliche Rechnung, PDF als Ansicht (Paket 37). */
+    private static function erechnung(int $id, User $user): array
+    {
+        $inv = \App\Models\IssuedInvoice::query()->visibleTo($user)->with(['lease.unit.property', 'lease.tenant.contacts', 'owner'])->findOrFail($id);
+        $buyer = \App\Support\ERechnung\Rechnungen::buyerData($inv->lease->tenant);
+        $item = self::leaseItem($inv->lease, [
+            'ref_id' => $inv->id,
+            'pdf' => fn () => self::pdfFromView('erechnung.print', ['inv' => $inv, 'd' => \App\Support\ERechnung\Ansicht::data($inv)], $inv->kindLabel().' '.$inv->number),
+            'pdf_name' => \App\Support\ERechnung\Rechnungen::fileName($inv, 'pdf'),
+            'xml' => fn () => $inv->xml,
+            'xml_name' => \App\Support\ERechnung\Rechnungen::fileName($inv, 'xml'),
+        ]);
+        if (MailService::validAddress($buyer['email']) && ! in_array($buyer['email'], $item['addresses'], true)) {
+            array_unshift($item['addresses'], $buyer['email']);
+        }
+        $item['vars']['Nummer'] = $inv->number;
+        $item['vars']['Betrag'] = Money::format($inv->gross);
+        $item['vars']['Frist'] = $inv->due_on->format('d.m.Y');
+
+        return [
+            'kind' => 'erechnung',
+            'title' => $inv->kindLabel().' '.$inv->number.' per E-Mail senden',
+            'back' => route('erechnung.index'),
+            'subject' => $inv->kindLabel().' [Nummer]',
+            'body' => "[Anrede]\n\nim Anhang erhalten Sie die ".($inv->isCredit() ? 'Gutschrift' : 'Rechnung')." [Nummer] über [Betrag]. Die Datei mit der Endung .xml ist die elektronische Rechnung (XRechnung), das PDF dient nur zur Ansicht. Bitte zahlen Sie bis zum [Frist].\n\n".self::closing(),
+            'placeholders' => ['Anrede', 'Nummer', 'Betrag', 'Frist', 'Einheit', 'Mieter', 'Absender'],
             'items' => [$item],
             'upload' => false,
         ];

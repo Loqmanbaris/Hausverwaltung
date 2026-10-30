@@ -29,6 +29,22 @@ class DailyTasks
             $lines[] = 'Sicherung: erstellt '.$result['file'].' ('.BackupService::formatSize($result['size']).'), '.count($deleted).' alte gelöscht';
         }
 
+        // Sicherungen bei OneDrive ablegen, wenn eingerichtet (Paket 40)
+        $od = \App\Support\Backup\OneDrive::config();
+        if ($od !== null && $od['auto']) {
+            try {
+                $sent = \App\Support\Backup\OneDrive::syncPending();
+                $lines[] = $sent === [] ? 'OneDrive: alles aktuell' : 'OneDrive: '.count($sent).' Sicherung(en) hochgeladen';
+            } catch (\Throwable $e) {
+                // Ein Fehler beim Upload darf den übrigen Lauf nicht verhindern. Er steht im Status und im Protokoll.
+                $lines[] = 'OneDrive: Upload fehlgeschlagen ('.$e->getMessage().')';
+                try {
+                    \App\Support\Mail\Notify::message('Sicherung: OneDrive-Upload fehlgeschlagen', $e->getMessage()."\n\nDie Sicherung liegt weiter auf dem Server. Prüfe unter Verwaltung → Sicherungen die OneDrive-Einstellungen.");
+                } catch (\Throwable) {
+                }
+            }
+        }
+
         // Soll-Mieten für den laufenden Monat anlegen und Zahlungen neu zuordnen (Paket 5a)
         $rent = RentLedger::syncAll();
         $lines[] = 'Mieten: '.$rent['leases'].' Verträge geprüft, '.$rent['created'].' neue Soll-Posten'.($rent['changed'] > 0 ? ', '.$rent['changed'].' angepasst' : '');
@@ -62,6 +78,22 @@ class DailyTasks
             $n = \App\Models\Inquiry::query()->where('status', 'erledigt')->where('updated_at', '<', now()->subMonths(6))->delete();
             if ($n > 0) {
                 $lines[] = 'Anfragen: '.$n.' alte erledigte gelöscht';
+            }
+        }
+
+        // Erinnerung an Kündigungsfristen laufender Verträge (Paket 32)
+        if (\Illuminate\Support\Facades\Schema::hasTable('service_contracts')) {
+            $n = \App\Support\Vertraege\Vertraege::sendReminders();
+            if ($n > 0) {
+                $lines[] = 'Verträge: Erinnerung für '.$n.' Vertrag/Verträge gesendet';
+            }
+        }
+
+        // Daten von Interessenten nach Ablauf der Löschfrist löschen (Paket 31)
+        if (\Illuminate\Support\Facades\Schema::hasTable('applicants')) {
+            $n = \App\Support\Interessenten\Interessenten::purge();
+            if ($n > 0) {
+                $lines[] = 'Interessenten: '.$n.' nach Ablauf der Löschfrist gelöscht';
             }
         }
 

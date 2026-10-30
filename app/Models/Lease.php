@@ -138,6 +138,11 @@ class Lease extends Model
         return $place.' – '.($this->tenant?->display_name ?? 'Mieter');
     }
 
+    public function deposit(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Deposit::class);
+    }
+
     public function depositLabel(): string
     {
         if ($this->deposit_amount === null) {

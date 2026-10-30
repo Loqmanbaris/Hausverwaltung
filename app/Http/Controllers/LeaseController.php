@@ -177,6 +177,9 @@ class LeaseController extends Controller
             if (\Illuminate\Support\Facades\Schema::hasTable('dunning_notices')) {
                 DB::table('dunning_notices')->where('lease_id', $lease->id)->delete();
             }
+            if (\Illuminate\Support\Facades\Schema::hasTable('rent_increases')) {
+                DB::table('rent_increases')->where('lease_id', $lease->id)->delete();
+            }
             DB::table('rent_charges')->where('lease_id', $lease->id)->delete();
             $lease->delete();
         });

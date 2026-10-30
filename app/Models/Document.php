@@ -12,12 +12,12 @@ class Document extends Model
 {
     protected $fillable = [
         'owner_id', 'attach_type', 'attach_id', 'category', 'title', 'path', 'original_name', 'mime', 'size', 'sha256',
-        'doc_date', 'expires_on', 'remind_days', 'reminded_at', 'archived', 'note', 'source', 'created_by',
+        'doc_date', 'expires_on', 'remind_days', 'reminded_at', 'archived', 'note', 'source', 'created_by', 'shared_with_tenant',
     ];
 
     protected function casts(): array
     {
-        return ['doc_date' => 'date', 'expires_on' => 'date', 'reminded_at' => 'datetime', 'archived' => 'boolean'];
+        return ['doc_date' => 'date', 'expires_on' => 'date', 'reminded_at' => 'datetime', 'archived' => 'boolean', 'shared_with_tenant' => 'boolean'];
     }
 
     public function owner(): BelongsTo

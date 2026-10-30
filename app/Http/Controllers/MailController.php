@@ -71,7 +71,7 @@ class MailController extends Controller
     public function document(Request $request)
     {
         $kind = (string) $request->query('art');
-        abort_unless(in_array($kind, ['vertrag', 'uebergabe', 'raten', 'mahnung'], true), 404);
+        abort_unless(in_array($kind, ['vertrag', 'uebergabe', 'raten', 'mahnung', 'erhoehung', 'int_zusage', 'int_absage'], true), 404);
         try {
             $box = Outbox::resolve($kind, (string) (int) $request->query('id'), $this->me());
         } catch (MailError) {
@@ -136,6 +136,9 @@ class MailController extends Controller
                 if ($item['pdf']) {
                     $attachments[] = ['name' => $item['pdf_name'], 'data' => ($item['pdf'])(), 'mime' => 'application/pdf'];
                 }
+                if (! empty($item['xml'])) {
+                    $attachments[] = ['name' => $item['xml_name'], 'data' => ($item['xml'])(), 'mime' => 'application/xml'];
+                }
             } catch (\Throwable $e) {
                 report($e);
                 $errors[] = $item['label'].': PDF konnte nicht erstellt werden.';
@@ -151,7 +154,7 @@ class MailController extends Controller
             if ($log->status === 'gesendet') {
                 $ok++;
                 // Gesendetes Schreiben automatisch ablegen (Paket 22)
-                $cat = ['mahnung' => 'mahnung', 'nk' => 'abrechnung', 'vertrag' => 'mietvertrag', 'uebergabe' => 'uebergabe', 'raten' => 'raten'][$box['kind']] ?? null;
+                $cat = ['mahnung' => 'mahnung', 'nk' => 'abrechnung', 'vertrag' => 'mietvertrag', 'uebergabe' => 'uebergabe', 'raten' => 'raten', 'erhoehung' => 'mieterhoehung'][$box['kind']] ?? null;
                 if ($cat && $item['pdf'] && class_exists(\App\Support\Ablage\Ablage::class) && \Illuminate\Support\Facades\Schema::hasTable('documents')) {
                     [$aType, $aId] = $item['lease_id'] ? ['lease', (int) $item['lease_id']] : ['tenant', (int) $item['tenant_id']];
                     if ($aId > 0) {
@@ -161,6 +164,31 @@ class MailController extends Controller
                 Audit::log('mail.sent', $log, $log->kindLabel().' an '.$log->recipients.': '.$log->subject);
                 if ($box['kind'] === 'anfrage') {
                     Inquiry::query()->whereKey($item['ref_id'])->where('status', 'neu')->update(['status' => 'in_bearbeitung']);
+                }
+                // E-Rechnung: Versand per E-Mail vermerken (Paket 37)
+                if ($box['kind'] === 'erechnung') {
+                    $ei = \App\Models\IssuedInvoice::query()->find($item['ref_id']);
+                    if ($ei) {
+                        \App\Support\ERechnung\Rechnungen::markSent($ei);
+                    }
+                }
+                // Interessenten: Zusage oder Absage per E-Mail setzt den Stand (Paket 31)
+                if (in_array($box['kind'], ['int_zusage', 'int_absage'], true)) {
+                    $ap = \App\Models\Applicant::query()->find($item['ref_id']);
+                    if ($ap && $ap->isOpen()) {
+                        \App\Support\Interessenten\Interessenten::setStatus($ap, $box['kind'] === 'int_zusage' ? 'zusage' : 'absage');
+                    }
+                }
+                // Mieterhöhung: Der Versand per E-Mail gilt als Erklärung (Paket 27)
+                if ($box['kind'] === 'erhoehung') {
+                    $inc = \App\Models\RentIncrease::query()->find($item['ref_id']);
+                    if ($inc && $inc->isDraft()) {
+                        try {
+                            \App\Support\Rent\Erhoehung\Verfahren::declare($inc, $this->me());
+                        } catch (\RuntimeException $e) {
+                            report($e);
+                        }
+                    }
                 }
             } else {
                 $errors[] = $item['label'].': '.$log->error;

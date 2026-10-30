@@ -45,6 +45,7 @@ class Mieten
     public const REASONS = [
         'beginn' => 'Vertragsbeginn',
         'erhoehung' => 'Mieterhöhung',
+        'modernisierung' => 'Modernisierungsumlage',
         'staffel' => 'Staffel',
         'index' => 'Indexanpassung',
         'vorauszahlung' => 'Neue Vorauszahlung',

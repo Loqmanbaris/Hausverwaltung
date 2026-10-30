@@ -25,11 +25,12 @@ class Ablage
         'unit' => ['Einheit', Unit::class],
         'tenant' => ['Mieter', Tenant::class],
         'lease' => ['Mietvertrag', Lease::class],
+        'contract' => ['Laufender Vertrag', \App\Models\ServiceContract::class],
     ];
 
     /** Schlüssel => [Bezeichnung, erlaubt bei, Ablaufdatum sinnvoll, Hinweis] */
     public const CATEGORIES = [
-        'versicherung' => ['Versicherung', ['owner', 'property'], true, 'Ablaufdatum = Vertragsende oder Kündigungsfrist'],
+        'versicherung' => ['Versicherung', ['owner', 'property', 'contract'], true, 'Ablaufdatum = Vertragsende oder Kündigungsfrist'],
         'grundbuch' => ['Grundbuchauszug', ['property'], false, ''],
         'kaufvertrag' => ['Kaufvertrag', ['owner', 'property'], false, ''],
         'energieausweis' => ['Energieausweis', ['property', 'unit'], true, 'Gültig 10 Jahre ab Ausstellung'],
@@ -45,10 +46,12 @@ class Ablage
         'mahnung' => ['Mahnung', ['tenant', 'lease'], false, ''],
         'abrechnung' => ['Nebenkostenabrechnung', ['tenant', 'lease'], false, ''],
         'raten' => ['Ratenvereinbarung', ['lease'], false, ''],
+        'mieterhoehung' => ['Mieterhöhung', ['tenant', 'lease'], false, ''],
         'ausweis' => ['Ausweiskopie', ['tenant'], true, 'Nur geschwärzte Kopie und nur so lange wie nötig aufbewahren (Datenschutz).'],
         'bonitaet' => ['Bonität und Einkommen', ['tenant'], false, 'Nach Abschluss des Mietvertrags löschen, wenn nicht mehr nötig (Datenschutz).'],
-        'schriftverkehr' => ['Schriftverkehr', ['owner', 'property', 'unit', 'tenant', 'lease'], false, ''],
-        'sonstiges' => ['Sonstiges', ['owner', 'property', 'unit', 'tenant', 'lease'], true, ''],
+        'vertrag' => ['Vertrag und Kündigung', ['contract'], true, 'Ablaufdatum = Vertragsende'],
+        'schriftverkehr' => ['Schriftverkehr', ['owner', 'property', 'unit', 'tenant', 'lease', 'contract'], false, ''],
+        'sonstiges' => ['Sonstiges', ['owner', 'property', 'unit', 'tenant', 'lease', 'contract'], true, ''],
     ];
 
     public static function categoriesFor(string $type): array
@@ -74,6 +77,7 @@ class Ablage
             'unit' => [$m, (int) $m->property?->owner_id, $m->label.($m->property ? ', '.$m->property->name : ''), route('units.edit', $m).'#dokumente'],
             'tenant' => [$m, (int) $m->owner_id, (string) $m->display_name, route('tenants.show', $m).'#dokumente'],
             'lease' => [$m, (int) $m->owner_id, $m->title(), route('leases.show', $m).'#dokumente'],
+            'contract' => [$m, (int) $m->owner_id, $m->title.($m->property ? ', '.$m->property->name : ''), route('svc.show', $m).'#dokumente'],
         };
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SystemUpdate;
 use App\Support\Audit;
+use App\Support\Updates\GithubSource;
 use App\Support\Updates\UpdatePackage;
 use App\Support\Updates\Updater;
 use Illuminate\Http\Request;
@@ -43,6 +44,12 @@ class UpdateController extends Controller
             return back()->withErrors(['paket' => $e->getMessage()]);
         }
 
+        return redirect()->route('updates.show', ['paket' => $this->storePending($raw)]);
+    }
+
+    /** Legt ein geprüftes Paket zum Einspielen bereit und gibt die Kennung zurück. */
+    private function storePending(string $raw): string
+    {
         $token = bin2hex(random_bytes(16));
         $dir = Updater::storageDir().'/pending';
         if (! is_dir($dir)) {
@@ -56,7 +63,74 @@ class UpdateController extends Controller
         }
         file_put_contents($dir.'/'.$token.'.crmupdate', $raw);
 
-        return redirect()->route('updates.show', ['paket' => $token]);
+        return $token;
+    }
+
+    /** Pakete aus dem GitHub-Repository anzeigen (Paket 30). */
+    public function github()
+    {
+        $files = [];
+        $error = null;
+        if (GithubSource::configured()) {
+            try {
+                $files = GithubSource::list();
+            } catch (RuntimeException $e) {
+                $error = $e->getMessage();
+            }
+        }
+
+        return view('updates.github', [
+            'files' => $files, 'error' => $error, 'configured' => GithubSource::configured(),
+            'repo' => GithubSource::repo(), 'path' => GithubSource::path(), 'branch' => GithubSource::branch(), 'hasToken' => GithubSource::hasToken(),
+        ]);
+    }
+
+    public function githubSave(Request $request)
+    {
+        $data = $request->validate([
+            'repo' => ['required', 'string', 'max:140'], 'path' => ['nullable', 'string', 'max:140'], 'branch' => ['required', 'string', 'max:100'],
+            'token' => ['nullable', 'string', 'max:300'], 'clear_token' => ['nullable', 'boolean'], 'password' => ['required', 'string'],
+        ], ['repo.required' => 'Bitte das Repository im Format „Name/Repository“ eintragen.', 'password.required' => 'Bitte zur Bestätigung dein Passwort eingeben.']);
+        if (! Hash::check($data['password'], (string) $this->me()->password)) {
+            return back()->withErrors(['password' => 'Das Passwort stimmt nicht.'])->withInput($request->except(['password', 'token']));
+        }
+        $repo = trim($data['repo']);
+        $path = trim((string) ($data['path'] ?? ''), '/ ');
+        $branch = trim($data['branch']);
+        $errors = [];
+        if (! GithubSource::validRepo($repo)) {
+            $errors['repo'] = 'Das Repository muss so aussehen: Name/Repository (zum Beispiel meinname/crm-updates).';
+        }
+        if (! GithubSource::validPath($path)) {
+            $errors['path'] = 'Der Ordner darf nur Buchstaben, Ziffern, Punkt, Strich, Unterstrich und Schrägstrich enthalten.';
+        }
+        if (! GithubSource::validBranch($branch)) {
+            $errors['branch'] = 'Der Branch-Name ist ungültig (meist „main“).';
+        }
+        if ($errors !== []) {
+            return back()->withErrors($errors)->withInput($request->except(['password', 'token']));
+        }
+        GithubSource::save($repo, $path, $branch, $data['token'] ?? null, (bool) ($data['clear_token'] ?? false));
+        Audit::log('update.github_saved', 'GitHub-Quelle für Updates gespeichert: '.$repo.($path !== '' ? '/'.$path : '').' ('.$branch.')');
+
+        return redirect()->route('updates.github')->with('status', 'Die Einstellungen sind gespeichert.');
+    }
+
+    /** Ein Paket aus GitHub laden, die Unterschrift prüfen und zur Prüfseite weiterleiten. */
+    public function githubFetch(Request $request)
+    {
+        $name = (string) $request->input('datei');
+        try {
+            $raw = GithubSource::fetch($name);
+            $package = UpdatePackage::fromSigned($raw);
+        } catch (RuntimeException $e) {
+            Audit::log('update.rejected', 'Update-Paket von GitHub abgelehnt ('.$name.'): '.$e->getMessage());
+
+            return redirect()->route('updates.github')->withErrors(['datei' => $e->getMessage()]);
+        }
+        Audit::log('update.github_fetched', 'Update-Paket von GitHub geladen: '.$name.' ('.$package->name.')');
+
+        return redirect()->route('updates.show', ['paket' => $this->storePending($raw)]);
     }
 
     public function show(Request $request)
