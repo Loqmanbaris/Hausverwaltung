@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    // Gemeinsamer Zugang aus dem Tele-Master-Portal (/sso). Gleicher Wert wie SSO_HAUSVERWALTUNG_SECRET im Portal.
+    'portal_sso' => [
+        'secret' => env('PORTAL_SSO_SECRET'),
+    ],
+
 ];

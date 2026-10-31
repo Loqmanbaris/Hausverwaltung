@@ -16,6 +16,9 @@ Route::middleware(SecurityHeaders::class)->group(function () {
     Route::get('/impressum', [\App\Http\Controllers\PublicController::class, 'imprint'])->name('imprint');
     Route::get('/datenschutz', [\App\Http\Controllers\PublicController::class, 'privacy'])->name('privacy');
 
+    // Gemeinsamer Zugang: Sprung aus dem Tele-Master-Portal (ohne PORTAL_SSO_SECRET abgeschaltet)
+    Route::get('/sso', \App\Http\Controllers\PortalSsoController::class)->middleware('throttle:20,1')->name('sso.portal');
+
     // Nicht angemeldet
     Route::middleware('guest')->group(function () {
         Route::get('/login', [LoginController::class, 'show'])->name('login');
