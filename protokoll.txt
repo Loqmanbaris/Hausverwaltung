@@ -1,17 +1,17 @@
-Ergebnis: OK (10.10.2026 23:52)
+Ergebnis: OK (31.10.2026 01:02)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    4f8b6a5 README: Ablauf für Updates
+Ziel:    53589b1 README, Änderungsverlauf, Werkzeug zur Stand-Prüfung
 
-=================== 10.10.2026 23:52:02 ===================
+=================== 31.10.2026 01:02:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - README: Ablauf für Updates
+  - README, Änderungsverlauf, Werkzeug zur Stand-Prüfung
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-10-10-2352.bkp (1,2 MB, 70 Tabellen, 258 Zeilen)
+Sicherung erstellt: sicherung-2026-10-31-0102.bkp (5,9 MB, 87 Tabellen, 2047 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -21,27 +21,47 @@ Datenbank umstellen ...
 
 
 Selbsttests ...
+  OK      afa:selbsttest
   OK      anpassen:selbsttest
   OK      ausgaben:selbsttest
   OK      design:selbsttest
   OK      dokumente:selbsttest
   OK      einrichtung:selbsttest
   OK      email:selbsttest
+  OK      erechnung:selbsttest
+  OK      erhoehung:selbsttest
   OK      farben:selbsttest
   OK      finanzierung:selbsttest
   OK      heizung:selbsttest
   OK      import:selbsttest
+  OK      interessenten:selbsttest
+  OK      jahresbericht:selbsttest
+  OK      kalender:selbsttest
+  OK      kaution:selbsttest
+  OK      korrektur:selbsttest
+  OK      laufvertraege:selbsttest
+  OK      loeschfristen:selbsttest
   OK      mahnwesen:selbsttest
   OK      mieten:selbsttest
   OK      nk:selbsttest
+  OK      onedrive:selbsttest
+  OK      plan:selbsttest
+  OK      portal:selbsttest
+  OK      pwa:selbsttest
+  OK      rechnung:selbsttest
+  OK      scan:selbsttest
   OK      seite:selbsttest
+  OK      serie:selbsttest
   OK      steuer:selbsttest
+  OK      tag:selbsttest
   OK      technik:selbsttest
   OK      uebergabe:selbsttest
   OK      uebersicht:selbsttest
+  OK      umlage:selbsttest
   OK      updates:selbsttest
+  OK      updatesuche:selbsttest
   OK      vertraege:selbsttest
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 4f8b6a5 – README: Ablauf für Updates ist online.
+FERTIG: Neuer Stand 53589b1 – README, Änderungsverlauf, Werkzeug zur Stand-Prüfung ist online.
