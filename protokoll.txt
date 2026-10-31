@@ -1,17 +1,18 @@
-Ergebnis: OK (31.10.2026 01:02)
+Ergebnis: OK (31.10.2026 09:02)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    53589b1 README, Änderungsverlauf, Werkzeug zur Stand-Prüfung
+Ziel:    0e16f94 Gemeinsamen Zugang übernehmen
 
-=================== 31.10.2026 01:02:02 ===================
+=================== 31.10.2026 09:02:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - README, Änderungsverlauf, Werkzeug zur Stand-Prüfung
+  - Gemeinsamen Zugang übernehmen
+  - Gemeinsamer Zugang: Sprung aus dem Portal ohne neue Anmeldung
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-10-31-0102.bkp (5,9 MB, 87 Tabellen, 2047 Zeilen)
+Sicherung erstellt: sicherung-2026-10-31-0902.bkp (5,9 MB, 87 Tabellen, 2048 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -64,4 +65,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 53589b1 – README, Änderungsverlauf, Werkzeug zur Stand-Prüfung ist online.
+FERTIG: Neuer Stand 0e16f94 – Gemeinsamen Zugang übernehmen ist online.
