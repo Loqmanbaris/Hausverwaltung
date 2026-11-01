@@ -2,6 +2,14 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## E-Mail in Outlook-Ansicht
+1. „E-Mails“ ist jetzt aufgebaut wie Outlook (gleich wie bei Freytag): Ordner Posteingang, Gesendet, Archiv | Liste | Lesebereich. Am großen Bildschirm drei Spalten, am iPad zwei, am Handy nacheinander mit „Zurück“.
+2. Liste nach Heute, Gestern, Diese Woche … gruppiert, farbige Namenskürzel, ungelesene fett mit Balken, Zeichen für Anhang und beantwortet, Marke „Mieter“/„Lieferant“.
+3. HTML-E-Mails werden wie im Original angezeigt (abgeschotteter Rahmen ohne Skripte), eingebettete Bilder ja, Bilder aus dem Internet nur auf Wunsch („Bilder anzeigen“). Schon abgeholte E-Mails holen ihre HTML-Fassung beim ersten Öffnen nach.
+4. Antworten, Allen antworten (mit Cc), Weiterleiten und Neue E-Mail direkt im Lesebereich, mit Cc-Feld, Anhängen und Schutz vor versehentlichem Verwerfen.
+5. „Gesendet“ zeigt alle aus dem CRM verschickten E-Mails (auch Mahnungen, Abrechnungen usw.), Fehler rot markiert.
+Neue Spalte received_emails.body_html (Migration). Selbsttest: posteingang:selbsttest
+
 ## Einstellungen als Kacheln im Profilmenü
 1. Das runde Zeichen oben rechts öffnet jetzt ein Profilmenü (wie im Portal und bei Freytag): Einstellungen, Passwort ändern, App installieren, Abmelden.
 2. Neue Seite „Einstellungen“ (/profil/einstellungen) mit Kacheln: Mein Konto (Passwort, Startseite anpassen, Kalender-Abo, „Mein Tag“ per E-Mail), Dieses Gerät (App installieren, Menü-Ansicht), Andere Systeme (Telemaster-Portal, Webseite), für Administratoren Verwaltung (Benutzer, Allgemeine Einstellungen, E-Mail einrichten, Webseite gestalten, Vertragsvorlagen, DATEV) und System (Einrichtung prüfen, Sicherungen, Löschfristen, Updates, Status, Protokoll).

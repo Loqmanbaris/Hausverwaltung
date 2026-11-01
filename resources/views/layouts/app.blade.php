@@ -50,6 +50,7 @@ body{min-height:100vh}
 .sb-foot{margin-top:auto;padding:.8rem .6rem 0;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
 .sb-foot a{color:var(--muted)}
 .mainwrap{min-width:0}
+.container.wide{max-width:none}
 .mainwrap > main{min-width:0;overflow-x:auto}
 .mainwrap > main > table{display:block;overflow-x:auto}
 .topbar{background:rgba(255,255,255,.85);backdrop-filter:saturate(1.4) blur(6px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:15}
@@ -130,7 +131,7 @@ body{min-height:100vh}
         </details>
       </div>
     </header>
-    <main class="container">
+    <main class="container @yield('main_class')">
       @if (session('status'))
         <div class="alert ok" role="status">{{ session('status') }}</div>
       @endif

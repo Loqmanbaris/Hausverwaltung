@@ -4,17 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\ScopesOwners;
 use App\Models\ReceivedEmail;
+use App\Models\SentEmail;
 use App\Support\Audit;
 use App\Support\Mail\Inbox;
 use App\Support\Mail\MailService;
 use App\Support\Mail\MailSettings;
+use App\Support\Mail\MailView;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-/** Posteingang: empfangene E-Mails lesen, beantworten, weiterleiten; freie E-Mails schreiben. */
+/**
+ * E-Mail wie Outlook: Ordner | Liste | Lesebereich (großer Bildschirm), am Handy nacheinander.
+ * Posteingang und Archiv = empfangene E-Mails aus dem Postfach, Gesendet = alles, was das CRM verschickt hat.
+ */
 class InboxController extends Controller
 {
     use ScopesOwners;
+
+    public const FOLDERS = ['eingang' => 'Posteingang', 'gesendet' => 'Gesendet', 'archiv' => 'Archiv'];
+
+    public const FOLDER_ICONS = ['eingang' => 'inbox', 'gesendet' => 'send', 'archiv' => 'archive'];
+
+    private const PER_PAGE = 40;
 
     private const UPLOAD_RULES = ['nullable', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png,gif,heic,doc,docx,xls,xlsx,odt,ods,txt,csv,zip'];
 
@@ -25,27 +36,136 @@ class InboxController extends Controller
 
     public function index(Request $request)
     {
-        $view = in_array($request->query('ansicht'), ['ungelesen', 'archiv'], true) ? $request->query('ansicht') : 'eingang';
-        $q = trim((string) $request->query('q'));
-        $mails = ReceivedEmail::visibleTo($this->me())
-            ->where('archived', $view === 'archiv')
-            ->when($view === 'ungelesen', fn ($w) => $w->whereNull('read_at'))
-            ->when($q !== '', fn ($w) => $w->where(fn ($x) => $x->where('from_address', 'like', '%'.$q.'%')->orWhere('from_name', 'like', '%'.$q.'%')
-                ->orWhere('subject', 'like', '%'.$q.'%')->orWhere('body', 'like', '%'.$q.'%')))
-            ->when($request->filled('mieter'), fn ($w) => $w->where('tenant_id', (int) $request->query('mieter')))
-            ->with(['tenant', 'vendor', 'owner'])
-            ->orderByDesc('received_at')->orderByDesc('id')
-            ->simplePaginate(50)->withQueryString();
+        return $this->page($request, null);
+    }
 
-        return view('mail.inbox', [
-            'mails' => $mails,
-            'view' => $view,
+    /** Alte Adresse /posteingang/{id}: gleiche Seite mit geöffneter E-Mail. */
+    public function show(Request $request, int $id)
+    {
+        return $this->page($request, $this->find($id));
+    }
+
+    private function page(Request $request, ?ReceivedEmail $open)
+    {
+        $folder = (string) $request->query('ordner', $open ? ($open->archived ? 'archiv' : 'eingang') : 'eingang');
+        if (! isset(self::FOLDERS[$folder])) {
+            $folder = 'eingang';
+        }
+        $q = trim((string) $request->query('q'));
+        $page = max(1, (int) $request->query('seite', 1));
+        $me = $this->me();
+
+        // Liste
+        if ($folder === 'gesendet') {
+            $query = SentEmail::visibleTo($me)
+                ->when($q !== '', fn ($w) => $w->where(fn ($x) => $x->where('recipients', 'like', '%'.$q.'%')->orWhere('subject', 'like', '%'.$q.'%')->orWhere('body', 'like', '%'.$q.'%')))
+                ->orderByDesc('id');
+        } else {
+            $query = ReceivedEmail::visibleTo($me)
+                ->where('archived', $folder === 'archiv')
+                ->when($q !== '', fn ($w) => $w->where(fn ($x) => $x->where('from_address', 'like', '%'.$q.'%')->orWhere('from_name', 'like', '%'.$q.'%')
+                    ->orWhere('subject', 'like', '%'.$q.'%')->orWhere('body', 'like', '%'.$q.'%')))
+                ->when($request->filled('mieter'), fn ($w) => $w->where('tenant_id', (int) $request->query('mieter')))
+                ->orderByDesc('received_at')->orderByDesc('id');
+        }
+        $total = (clone $query)->count();
+        $list = $query->forPage($page, self::PER_PAGE)->get();
+
+        // Geöffnete E-Mail (Posteingang/Archiv) oder gesendete E-Mail
+        $sent = null;
+        if ($open === null && $folder !== 'gesendet' && $request->filled('id')) {
+            $open = ReceivedEmail::visibleTo($me)->find((int) $request->query('id'));
+        }
+        if ($folder === 'gesendet' && $request->filled('id')) {
+            $sent = SentEmail::visibleTo($me)->with(['user', 'tenant'])->find((int) $request->query('id'));
+        }
+        if ($open) {
+            if ($open->read_at === null) {
+                $open->forceFill(['read_at' => now(), 'read_by' => $me->id])->save();
+            }
+            Inbox::backfillHtml($open);
+            $open->load(['tenant', 'vendor', 'owner', 'applicant']);
+        }
+
+        // Schreiben (neu, antworten, allen antworten, weiterleiten)
+        $compose = null;
+        if ($request->boolean('schreiben')) {
+            $compose = $this->composeData($request);
+        }
+
+        return view('mail.outlook', [
+            'folder' => $folder,
             'q' => $q,
+            'page' => $page,
+            'pages' => (int) ceil($total / self::PER_PAGE),
+            'list' => $list,
+            'open' => $open,
+            'sent' => $sent,
+            'compose' => $compose,
             'receive' => MailSettings::receiveConfigured(),
             'send' => MailSettings::configured(),
+            'account' => MailSettings::get('mail_from_address') ?: MailSettings::get('mail_username'),
+            'fromName' => MailSettings::fromName(),
             'lastFetch' => Inbox::lastFetch(),
             'lastError' => Inbox::lastError(),
-            'unread' => ReceivedEmail::unreadCountFor($this->me()),
+            'unread' => ReceivedEmail::unreadCountFor($me),
+            'images' => $request->boolean('bilder'),
+        ]);
+    }
+
+    /** @return array{mode: string, to: string, cc: string, subject: string, body: string, ref: ?ReceivedEmail} */
+    private function composeData(Request $request): array
+    {
+        $mode = in_array($request->query('wie'), ['antworten', 'allen', 'weiter'], true) ? (string) $request->query('wie') : 'neu';
+        $ref = $mode !== 'neu' && $request->filled('id') ? $this->find((int) $request->query('id')) : null;
+        if ($ref === null) {
+            $mode = 'neu';
+        }
+        $to = (string) $request->query('an', '');
+        $cc = '';
+        $subject = (string) $request->query('betreff', '');
+        $body = $this->closing();
+        if ($ref) {
+            if ($mode === 'weiter') {
+                $to = '';
+                $subject = $this->prefixed('WG', $ref->subject);
+                $body .= "\n\n".$this->forwardText($ref);
+            } else {
+                $to = $ref->replyAddress();
+                $subject = $this->prefixed('AW', $ref->subject);
+                $body .= "\n\n".$this->quote($ref);
+                if ($mode === 'allen') {
+                    $own = array_map('mb_strtolower', array_filter([MailSettings::get('mail_from_address'), MailSettings::get('mail_username'), mb_strtolower($to)]));
+                    $others = [];
+                    foreach ([$ref->to_addresses, $ref->cc] as $line) {
+                        foreach (\App\Support\Mail\Imap\MimeParser::addresses((string) $line) as [$addr]) {
+                            if (! in_array($addr, $own, true)) {
+                                $others[$addr] = $addr;
+                            }
+                        }
+                    }
+                    $cc = implode(', ', $others);
+                }
+            }
+        }
+
+        return ['mode' => $mode, 'to' => $to, 'cc' => $cc, 'subject' => $subject, 'body' => $body, 'ref' => $ref];
+    }
+
+    /** Inhalt der HTML-Fassung für den abgeschotteten Rahmen (keine Skripte, Bilder aus dem Internet nur auf Wunsch). */
+    public function html(Request $request, int $id)
+    {
+        $mail = $this->find($id);
+        abort_if((string) $mail->body_html === '', 404);
+        $img = $request->boolean('bilder');
+
+        return response(MailView::safeHtml($mail, $img), 200, [
+            'Content-Type' => 'text/html; charset=utf-8',
+            'Content-Security-Policy' => "default-src 'none'; img-src data:".($img ? ' https: http:' : '')."; style-src 'unsafe-inline'".($img ? ' https:' : '')."; font-src data:".($img ? ' https:' : '')."; form-action 'none'; base-uri 'none'; frame-ancestors 'self'",
+            'X-Frame-Options' => 'SAMEORIGIN',
+            'Referrer-Policy' => 'no-referrer',
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store',
         ]);
     }
 
@@ -63,27 +183,12 @@ class InboxController extends Controller
         return back()->with('status', $msg);
     }
 
-    public function show(int $id)
-    {
-        $mail = $this->find($id);
-        if ($mail->read_at === null) {
-            $mail->forceFill(['read_at' => now(), 'read_by' => $this->me()->id])->save();
-        }
-
-        return view('mail.inbox-show', [
-            'mail' => $mail->load(['tenant', 'vendor', 'owner', 'applicant']),
-            'send' => MailSettings::configured(),
-            'replyBody' => $this->closing()."\n\n".$this->quote($mail),
-            'replySubject' => $this->prefixed('AW', $mail->subject),
-        ]);
-    }
-
     public function attachment(int $id, int $n)
     {
         $mail = $this->find($id);
         $a = ($mail->attachments ?? [])[$n] ?? null;
         abort_if($a === null || ! Storage::disk('local')->exists($a['path']), 404);
-        $safe = in_array($a['mime'], ['application/pdf', 'image/jpeg', 'image/png', 'image/gif'], true);
+        $safe = in_array($a['mime'], ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'], true);
         $name = str_replace(['"', '\\'], '', $a['name']);
 
         return response(Storage::disk('local')->get($a['path']), 200, [
@@ -100,26 +205,25 @@ class InboxController extends Controller
         $mail = $this->find($id);
         $mail->forceFill(['archived' => ! $mail->archived])->save();
 
-        return $mail->archived
-            ? redirect()->route('inbox.index')->with('status', 'Ins Archiv verschoben.')
-            : back()->with('status', 'Wieder im Posteingang.');
+        return redirect()->route('inbox.index', ['ordner' => $mail->archived ? 'eingang' : 'archiv'])
+            ->with('status', $mail->archived ? 'Ins Archiv verschoben.' : 'Zurück in den Posteingang.');
     }
 
     public function unread(int $id)
     {
-        $this->find($id)->forceFill(['read_at' => null, 'read_by' => null])->save();
+        $mail = $this->find($id);
+        $mail->forceFill(['read_at' => null, 'read_by' => null])->save();
 
-        return redirect()->route('inbox.index')->with('status', 'Als ungelesen markiert.');
+        return redirect()->route('inbox.index', ['ordner' => $mail->archived ? 'archiv' : 'eingang'])->with('status', 'Als ungelesen markiert.');
     }
 
     public function reply(Request $request, int $id)
     {
         $mail = $this->find($id);
         $data = $this->validateMail($request);
-        $to = $this->recipients($data['to']);
-        $log = MailService::send($to, $data['subject'], $data['body'], $this->uploads($request), [
+        $log = MailService::send($this->recipients($data['to']), $data['subject'], $data['body'], $this->uploads($request), [
             'kind' => 'antwort', 'ref_id' => $mail->id, 'owner_id' => $mail->owner_id, 'tenant_id' => $mail->tenant_id,
-        ], $this->me(), true, $this->threadFor($mail));
+        ], $this->me(), true, $this->threadFor($mail), $this->recipients((string) ($data['cc'] ?? '')));
 
         if ($log->status !== 'gesendet') {
             Audit::log('mail.failed', $log, 'Antwort an '.($log->recipients ?: '–').': '.$log->error);
@@ -129,21 +233,29 @@ class InboxController extends Controller
         $mail->forceFill(['replied_at' => now()])->save();
         Audit::log('mail.sent', $log, 'Antwort an '.$log->recipients.': '.$log->subject);
 
-        return redirect()->route('inbox.show', $mail->id)->with('status', 'Die Antwort wurde gesendet.');
+        return redirect()->route('inbox.index', ['ordner' => $mail->archived ? 'archiv' : 'eingang', 'id' => $mail->id])->with('status', 'Die Antwort wurde gesendet.');
     }
 
-    /** Neue E-Mail schreiben, auch zum Weiterleiten einer empfangenen E-Mail. */
+    /** Alte Adresse „Neue E-Mail“: führt in den Schreibbereich der Outlook-Ansicht. */
     public function write(Request $request)
     {
-        $fwd = $request->filled('weiter') ? $this->find((int) $request->query('weiter')) : null;
+        $params = ['schreiben' => 1];
+        if ($request->filled('weiter')) {
+            $params += ['wie' => 'weiter', 'id' => (int) $request->query('weiter')];
+        }
+        foreach (['an', 'betreff'] as $k) {
+            if ($request->filled($k)) {
+                $params[$k] = (string) $request->query($k);
+            }
+        }
 
-        return view('mail.write', [
-            'send' => MailSettings::configured(),
-            'fwd' => $fwd,
-            'to' => (string) $request->query('an', ''),
-            'subject' => $fwd ? $this->prefixed('WG', $fwd->subject) : (string) $request->query('betreff', ''),
-            'body' => $this->closing()."\n\n".($fwd ? $this->forwardText($fwd) : ''),
-        ]);
+        return redirect()->route('inbox.index', $params);
+    }
+
+    /** Alte Adresse „Gesendete E-Mails“: Ordner Gesendet. */
+    public function sentFolder(Request $request)
+    {
+        return redirect()->route('inbox.index', array_filter(['ordner' => 'gesendet', 'q' => $request->query('q')]));
     }
 
     public function sendNew(Request $request)
@@ -154,7 +266,7 @@ class InboxController extends Controller
         $attachments = $this->uploads($request);
         if ($fwd && ! empty($data['mit_anhaengen'])) {
             foreach ($fwd->attachments ?? [] as $a) {
-                if (Storage::disk('local')->exists($a['path'])) {
+                if (empty($a['inline']) && Storage::disk('local')->exists($a['path'])) {
                     $attachments[] = ['name' => $a['name'], 'data' => (string) Storage::disk('local')->get($a['path']), 'mime' => $a['mime']];
                 }
             }
@@ -162,7 +274,7 @@ class InboxController extends Controller
         $links = $fwd ? ['owner_id' => $fwd->owner_id, 'tenant_id' => $fwd->tenant_id] : Inbox::match($to[0] ?? '');
         $log = MailService::send($to, $data['subject'], $data['body'], $attachments, [
             'kind' => 'frei', 'ref_id' => $fwd?->id, 'owner_id' => $links['owner_id'], 'tenant_id' => $links['tenant_id'],
-        ], $this->me());
+        ], $this->me(), true, [], $this->recipients((string) ($data['cc'] ?? '')));
 
         if ($log->status !== 'gesendet') {
             Audit::log('mail.failed', $log, 'E-Mail an '.($log->recipients ?: '–').': '.$log->error);
@@ -171,13 +283,15 @@ class InboxController extends Controller
         }
         Audit::log('mail.sent', $log, 'E-Mail an '.$log->recipients.': '.$log->subject);
 
-        return redirect()->to($fwd ? route('inbox.show', $fwd->id) : route('mail.index'))->with('status', 'Die E-Mail wurde gesendet.');
+        return redirect()->to($fwd ? route('inbox.index', ['ordner' => $fwd->archived ? 'archiv' : 'eingang', 'id' => $fwd->id]) : route('inbox.index', ['ordner' => 'gesendet', 'id' => $log->id]))
+            ->with('status', 'Die E-Mail wurde gesendet.');
     }
 
     private function validateMail(Request $request, array $extra = []): array
     {
         return $request->validate(array_merge([
             'to' => ['required', 'string', 'max:1000'],
+            'cc' => ['nullable', 'string', 'max:1000'],
             'subject' => ['required', 'string', 'max:200'],
             'body' => ['required', 'string', 'max:50000'],
             'dateien' => ['nullable', 'array', 'max:5'],
@@ -196,14 +310,13 @@ class InboxController extends Controller
     private function recipients(string $raw): array
     {
         $out = [];
-        foreach (preg_split('/[,;\s]+/', $raw) ?: [] as $a) {
-            $a = trim($a, " <>\t");
-            if ($a !== '') {
-                $out[] = $a;
+        foreach (\App\Support\Mail\Imap\MimeParser::addresses(str_replace([';', "\n"], ',', $raw)) as [$addr]) {
+            foreach (preg_split('/\s+/', $addr, -1, PREG_SPLIT_NO_EMPTY) ?: [] as $a) {
+                $out[mb_strtolower($a)] = $a;
             }
         }
 
-        return array_slice(array_values(array_unique($out)), 0, 20);
+        return array_slice(array_values($out), 0, 20);
     }
 
     /** @return array<int, array{name: string, data: string, mime: string}> */
@@ -240,7 +353,7 @@ class InboxController extends Controller
 
     private function forwardText(ReceivedEmail $m): string
     {
-        return "---------- Weitergeleitete Nachricht ----------\n"
+        return MailView::SEPARATOR."\n"
             .'Von: '.($m->from_name ? $m->from_name.' <'.$m->from_address.'>' : $m->from_address)."\n"
             .'Datum: '.($m->received_at ?? $m->created_at)->timezone('Europe/Berlin')->format('d.m.Y H:i')."\n"
             .'Betreff: '.$m->subject."\n"

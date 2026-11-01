@@ -25,7 +25,7 @@ class EmailSelbsttest extends Command
         $checks = [
             'Tabelle' => Schema::hasTable('sent_emails'),
             'Seiten' => Route::has('mail.compose') && Route::has('mail.send') && Route::has('mail.settings') && Route::has('mail.index') && Route::has('documents.pdf'),
-            'Ansichten' => view()->exists('mail.compose') && view()->exists('mail.settings') && view()->exists('mail.index'),
+            'Ansichten' => view()->exists('mail.compose') && view()->exists('mail.settings') && view()->exists('mail.outlook'),
             'E-Mail-Bibliothek' => class_exists(\Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport::class),
             'PDF erzeugen' => str_starts_with($pdf, '%PDF-1.4') && str_contains($pdf, '%%EOF'),
             'Bilder im PDF (GD)' => function_exists('imagecreatefromstring') && function_exists('imagejpeg'),

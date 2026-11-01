@@ -37,7 +37,9 @@ class PosteingangSelbsttest extends Command
             'Tabelle' => Schema::hasTable('received_emails') && Schema::hasColumn('received_emails', 'uidvalidity'),
             'Seiten' => Route::has('inbox.index') && Route::has('inbox.show') && Route::has('inbox.fetch') && Route::has('inbox.reply')
                 && Route::has('inbox.attachment') && Route::has('mail.write') && Route::has('mail.write.send') && Route::has('mail.test.receive'),
-            'Ansichten' => view()->exists('mail.inbox') && view()->exists('mail.inbox-show') && view()->exists('mail.write') && view()->exists('mail.partials.tabs'),
+            'Ansichten' => view()->exists('mail.outlook'),
+            'HTML-Ansicht abgeschottet' => Route::has('inbox.html') && ! str_contains(\App\Support\Mail\MailView::safeHtml(new \App\Models\ReceivedEmail(['body_html' => '<p onclick="x()">Hallo</p><script>alert(1)</script><a href="javascript:x()">y</a>'])), 'script')
+                && ! str_contains(\App\Support\Mail\MailView::safeHtml(new \App\Models\ReceivedEmail(['body_html' => '<p onclick="x()">Hallo</p>'])), 'onclick'),
             'IMAP-Zugang' => class_exists(ImapClient::class) && function_exists('stream_socket_client') && extension_loaded('openssl'),
             'Absender und Betreff lesen' => ($m['from_address'] ?? '') === 'juergen@example.de' && ($m['from_name'] ?? '') === 'Jürgen Müller' && ($m['subject'] ?? '') === 'Heizung fällt aus',
             'Text lesen (Umlaute)' => ($m['text'] ?? '') === 'Grüße aus der Wohnung',

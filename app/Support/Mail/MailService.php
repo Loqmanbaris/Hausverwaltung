@@ -33,16 +33,17 @@ class MailService
      * @param  array{kind: string, ref_id?: ?int, owner_id?: ?int, tenant_id?: ?int, lease_id?: ?int}  $ctx
      */
     /** @param  array{in_reply_to?: string, references?: string}  $thread  Für Antworten: Bezug auf die ursprüngliche E-Mail */
-    public static function send(array $to, string $subject, string $body, array $attachments, array $ctx, ?User $user, bool $copy = true, array $thread = []): SentEmail
+    public static function send(array $to, string $subject, string $body, array $attachments, array $ctx, ?User $user, bool $copy = true, array $thread = [], array $cc = []): SentEmail
     {
         $to = array_values(array_unique(array_filter(array_map('trim', $to), fn ($a) => $a !== '')));
+        $cc = array_values(array_diff(array_unique(array_filter(array_map('trim', $cc), fn ($a) => $a !== '')), $to));
         $log = new SentEmail([
             'owner_id' => $ctx['owner_id'] ?? null,
             'tenant_id' => $ctx['tenant_id'] ?? null,
             'lease_id' => $ctx['lease_id'] ?? null,
             'kind' => $ctx['kind'],
             'ref_id' => $ctx['ref_id'] ?? null,
-            'recipients' => mb_substr(implode(', ', $to), 0, 500),
+            'recipients' => mb_substr(implode(', ', $to).($cc !== [] ? ' · Cc: '.implode(', ', $cc) : ''), 0, 500),
             'subject' => mb_substr($subject, 0, 200),
             'body' => $body,
             'attachments' => array_map(fn ($a) => $a['name'], $attachments),
@@ -53,7 +54,7 @@ class MailService
             if ($to === []) {
                 throw new RuntimeException('Keine Empfänger-Adresse.');
             }
-            foreach ($to as $a) {
+            foreach (array_merge($to, $cc) as $a) {
                 if (! self::validAddress($a)) {
                     throw new RuntimeException('Ungültige E-Mail-Adresse: '.$a);
                 }
@@ -70,6 +71,9 @@ class MailService
             foreach ($to as $a) {
                 $email->addTo($a);
             }
+            foreach ($cc as $a) {
+                $email->addCc($a);
+            }
             // Kennzeichen: Die Blindkopie dieser E-Mail erscheint nicht im Posteingang des CRM
             $email->getHeaders()->addTextHeader('X-CRM-Gesendet', '1');
             foreach (['in_reply_to' => 'In-Reply-To', 'references' => 'References'] as $k => $h) {
@@ -83,7 +87,7 @@ class MailService
                 }
             }
             $bcc = MailSettings::copyAddress();
-            if ($copy && $bcc !== '' && self::validAddress($bcc) && ! in_array(mb_strtolower($bcc), array_map('mb_strtolower', $to), true)) {
+            if ($copy && $bcc !== '' && self::validAddress($bcc) && ! in_array(mb_strtolower($bcc), array_map('mb_strtolower', array_merge($to, $cc)), true)) {
                 $email->addBcc($bcc);
             }
             foreach ($attachments as $a) {
@@ -91,7 +95,7 @@ class MailService
             }
 
             if (self::$fake !== null) {
-                self::$fake[] = ['to' => $to, 'bcc' => $copy ? $bcc : '', 'subject' => $subject, 'body' => $body, 'attachments' => $attachments, 'ctx' => $ctx, 'thread' => $thread, 'raw' => $email->toString()];
+                self::$fake[] = ['to' => $to, 'bcc' => $copy ? $bcc : '', 'subject' => $subject, 'body' => $body, 'attachments' => $attachments, 'ctx' => $ctx, 'thread' => $thread, 'cc' => $cc, 'raw' => $email->toString()];
             } else {
                 $port = (int) MailSettings::get('mail_port') ?: 587;
                 $transport = new EsmtpTransport(MailSettings::get('mail_host'), $port, $port === 465);

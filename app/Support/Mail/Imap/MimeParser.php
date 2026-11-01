@@ -12,7 +12,7 @@ class MimeParser
      * @return array{
      *   subject: string, from_address: string, from_name: string, to: string, cc: string, reply_to: string,
      *   date: ?\DateTimeImmutable, message_id: string, in_reply_to: string, references: string,
-     *   text: string, attachments: array<int, array{name: string, mime: string, data: string}>, headers: array<string, string>
+     *   text: string, html: string, attachments: array<int, array{name: string, mime: string, data: string, cid: string, inline: bool}>, headers: array<string, string>
      * }
      */
     public static function parse(string $raw): array
@@ -51,6 +51,7 @@ class MimeParser
             'in_reply_to' => trim($headers['in-reply-to'] ?? ''),
             'references' => trim(preg_replace('/\s+/', ' ', $headers['references'] ?? '')),
             'text' => $text,
+            'html' => $html,
             'attachments' => $attachments,
             'headers' => $headers,
         ];
@@ -106,9 +107,11 @@ class MimeParser
                     [$ph, $pb] = self::split($p);
                     self::walk($ph, $pb, $t, $h, $attachments, $depth + 1);
                 }
+                // Beide Fassungen behalten: Text für Vorschau und Suche, HTML für die Anzeige
                 if (trim($t) !== '') {
                     $text .= ($text !== '' ? "\n\n" : '').$t;
-                } elseif ($h !== '') {
+                }
+                if ($h !== '') {
                     $html .= $h;
                 }
 
@@ -139,10 +142,14 @@ class MimeParser
             if ($data === '') {
                 return;
             }
+            $cid = trim((string) ($headers['content-id'] ?? ''), " <>\t");
             $attachments[] = [
                 'name' => self::safeName($name !== '' ? $name : 'anhang-'.(count($attachments) + 1).self::extension($type)),
                 'mime' => $type,
                 'data' => $data,
+                'cid' => $cid,
+                // Eingebettete Bilder (im Text der E-Mail) nicht in der Anhangsliste zeigen
+                'inline' => $cid !== '' && str_starts_with($type, 'image/') && $disp !== 'attachment',
             ];
 
             return;

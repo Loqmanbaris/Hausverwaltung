@@ -211,19 +211,4 @@ class MailController extends Controller
 
         return $redirect;
     }
-
-    public function index(Request $request)
-    {
-        $kind = (string) $request->query('art');
-        $q = trim((string) $request->query('q'));
-        $mails = SentEmail::visibleTo($this->me())
-            ->when(isset(SentEmail::KINDS[$kind]), fn ($w) => $w->where('kind', $kind))
-            ->when($request->query('status') === 'fehler', fn ($w) => $w->where('status', 'fehler'))
-            ->when($q !== '', fn ($w) => $w->where(fn ($x) => $x->where('recipients', 'like', '%'.$q.'%')->orWhere('subject', 'like', '%'.$q.'%')))
-            ->with(['user', 'tenant'])
-            ->orderByDesc('id')
-            ->simplePaginate(50)->withQueryString();
-
-        return view('mail.index', ['mails' => $mails, 'kind' => $kind, 'q' => $q, 'configured' => MailSettings::configured()]);
-    }
 }

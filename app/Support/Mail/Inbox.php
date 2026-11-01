@@ -177,6 +177,7 @@ class Inbox
             'cc' => $m['cc'] !== '' ? mb_substr($m['cc'], 0, 1000) : null,
             'subject' => mb_substr($m['subject'] !== '' ? $m['subject'] : '(ohne Betreff)', 0, 300),
             'body' => $body,
+            'body_html' => $tooBig ? '' : (strlen($m['html']) > 3000000 ? '' : $m['html']),
             'size' => min($size, 4294967295),
             'received_at' => $m['date'] ? \Illuminate\Support\Carbon::instance($m['date'])->setTimezone(config('app.timezone')) : now(),
             'attachments' => [],
@@ -187,13 +188,52 @@ class Inbox
             foreach ($m['attachments'] as $i => $a) {
                 $path = 'posteingang/'.$mail->id.'/'.($i + 1).'-'.preg_replace('/[^A-Za-z0-9._-]+/', '_', $a['name']);
                 Storage::disk('local')->put($path, $a['data']);
-                $files[] = ['name' => $a['name'], 'mime' => $a['mime'], 'size' => strlen($a['data']), 'path' => $path];
+                $files[] = ['name' => $a['name'], 'mime' => $a['mime'], 'size' => strlen($a['data']), 'path' => $path, 'cid' => $a['cid'], 'inline' => $a['inline']];
             }
             $mail->attachments = $files;
             $mail->save();
         }
 
         return true;
+    }
+
+    /**
+     * HTML-Fassung für E-Mails nachholen, die vor der Outlook-Ansicht abgeholt wurden (nur Text gespeichert).
+     * Holt die Nachricht einmal erneut aus dem Postfach; danach steht body_html fest (auch '' = keine HTML-Fassung).
+     */
+    public static function backfillHtml(ReceivedEmail $mail): void
+    {
+        if ($mail->body_html !== null) {
+            return;
+        }
+        $html = '';
+        try {
+            if (MailSettings::receiveConfigured() && $mail->size <= self::MAX_BYTES) {
+                $client = new ImapClient(MailSettings::get('imap_host'), (int) MailSettings::get('imap_port') ?: 993, 12);
+                $client->connect();
+                $client->login(MailSettings::get('mail_username'), (string) MailSettings::password());
+                $box = $client->select($mail->folder ?: self::FOLDER);
+                $raw = $box['uidvalidity'] === (int) $mail->uidvalidity ? $client->fetchRaw((int) $mail->uid) : null;
+                $client->logout();
+                if ($raw !== null) {
+                    $m = MimeParser::parse($raw);
+                    $html = strlen($m['html']) > 3000000 ? '' : $m['html'];
+                    // Kennungen eingebetteter Bilder an die gespeicherten Anhänge hängen (gleiche Reihenfolge)
+                    $files = $mail->attachments ?? [];
+                    if (count($files) === count($m['attachments'])) {
+                        foreach ($m['attachments'] as $i => $a) {
+                            $files[$i]['cid'] = $a['cid'];
+                            $files[$i]['inline'] = $a['inline'];
+                        }
+                        $mail->attachments = $files;
+                    }
+                }
+            }
+        } catch (Throwable) {
+            return; // nächstes Mal erneut versuchen
+        }
+        $mail->body_html = $html;
+        $mail->save();
     }
 
     /**

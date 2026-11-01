@@ -11,7 +11,7 @@ class ReceivedEmail extends Model
 {
     protected $fillable = [
         'folder', 'uidvalidity', 'uid', 'message_id', 'in_reply_to', 'references', 'from_address', 'from_name', 'reply_to',
-        'to_addresses', 'cc', 'subject', 'body', 'attachments', 'size', 'received_at', 'owner_id', 'tenant_id', 'vendor_id',
+        'to_addresses', 'cc', 'subject', 'body', 'body_html', 'attachments', 'size', 'received_at', 'owner_id', 'tenant_id', 'vendor_id',
         'applicant_id', 'read_at', 'read_by', 'replied_at', 'archived',
     ];
 

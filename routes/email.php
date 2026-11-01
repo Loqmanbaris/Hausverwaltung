@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 // E-Mail-Versand (Paket 21)
 Route::middleware([SecurityHeaders::class, 'auth', EnsureTwoFactor::class])->group(function () {
-    Route::get('/email', [MailController::class, 'index'])->name('mail.index');
+    Route::get('/email', [InboxController::class, 'sentFolder'])->name('mail.index'); // Ordner „Gesendet“ der Outlook-Ansicht
     Route::get('/email/neu', [MailController::class, 'compose'])->name('mail.compose');
     Route::get('/email/vorschau.pdf', [MailController::class, 'preview'])->name('mail.preview');
     Route::get('/dokument.pdf', [MailController::class, 'document'])->name('documents.pdf');
@@ -20,6 +20,7 @@ Route::middleware([SecurityHeaders::class, 'auth', EnsureTwoFactor::class])->gro
     Route::get('/posteingang', [InboxController::class, 'index'])->name('inbox.index');
     Route::post('/posteingang/abrufen', [InboxController::class, 'fetch'])->middleware('throttle:6,1')->name('inbox.fetch');
     Route::get('/posteingang/{id}', [InboxController::class, 'show'])->whereNumber('id')->name('inbox.show');
+    Route::get('/posteingang/{id}/inhalt', [InboxController::class, 'html'])->whereNumber('id')->name('inbox.html');
     Route::get('/posteingang/{id}/anhang/{n}', [InboxController::class, 'attachment'])->whereNumber(['id', 'n'])->name('inbox.attachment');
     Route::post('/posteingang/{id}/archiv', [InboxController::class, 'archive'])->whereNumber('id')->name('inbox.archive');
     Route::post('/posteingang/{id}/ungelesen', [InboxController::class, 'unread'])->whereNumber('id')->name('inbox.unread');
