@@ -77,6 +77,7 @@ require __DIR__ . '/datev.php';
 require __DIR__ . '/mieten.php';
 require __DIR__ . '/updates.php';
 require __DIR__ . '/webseite.php';
+require __DIR__ . '/profil.php';
 require __DIR__ . '/vertraege.php';
 require __DIR__ . '/uebergabe.php';
 require __DIR__ . '/zinsen.php';

@@ -62,6 +62,20 @@ body{min-height:100vh}
 .usermenu .av{width:1.9rem;height:1.9rem;border-radius:50%;background:var(--ink);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700}
 .usermenu a,.usermenu .link{color:var(--muted)}
 .usermenu form{margin:0}
+.pm{position:relative}
+.pm>summary{list-style:none;cursor:pointer;border-radius:2rem;padding:.15rem .55rem .15rem .15rem}
+.pm>summary::-webkit-details-marker{display:none}
+.pm>summary:hover,.pm[open]>summary{background:#f3f4f6}
+.pm .av{position:relative}
+.pm-dot{position:absolute;top:-2px;right:-2px;width:.6rem;height:.6rem;border-radius:50%;background:var(--brand);border:2px solid #fff}
+.pm-caret{color:var(--muted);font-size:.75rem}
+.pm-box{position:absolute;right:0;top:calc(100% + .4rem);min-width:15rem;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.14);padding:.35rem;z-index:30;white-space:normal}
+.pm-head{display:flex;flex-direction:column;padding:.5rem .65rem .6rem;border-bottom:1px solid var(--line);margin-bottom:.3rem}
+.pm-head small{color:var(--muted);font-weight:500}
+.pm-box a,.pm-box button{display:flex;align-items:center;gap:.6rem;width:100%;padding:.55rem .65rem;border-radius:8px;color:var(--ink);text-decoration:none;background:none;border:0;font:inherit;text-align:left;cursor:pointer}
+.pm-box a:hover,.pm-box button:hover{background:#f3f4f6}
+.pm-box a .sb-badge{margin-left:auto}
+.pm-sep{height:1px;background:var(--line);margin:.3rem 0}
 .link{background:none;border:0;color:inherit;font:inherit;text-decoration:underline;cursor:pointer;padding:0}
 .menu-btn{display:none;border:1px solid var(--line-strong);background:#fff;border-radius:8px;padding:.4rem .65rem;font:inherit;font-weight:600;cursor:pointer}
 .sb-close{display:none}
@@ -73,7 +87,7 @@ body{min-height:100vh}
   body.nav-open .sb-shade{display:block}
   .sb-shade{display:none;position:fixed;inset:0;background:rgba(17,24,39,.35);z-index:35}
   .menu-btn{display:inline-block}
-  .usermenu .who span.n,.usermenu a.pw{display:none}
+  .usermenu .who span.n,.usermenu .pm-caret{display:none}
   .sb-close{display:block;margin:0 0 .6rem auto}
 }
 @@media (max-width:560px){.topsearch{max-width:none}}
@@ -88,7 +102,7 @@ body{min-height:100vh}
     <button class="menu-btn sb-close" type="button" onclick="document.body.classList.remove('nav-open')">Schließen ✕</button>
     <a class="sb-brand" href="{{ route('dashboard') }}">@if ($logo)<img src="{{ $logo->url() }}" alt="{{ config('app.name') }}">@else<span class="dot"></span>{{ config('app.name') }}@endif</a>
     <nav>@include('partials.nav-main')</nav>
-    <div class="sb-foot"><a href="#" data-install>App installieren</a><br><a href="{{ route('home') }}" target="_blank" rel="noopener">Webseite ansehen ↗</a></div>
+    <div class="sb-foot"><a href="{{ route('profile.settings') }}">Einstellungen</a><br><a href="{{ route('home') }}" target="_blank" rel="noopener">Webseite ansehen ↗</a></div>
   </aside>
   <div class="sb-shade" onclick="document.body.classList.remove('nav-open')"></div>
   <div class="mainwrap">
@@ -98,14 +112,22 @@ body{min-height:100vh}
         <form class="topsearch" method="GET" action="{{ route('search') }}" role="search">
           <input type="text" name="q" value="{{ request()->routeIs('search') ? request('q') : '' }}" maxlength="100" placeholder="Suchen: Mieter, Objekt, Beleg …" aria-label="Suche">
         </form>
-        <div class="usermenu">
-          <span class="who"><span class="av">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}</span><span class="n">{{ auth()->user()->name }}</span></span>
-          <a class="pw" href="{{ route('password.change') }}">Passwort</a>
-          <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button class="link" type="submit">Abmelden</button>
-          </form>
-        </div>
+        {{-- Profilmenü (rundes Zeichen): wie im Portal und bei Freytag nur das Nötigste, alles andere unter „Einstellungen“ als Kacheln --}}
+        @php($pmBadge = (function () { try { return \App\Http\Controllers\ProfileSettingsController::badge(request()); } catch (\Throwable) { return 0; } })())
+        <details class="usermenu pm" id="pm">
+          <summary class="who" aria-label="Profilmenü"><span class="av">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}@if ($pmBadge > 0)<i class="pm-dot"></i>@endif</span><span class="n">{{ auth()->user()->name }}</span><span class="pm-caret" aria-hidden="true">▾</span></summary>
+          <div class="pm-box">
+            <div class="pm-head"><b>{{ auth()->user()->name }}</b><small>{{ auth()->user()->roleLabel() }}</small></div>
+            <a href="{{ route('profile.settings') }}"><span>⚙️</span><span>Einstellungen</span>@if ($pmBadge > 0)<span class="sb-badge">{{ $pmBadge }}</span>@endif</a>
+            <a href="{{ route('password.change') }}"><span>🔑</span><span>Passwort ändern</span></a>
+            <a href="#" data-install><span>📱</span><span>App installieren</span></a>
+            <div class="pm-sep"></div>
+            <form method="POST" action="{{ route('logout') }}">
+              @csrf
+              <button type="submit"><span>↩</span><span>Abmelden</span></button>
+            </form>
+          </div>
+        </details>
       </div>
     </header>
     <main class="container">
@@ -116,6 +138,10 @@ body{min-height:100vh}
     </main>
   </div>
 </div>
+<script>
+document.addEventListener('click',function(e){var m=document.getElementById('pm');if(m&&m.open&&!m.contains(e.target)){m.open=false;}});
+document.addEventListener('keydown',function(e){var m=document.getElementById('pm');if(e.key==='Escape'&&m){m.open=false;}});
+</script>
 <script>
 (function(){
   var K='sbOpen',st={};

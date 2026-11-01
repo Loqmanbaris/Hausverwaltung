@@ -2,6 +2,12 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Einstellungen als Kacheln im Profilmenü
+1. Das runde Zeichen oben rechts öffnet jetzt ein Profilmenü (wie im Portal und bei Freytag): Einstellungen, Passwort ändern, App installieren, Abmelden.
+2. Neue Seite „Einstellungen“ (/profil/einstellungen) mit Kacheln: Mein Konto (Passwort, Startseite anpassen, Kalender-Abo, „Mein Tag“ per E-Mail), Dieses Gerät (App installieren, Menü-Ansicht), Andere Systeme (Telemaster-Portal, Webseite), für Administratoren Verwaltung (Benutzer, Allgemeine Einstellungen, E-Mail einrichten, Webseite gestalten, Vertragsvorlagen, DATEV) und System (Einrichtung prüfen, Sicherungen, Löschfristen, Updates, Status, Protokoll).
+3. Die Gruppe „Verwaltung“ im Seitenmenü entfällt dafür. Offene Einrichtungsschritte zeigt ein Punkt am Profilzeichen.
+Keine Migration. Selbsttest: design:selbsttest
+
 ## E-Mail-Empfang (Posteingang)
 1. Neuer Posteingang unter „E-Mails“: Das CRM holt alle 5 Minuten neue E-Mails aus dem Postfach (IMAP, IONOS: imap.ionos.de, Port 993), mit gleichem Benutzernamen und Passwort wie für den Versand. Zusätzlich „Jetzt abrufen“. Beim ersten Abruf die E-Mails der letzten 30 Tage.
 2. Im Postfach bleibt alles unverändert (nur lesen, E-Mails bleiben dort ungelesen). Blindkopien, die das CRM selbst verschickt, erscheinen nicht im Posteingang.

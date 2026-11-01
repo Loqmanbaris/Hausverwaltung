@@ -8,7 +8,6 @@
       'inquiries' => $cnt(fn () => \App\Models\Inquiry::newCountFor($u)),
       'orders' => $cnt(fn () => \App\Models\WorkOrder::visibleTo($u)->where('status', 'gemeldet')->count()),
       'maint' => $cnt(fn () => \App\Models\MaintenanceTask::visibleTo($u)->where('active', true)->where('next_due', '<', date('Y-m-d'))->count()),
-      'setup' => $u?->isAdmin() ? $cnt(fn () => \App\Support\Setup\Einrichtung::summary()['open']) : 0,
       'heat' => $cnt(fn () => \App\Support\Nk\Verbrauchsinfo::open($u)->count() + \App\Models\Co2Claim::visibleTo($u)->where('status', 'offen')->count()),
       'day' => $cnt(fn () => \App\Support\Tag\MeinTag::openCount($u)),
       'mail' => $cnt(fn () => \App\Models\ReceivedEmail::unreadCountFor($u)),
@@ -66,19 +65,7 @@
           ['Anfragen', 'inquiries.index', ['inquiries.*'], $badge['inquiries'], false],
           ['Webseite gestalten', 'site.edit', ['site.*'], 0, true],
       ],
-      'Verwaltung' => [
-          ['Kalender-Abo', 'calendar.index', ['calendar.*'], 0, false],
-          ['Benutzer', 'users.index', ['users.*'], 0, true],
-          ['Einstellungen', 'settings.edit', ['settings.*', 'cost-types.*'], 0, true],
-          ['E-Mail einrichten', 'mail.settings', ['mail.settings'], 0, true],
-          ['Vertragsvorlagen', 'contract-templates.index', ['contract-templates.*'], 0, true],
-          ['Löschfristen', 'retention.index', ['retention.*'], 0, true],
-          ['Sicherungen', 'backups.index', ['backups.*'], 0, true],
-          ['Updates', 'updates.index', ['updates.*'], 0, true],
-          ['Einrichtung prüfen', 'setup.index', ['setup.*'], $badge['setup'] ?? 0, true],
-          ['Status', 'status', ['status'], 0, true],
-          ['Protokoll', 'audit.index', ['audit.*'], 0, true],
-      ],
+      // Gruppe „Verwaltung“ (Benutzer, Einstellungen, E-Mail einrichten, Sicherungen …) steht seit 01.11.2026 als Kacheln unter Profilmenü → Einstellungen
   ];
   // Ansicht: „Alltag“ zeigt nur, was täglich gebraucht wird; „Verwaltung“ zeigt alles. Die Wahl wird pro Gerät gemerkt.
   $mode = request()->cookie('nav_mode') === 'verwaltung' ? 'verwaltung' : 'alltag';

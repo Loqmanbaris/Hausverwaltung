@@ -32,6 +32,7 @@ class DesignSelbsttest extends Command
         $checks = [
             'Ansichten vorhanden' => view()->exists('layouts.app') && view()->exists('layouts.guest') && view()->exists('partials.nav-main'),
             'Ansichten lesbar' => $compiles('layouts.app') && $compiles('layouts.guest') && $compiles('partials.nav-main'),
+            'Einstellungen als Kacheln' => \Illuminate\Support\Facades\Route::has('profile.settings') && view()->exists('profile.settings') && $compiles('profile.settings'),
             'Neues Seitenmenü' => str_contains((string) @file_get_contents(resource_path('views/layouts/app.blade.php')), 'partials.nav-main'),
             'Menüpunkte ('.count($m[1]).')' => count($m[1]) > 20 && $missing === [],
         ];
