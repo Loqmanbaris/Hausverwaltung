@@ -2,6 +2,12 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Aussehen wie im Telemaster-Portal
+1. Kopfleiste und Seitenmenü in Anthrazit wie im Portal, Schrift Roboto (liegt auf dem eigenen Server, keine Verbindung zu Google).
+2. Jeder Menüpunkt hat ein Symbol. Der aktive Punkt ist in der Farbe der Hausverwaltung hervorgehoben (Akzentfarbe aus „Webseite gestalten“, sonst Orange), nicht im Gold des Portals.
+3. Karten mit runden Ecken und feinem Rahmen, Suchfeld und Profilmenü passend zur dunklen Kopfleiste.
+Keine Migration. Schrift: Roboto (Apache-2.0), public/fonts.
+
 ## E-Mail in Outlook-Ansicht
 1. „E-Mails“ ist jetzt aufgebaut wie Outlook (gleich wie bei Freytag): Ordner Posteingang, Gesendet, Archiv | Liste | Lesebereich. Am großen Bildschirm drei Spalten, am iPad zwei, am Handy nacheinander mit „Zurück“.
 2. Liste nach Heute, Gestern, Diese Woche … gruppiert, farbige Namenskürzel, ungelesene fett mit Balken, Zeichen für Anhang und beantwortet, Marke „Mieter“/„Lieferant“.
