@@ -27,6 +27,8 @@ class SentEmail extends Model
         'auftrag' => 'Handwerkerauftrag',
         'verbrauch' => 'Verbrauchsinformation',
         'hinweis' => 'Hinweis an Verwaltung',
+        'antwort' => 'Antwort auf E-Mail',
+        'frei' => 'E-Mail',
         'test' => 'Test',
     ];
 

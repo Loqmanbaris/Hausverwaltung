@@ -113,7 +113,7 @@
         </tbody>
       </table>
     </div>
-    <p style="margin:.6rem 0 0"><a href="{{ route('mail.index', ['q' => $tenant->email ?: $tenant->display_name]) }}">Alle E-Mails</a></p>
+    <p style="margin:.6rem 0 0"><a href="{{ route('mail.index', ['q' => $tenant->email ?: $tenant->display_name]) }}">Gesendete E-Mails</a>@if (\Illuminate\Support\Facades\Route::has('inbox.index')) · <a href="{{ route('inbox.index', ['mieter' => $tenant->id]) }}">Empfangene E-Mails</a>@endif</p>
   </div>
 @endif
 

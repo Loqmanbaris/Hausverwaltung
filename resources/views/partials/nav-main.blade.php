@@ -11,6 +11,7 @@
       'setup' => $u?->isAdmin() ? $cnt(fn () => \App\Support\Setup\Einrichtung::summary()['open']) : 0,
       'heat' => $cnt(fn () => \App\Support\Nk\Verbrauchsinfo::open($u)->count() + \App\Models\Co2Claim::visibleTo($u)->where('status', 'offen')->count()),
       'day' => $cnt(fn () => \App\Support\Tag\MeinTag::openCount($u)),
+      'mail' => $cnt(fn () => \App\Models\ReceivedEmail::unreadCountFor($u)),
       'docs' => $cnt(fn () => \App\Models\Document::visibleTo($u)->where('archived', false)->whereNotNull('expires_on')->where('expires_on', '<', date('Y-m-d'))->count()),
   ];
   // [Bezeichnung, Route, aktiv bei, Badge, nur Admin]
@@ -18,7 +19,7 @@
       '' => [
           ['Mein Tag', 'tag.index', ['tag.*'], $badge['day'] ?? 0, false],
           ['Suche', 'search', ['search'], 0, false],
-          ['E-Mails', 'mail.index', ['mail.index', 'mail.compose'], 0, false],
+          ['E-Mails', 'inbox.index', ['inbox.*', 'mail.index', 'mail.compose', 'mail.write'], $badge['mail'] ?? 0, false],
       ],
       'Stammdaten' => [
           ['Eigentümer', 'owners.index', ['owners.*'], 0, false],
@@ -81,7 +82,7 @@
   ];
   // Ansicht: „Alltag“ zeigt nur, was täglich gebraucht wird; „Verwaltung“ zeigt alles. Die Wahl wird pro Gerät gemerkt.
   $mode = request()->cookie('nav_mode') === 'verwaltung' ? 'verwaltung' : 'alltag';
-  $daily = ['tag.index', 'search', 'mail.index', 'tenants.index', 'leases.index', 'applicants.index', 'rent.month', 'rent.open', 'dunning.index',
+  $daily = ['tag.index', 'search', 'inbox.index', 'mail.index', 'tenants.index', 'leases.index', 'applicants.index', 'rent.month', 'rent.open', 'dunning.index',
       'bank.transactions', 'invoices.index', 'receipts.index', 'bank.expenses', 'workorders.index', 'inquiries.index', 'documents.index'];
   $menu = [];
   foreach ($groups as $title => $items) {

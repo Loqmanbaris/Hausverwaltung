@@ -105,6 +105,12 @@ class Einrichtung
         $out[] = self::item('E-Mail', 'E-Mail-Versand eingerichtet', $mailOk, 'Zugangsdaten des Postfachs fehlen (IONOS: smtp.ionos.de, Port 587).', 'Postfach ist eingetragen.', 'mail.settings', 'E-Mail einrichten');
         $testOk = self::count('sent_emails', fn ($q) => $q->where('status', 'gesendet'));
         $out[] = self::item('E-Mail', 'Test-E-Mail erfolgreich', $testOk > 0, 'Noch keine E-Mail erfolgreich gesendet – unter „E-Mail einrichten“ eine Test-E-Mail schicken.', 'E-Mails werden versendet.', 'mail.settings', 'E-Mail einrichten');
+        $recvOk = false;
+        try {
+            $recvOk = \App\Support\Mail\MailSettings::receiveConfigured() && ! \App\Support\Settings::get('imap_last_error') && \App\Support\Settings::get('imap_last_fetch');
+        } catch (Throwable) {
+        }
+        $out[] = self::item('E-Mail', 'E-Mail-Empfang (Posteingang)', (bool) $recvOk, \App\Support\Settings::get('imap_last_error') ? 'Abruf fehlgeschlagen: '.\App\Support\Settings::get('imap_last_error') : 'Noch kein erfolgreicher Abruf – unter „E-Mail einrichten“ den Empfang einschalten und „Verbindung prüfen“.', 'Neue E-Mails kommen alle 5 Minuten in den Posteingang.', 'mail.settings', 'E-Mail einrichten', false);
         $withMail = self::count('tenants', fn ($q) => $q->whereNotNull('email')->where('email', '!=', ''));
         $out[] = self::item('E-Mail', 'E-Mail-Adressen der Mieter', $tenants > 0 && $withMail >= $tenants * 0.5, $tenants === 0 ? 'Erst Mieter anlegen.' : 'Nur '.$withMail.' von '.$tenants.' Mietern haben eine E-Mail-Adresse.', $withMail.' von '.$tenants.' Mietern haben eine E-Mail-Adresse.', 'tenants.index', 'Mieter', false);
 

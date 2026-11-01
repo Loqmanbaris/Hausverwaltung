@@ -32,7 +32,8 @@ class MailService
      * @param  array<int, array{name: string, data: string, mime: string}>  $attachments
      * @param  array{kind: string, ref_id?: ?int, owner_id?: ?int, tenant_id?: ?int, lease_id?: ?int}  $ctx
      */
-    public static function send(array $to, string $subject, string $body, array $attachments, array $ctx, ?User $user, bool $copy = true): SentEmail
+    /** @param  array{in_reply_to?: string, references?: string}  $thread  Für Antworten: Bezug auf die ursprüngliche E-Mail */
+    public static function send(array $to, string $subject, string $body, array $attachments, array $ctx, ?User $user, bool $copy = true, array $thread = []): SentEmail
     {
         $to = array_values(array_unique(array_filter(array_map('trim', $to), fn ($a) => $a !== '')));
         $log = new SentEmail([
@@ -69,6 +70,18 @@ class MailService
             foreach ($to as $a) {
                 $email->addTo($a);
             }
+            // Kennzeichen: Die Blindkopie dieser E-Mail erscheint nicht im Posteingang des CRM
+            $email->getHeaders()->addTextHeader('X-CRM-Gesendet', '1');
+            foreach (['in_reply_to' => 'In-Reply-To', 'references' => 'References'] as $k => $h) {
+                $v = trim((string) ($thread[$k] ?? ''));
+                if ($v !== '' && preg_match('/^[\x21-\x7E ]{3,4000}$/', $v)) {
+                    try {
+                        $email->getHeaders()->addIdHeader($h, array_values(array_filter(array_map(fn ($x) => trim($x, '<> '), preg_split('/\s+/', $v) ?: []))));
+                    } catch (Throwable) {
+                        // ungültige Kennung: Antwort trotzdem senden, nur ohne Bezug
+                    }
+                }
+            }
             $bcc = MailSettings::copyAddress();
             if ($copy && $bcc !== '' && self::validAddress($bcc) && ! in_array(mb_strtolower($bcc), array_map('mb_strtolower', $to), true)) {
                 $email->addBcc($bcc);
@@ -78,7 +91,7 @@ class MailService
             }
 
             if (self::$fake !== null) {
-                self::$fake[] = ['to' => $to, 'bcc' => $copy ? $bcc : '', 'subject' => $subject, 'body' => $body, 'attachments' => $attachments, 'ctx' => $ctx];
+                self::$fake[] = ['to' => $to, 'bcc' => $copy ? $bcc : '', 'subject' => $subject, 'body' => $body, 'attachments' => $attachments, 'ctx' => $ctx, 'thread' => $thread, 'raw' => $email->toString()];
             } else {
                 $port = (int) MailSettings::get('mail_port') ?: 587;
                 $transport = new EsmtpTransport(MailSettings::get('mail_host'), $port, $port === 465);

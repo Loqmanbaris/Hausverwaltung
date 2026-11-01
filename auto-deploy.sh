@@ -20,6 +20,14 @@ mkdir -p storage/logs
 exec 9>storage/logs/auto-deploy.lock
 flock -n 9 || exit 0
 
+# Posteingang: neue E-Mails aus dem Postfach abholen (höchstens 2 Minuten, Fehler stehen im CRM)
+for c in php8.4-cli /usr/bin/php8.4-cli; do
+  if command -v "$c" >/dev/null 2>&1; then
+    timeout 120 "$c" artisan mail:abrufen --cron </dev/null >/dev/null 2>&1
+    break
+  fi
+done
+
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 git fetch -q origin "$BRANCH" 2>/dev/null || exit 0
 NEW=$(git rev-parse "origin/$BRANCH")

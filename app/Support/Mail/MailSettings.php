@@ -6,7 +6,7 @@ use App\Support\Settings;
 use Illuminate\Support\Facades\Crypt;
 use Throwable;
 
-/** Zugangsdaten für den E-Mail-Versand (Paket 21). Das Passwort wird verschlüsselt gespeichert. */
+/** Zugangsdaten für den E-Mail-Versand (Paket 21) und den Empfang (Posteingang). Das Passwort wird verschlüsselt gespeichert. */
 class MailSettings
 {
     public const DEFAULTS = [
@@ -18,6 +18,9 @@ class MailSettings
         'mail_bcc' => '',
         'mail_signature' => '',
         'mail_notify' => '1',
+        'imap_enabled' => '1',
+        'imap_host' => 'imap.ionos.de',
+        'imap_port' => '993',
     ];
 
     public static function get(string $key): string
@@ -46,6 +49,12 @@ class MailSettings
     public static function configured(): bool
     {
         return self::get('mail_host') !== '' && self::get('mail_username') !== '' && self::get('mail_from_address') !== '' && self::hasPassword();
+    }
+
+    /** E-Mail-Empfang (Posteingang): gleiche Zugangsdaten, eigener Server. */
+    public static function receiveConfigured(): bool
+    {
+        return self::get('imap_enabled') === '1' && self::get('imap_host') !== '' && self::get('mail_username') !== '' && self::hasPassword();
     }
 
     /** @param array<string, ?string> $values */

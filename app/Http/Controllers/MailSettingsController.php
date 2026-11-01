@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Support\Audit;
+use App\Support\Mail\Inbox;
 use App\Support\Mail\MailService;
 use App\Support\Mail\MailSettings;
 use Illuminate\Http\Request;
@@ -17,7 +18,10 @@ class MailSettingsController extends Controller
             $values[$k] = MailSettings::get($k);
         }
 
-        return view('mail.settings', ['v' => $values, 'hasPassword' => MailSettings::hasPassword(), 'configured' => MailSettings::configured()]);
+        return view('mail.settings', [
+            'v' => $values, 'hasPassword' => MailSettings::hasPassword(), 'configured' => MailSettings::configured(),
+            'receive' => MailSettings::receiveConfigured(), 'lastFetch' => Inbox::lastFetch(), 'lastError' => Inbox::lastError(),
+        ]);
     }
 
     public function update(Request $request)
@@ -32,7 +36,12 @@ class MailSettingsController extends Controller
             'mail_bcc' => ['nullable', 'email', 'max:190'],
             'mail_signature' => ['nullable', 'string', 'max:1000'],
             'mail_notify' => ['nullable', 'in:1'],
+            'imap_enabled' => ['nullable', 'in:1'],
+            'imap_host' => ['nullable', 'string', 'max:120', 'regex:/^[A-Za-z0-9.-]+$/'],
+            'imap_port' => ['nullable', 'integer', 'in:993,143'],
         ], [
+            'imap_host.regex' => 'Bitte nur den Servernamen eingeben, z. B. imap.ionos.de.',
+            'imap_port.in' => 'Bitte Port 993 (empfohlen) oder 143 wählen.',
             'mail_host.regex' => 'Bitte nur den Servernamen eingeben, z. B. smtp.ionos.de.',
             'mail_port.in' => 'Bitte Port 587 (empfohlen) oder 465 wählen.',
             'mail_from_address.email' => 'Bitte eine gültige Absender-Adresse eingeben.',
@@ -42,6 +51,9 @@ class MailSettingsController extends Controller
             return back()->withInput()->withErrors(['mail_password' => 'Bitte das Passwort des Postfachs eingeben.']);
         }
         $data['mail_notify'] = isset($data['mail_notify']) ? '1' : '0';
+        $data['imap_enabled'] = isset($data['imap_enabled']) ? '1' : '0';
+        $data['imap_host'] = trim((string) ($data['imap_host'] ?? '')) ?: 'imap.ionos.de';
+        $data['imap_port'] = (string) ($data['imap_port'] ?? '993');
         MailSettings::save($data, $data['mail_password'] ?? null);
         Audit::log('mail.settings', null, 'E-Mail-Einstellungen geändert'.(! empty($data['mail_password']) ? ' (neues Passwort)' : ''));
 
@@ -56,5 +68,13 @@ class MailSettingsController extends Controller
         return $log->status === 'gesendet'
             ? back()->with('status', 'Die Test-E-Mail wurde an '.$data['test_to'].' gesendet. Bitte im Postfach nachsehen (auch im Spam-Ordner).')
             : back()->withInput()->withErrors(['test_to' => 'Nicht gesendet: '.$log->error]);
+    }
+
+    /** Anmeldung am Posteingangsserver prüfen (nichts wird abgeholt). */
+    public function testReceive()
+    {
+        $r = Inbox::test();
+
+        return $r['ok'] ? back()->with('status', $r['text']) : back()->withErrors(['imap' => 'Empfang: '.$r['text']]);
     }
 }

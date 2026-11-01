@@ -13,8 +13,9 @@
 </style>
 <div class="sd-head">
   <h1>Gesendete E-Mails</h1>
-  @if (auth()->user()->isAdmin())<div class="sd-actions"><a class="sd-btn sec" href="{{ route('mail.settings') }}">E-Mail einrichten</a></div>@endif
+  <div class="sd-actions"><a class="sd-btn" href="{{ route('mail.write') }}">Neue E-Mail</a></div>
 </div>
+@include('mail.partials.tabs')
 @unless ($configured)
   <div class="sd-err">Der E-Mail-Versand ist noch nicht eingerichtet.@if (auth()->user()->isAdmin()) <a href="{{ route('mail.settings') }}">Jetzt einrichten</a>@endif</div>
 @endunless

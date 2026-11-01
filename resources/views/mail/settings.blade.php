@@ -5,13 +5,13 @@
 @include('partials.sd-flash')
 <div class="sd-head">
   <h1>E-Mail einrichten</h1>
-  <div class="sd-actions"><a class="sd-btn sec" href="{{ route('mail.index') }}">Gesendete E-Mails</a></div>
+  <div class="sd-actions"><a class="sd-btn sec" href="{{ route('inbox.index') }}">Posteingang</a><a class="sd-btn sec" href="{{ route('mail.index') }}">Gesendete E-Mails</a></div>
 </div>
 
 @if ($configured)
-  <div class="sd-card" style="border-left:4px solid #067647"><strong style="color:#067647">Der E-Mail-Versand ist eingerichtet.</strong> Mit einer Test-E-Mail prüfst du, ob die Verbindung klappt.</div>
+  <div class="sd-card" style="border-left:4px solid #067647"><strong style="color:#067647">Der E-Mail-Versand ist eingerichtet.</strong> Mit einer Test-E-Mail prüfst du, ob die Verbindung klappt, mit „Verbindung prüfen“ den Empfang.</div>
 @else
-  <div class="sd-card" style="border-left:4px solid #b54708"><strong>Noch nicht eingerichtet.</strong> Trage hier die Zugangsdaten deines Postfachs ein. Bei IONOS findest du sie unter „E-Mail“ → Postfach → „Zugangsdaten“.</div>
+  <div class="sd-card" style="border-left:4px solid #b54708"><strong>Noch nicht eingerichtet.</strong> Trage hier die Zugangsdaten deines Postfachs ein. Bei IONOS: Benutzername ist die vollständige E-Mail-Adresse, Passwort ist das Passwort des Postfachs. Server und Ports sind schon richtig vorbelegt.</div>
 @endif
 
 <form method="POST" action="{{ route('mail.settings.update') }}">
@@ -41,6 +41,29 @@
   </div>
 
   <div class="sd-card">
+    <h2>Posteingang (E-Mails empfangen)</h2>
+    <p class="sd-muted" style="margin-top:0">Das CRM holt neue E-Mails alle 5 Minuten aus dem Postfach (gleicher Benutzername und gleiches Passwort wie oben). Im Postfach bleibt alles unverändert, die E-Mails bleiben dort auch ungelesen. Beim ersten Abruf werden die E-Mails der letzten {{ \App\Support\Mail\Inbox::FIRST_DAYS }} Tage übernommen.</p>
+    <div class="sd-grid">
+      @include('partials.sd-field', ['name' => 'imap_host', 'label' => 'Posteingangsserver (IMAP)', 'value' => $v['imap_host'], 'hint' => 'IONOS: imap.ionos.de'])
+      <div class="sd-field">
+        <label for="f-imap_port">Port</label>
+        <select id="f-imap_port" name="imap_port">
+          @foreach (['993' => '993 (SSL/TLS, empfohlen)', '143' => '143 (STARTTLS)'] as $p => $pl)
+            <option value="{{ $p }}" @selected(old('imap_port', $v['imap_port']) == $p)>{{ $pl }}</option>
+          @endforeach
+        </select>
+      </div>
+      <label style="display:flex;gap:.5rem;align-items:center;font-weight:500;grid-column:1/-1">
+        <input type="checkbox" name="imap_enabled" value="1" @checked(old('imap_enabled', $v['imap_enabled']) === '1')>
+        E-Mails aus dem Postfach im CRM empfangen
+      </label>
+    </div>
+    @if ($lastFetch)
+      <p class="sd-muted" style="margin:.6rem 0 0;font-size:.88rem">Letzter Abruf: {{ \Illuminate\Support\Carbon::parse($lastFetch)->timezone('Europe/Berlin')->format('d.m.Y H:i') }} Uhr @if ($lastError)<br><span style="color:#b42318">Fehler: {{ $lastError }}</span>@endif</p>
+    @endif
+  </div>
+
+  <div class="sd-card">
     <h2>Kopie und Unterschrift</h2>
     <div class="sd-grid">
       @include('partials.sd-field', ['name' => 'mail_bcc', 'label' => 'Blindkopie jeder E-Mail an', 'type' => 'email', 'value' => $v['mail_bcc'], 'hint' => 'Leer lassen = an die Absender-Adresse. So liegt jede gesendete E-Mail auch in deinem Postfach.'])
@@ -56,6 +79,17 @@
   </div>
   <div class="sd-actions"><button class="sd-btn" type="submit">Speichern</button></div>
 </form>
+
+@if ($hasPassword)
+  <form method="POST" action="{{ route('mail.test.receive') }}" class="sd-card" style="margin-top:1rem">
+    @csrf
+    <h2>Empfang prüfen</h2>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center">
+      <span class="sd-muted" style="flex:1 1 16rem">Meldet sich am Posteingangsserver an und zeigt, wie viele E-Mails im Postfach liegen. Es wird nichts abgeholt.</span>
+      <button class="sd-btn sec" type="submit">Verbindung prüfen</button>
+    </div>
+  </form>
+@endif
 
 @if ($configured)
   <form method="POST" action="{{ route('mail.test') }}" class="sd-card" style="margin-top:1rem">

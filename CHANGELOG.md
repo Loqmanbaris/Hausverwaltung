@@ -2,6 +2,15 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## E-Mail-Empfang (Posteingang)
+1. Neuer Posteingang unter „E-Mails“: Das CRM holt alle 5 Minuten neue E-Mails aus dem Postfach (IMAP, IONOS: imap.ionos.de, Port 993), mit gleichem Benutzernamen und Passwort wie für den Versand. Zusätzlich „Jetzt abrufen“. Beim ersten Abruf die E-Mails der letzten 30 Tage.
+2. Im Postfach bleibt alles unverändert (nur lesen, E-Mails bleiben dort ungelesen). Blindkopien, die das CRM selbst verschickt, erscheinen nicht im Posteingang.
+3. Lesen mit Anhängen, Antworten (mit Bezug, landet beim Empfänger im selben Verlauf), Weiterleiten mit Anhängen, Archivieren, als ungelesen markieren, Suche. HTML-E-Mails werden nur als Text gezeigt.
+4. Absender werden Mietern (auch Ansprechpartnern), Eigentümern, Lieferanten und Interessenten zugeordnet. Mitarbeiter sehen nur E-Mails ihrer Eigentümer. Beim Mieter: Link „Empfangene E-Mails“.
+5. Neu: „Neue E-Mail“ – freie E-Mail an beliebige Adressen mit Anhängen.
+6. E-Mail einrichten: neuer Abschnitt „Posteingang“ und „Verbindung prüfen“. Ungelesene E-Mails als Zahl im Menü.
+Neue Tabelle received_emails (Migration), Anhänge unter storage/app/private/posteingang. Abruf: `mail:abrufen` (läuft in auto-deploy.sh). Selbsttest: posteingang:selbsttest
+
 ## Paket 47: Beleg-Scanner (Zuschneiden, PDF, Texterkennung)
 Beim Erfassen eines Belegs (Belege → Neuer Beleg, Foto aufnehmen oder Datei auswählen):
 1. Zuschneiden: Nach dem Foto öffnet sich ein Dialog. Die Kanten des Belegs werden automatisch gesucht, du ziehst die vier Ecken mit dem Finger nach. Das Bild wird entzerrt und begradigt. Dazu Drehen, „Ganzes Bild“ und die Darstellung Kontrast, Original oder Schwarzweiß.
