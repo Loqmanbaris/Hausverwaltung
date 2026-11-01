@@ -1,23 +1,25 @@
-Ergebnis: OK (31.10.2026 11:57)
+Ergebnis: OK (01.11.2026 23:27)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    3d4873b CLAUDE.md: Regeln und Aufbau für jede Claude-Sitzung
+Ziel:    73a47be E-Mail-Empfang: Posteingang über IMAP (IONOS), Antworten, Weiterleiten, freie E-Mail
 
-=================== 31.10.2026 11:57:02 ===================
+=================== 01.11.2026 23:27:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - CLAUDE.md: Regeln und Aufbau für jede Claude-Sitzung
+  - E-Mail-Empfang: Posteingang über IMAP (IONOS), Antworten, Weiterleiten, freie E-Mail
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-10-31-1157.bkp (5,9 MB, 87 Tabellen, 2049 Zeilen)
+Sicherung erstellt: sicherung-2026-11-01-2327.bkp (5,9 MB, 87 Tabellen, 2077 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
 Datenbank umstellen ...
 
-   INFO  Nothing to migrate.  
+   INFO  Running migrations.  
+
+  2026_11_17_000001_create_received_emails ...................... 70.08ms DONE
 
 
 Selbsttests ...
@@ -47,6 +49,7 @@ Selbsttests ...
   OK      onedrive:selbsttest
   OK      plan:selbsttest
   OK      portal:selbsttest
+  OK      posteingang:selbsttest
   OK      pwa:selbsttest
   OK      rechnung:selbsttest
   OK      scan:selbsttest
@@ -64,4 +67,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 3d4873b – CLAUDE.md: Regeln und Aufbau für jede Claude-Sitzung ist online.
+FERTIG: Neuer Stand 73a47be – E-Mail-Empfang: Posteingang über IMAP (IONOS), Antworten, Weiterleiten, freie E-Mail ist online.
