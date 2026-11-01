@@ -1,25 +1,23 @@
-Ergebnis: OK (01.11.2026 23:47)
+Ergebnis: OK (01.11.2026 23:57)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    0ad7701 E-Mail in Outlook-Ansicht: Ordner | Liste | Lesebereich wie bei Freytag
+Ziel:    d3f6b40 Aussehen wie im Portal: Kopfleiste und Menü in Anthrazit, Symbole, Farbe der Hausverwaltung
 
-=================== 01.11.2026 23:47:03 ===================
+=================== 01.11.2026 23:57:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - E-Mail in Outlook-Ansicht: Ordner | Liste | Lesebereich wie bei Freytag
+  - Aussehen wie im Portal: Kopfleiste und Menü in Anthrazit, Symbole, Farbe der Hausverwaltung
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-01-2347.bkp (7,3 MB, 88 Tabellen, 2095 Zeilen)
+Sicherung erstellt: sicherung-2026-11-01-2357.bkp (7,3 MB, 88 Tabellen, 2097 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
 Datenbank umstellen ...
 
-   INFO  Running migrations.  
-
-  2026_11_18_000001_add_body_html_to_received_emails ............. 8.17ms DONE
+   INFO  Nothing to migrate.  
 
 
 Selbsttests ...
@@ -67,4 +65,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 0ad7701 – E-Mail in Outlook-Ansicht: Ordner | Liste | Lesebereich wie bei Freytag ist online.
+FERTIG: Neuer Stand d3f6b40 – Aussehen wie im Portal: Kopfleiste und Menü in Anthrazit, Symbole, Farbe der Hausverwaltung ist online.
