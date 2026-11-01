@@ -1,23 +1,25 @@
-Ergebnis: OK (01.11.2026 23:37)
+Ergebnis: OK (01.11.2026 23:47)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    c4bd894 Einstellungen als Kacheln im Profilmenü statt Gruppe „Verwaltung“ im Seitenmenü
+Ziel:    0ad7701 E-Mail in Outlook-Ansicht: Ordner | Liste | Lesebereich wie bei Freytag
 
-=================== 01.11.2026 23:37:03 ===================
+=================== 01.11.2026 23:47:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Einstellungen als Kacheln im Profilmenü statt Gruppe „Verwaltung“ im Seitenmenü
+  - E-Mail in Outlook-Ansicht: Ordner | Liste | Lesebereich wie bei Freytag
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-01-2337.bkp (7,3 MB, 88 Tabellen, 2092 Zeilen)
+Sicherung erstellt: sicherung-2026-11-01-2347.bkp (7,3 MB, 88 Tabellen, 2095 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
 Datenbank umstellen ...
 
-   INFO  Nothing to migrate.  
+   INFO  Running migrations.  
+
+  2026_11_18_000001_add_body_html_to_received_emails ............. 8.17ms DONE
 
 
 Selbsttests ...
@@ -65,4 +67,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand c4bd894 – Einstellungen als Kacheln im Profilmenü statt Gruppe „Verwaltung“ im Seitenmenü ist online.
+FERTIG: Neuer Stand 0ad7701 – E-Mail in Outlook-Ansicht: Ordner | Liste | Lesebereich wie bei Freytag ist online.
