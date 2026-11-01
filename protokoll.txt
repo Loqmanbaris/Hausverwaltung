@@ -1,25 +1,23 @@
-Ergebnis: OK (01.11.2026 23:27)
+Ergebnis: OK (01.11.2026 23:37)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    73a47be E-Mail-Empfang: Posteingang über IMAP (IONOS), Antworten, Weiterleiten, freie E-Mail
+Ziel:    c4bd894 Einstellungen als Kacheln im Profilmenü statt Gruppe „Verwaltung“ im Seitenmenü
 
-=================== 01.11.2026 23:27:02 ===================
+=================== 01.11.2026 23:37:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - E-Mail-Empfang: Posteingang über IMAP (IONOS), Antworten, Weiterleiten, freie E-Mail
+  - Einstellungen als Kacheln im Profilmenü statt Gruppe „Verwaltung“ im Seitenmenü
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-01-2327.bkp (5,9 MB, 87 Tabellen, 2077 Zeilen)
+Sicherung erstellt: sicherung-2026-11-01-2337.bkp (7,3 MB, 88 Tabellen, 2092 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
 Datenbank umstellen ...
 
-   INFO  Running migrations.  
-
-  2026_11_17_000001_create_received_emails ...................... 70.08ms DONE
+   INFO  Nothing to migrate.  
 
 
 Selbsttests ...
@@ -67,4 +65,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 73a47be – E-Mail-Empfang: Posteingang über IMAP (IONOS), Antworten, Weiterleiten, freie E-Mail ist online.
+FERTIG: Neuer Stand c4bd894 – Einstellungen als Kacheln im Profilmenü statt Gruppe „Verwaltung“ im Seitenmenü ist online.
