@@ -1,17 +1,17 @@
-Ergebnis: OK (02.11.2026 09:22)
+Ergebnis: OK (02.11.2026 09:27)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    e997811 Kontoumsätze bearbeiten: Angaben korrigieren, Zuordnungen einzeln ändern
+Ziel:    d1385d8 Stammdaten und Webseite als Kacheln unter Einstellungen, Excel-Import gelöscht
 
-=================== 02.11.2026 09:22:03 ===================
+=================== 02.11.2026 09:27:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Kontoumsätze bearbeiten: Angaben korrigieren, Zuordnungen einzeln ändern
+  - Stammdaten und Webseite als Kacheln unter Einstellungen, Excel-Import gelöscht
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-0922.bkp (7,4 MB, 88 Tabellen, 2184 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-0927.bkp (7,4 MB, 88 Tabellen, 2195 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -33,7 +33,6 @@ Selbsttests ...
   OK      farben:selbsttest
   OK      finanzierung:selbsttest
   OK      heizung:selbsttest
-  OK      import:selbsttest
   OK      interessenten:selbsttest
   OK      jahresbericht:selbsttest
   OK      kalender:selbsttest
@@ -65,4 +64,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand e997811 – Kontoumsätze bearbeiten: Angaben korrigieren, Zuordnungen einzeln ändern ist online.
+FERTIG: Neuer Stand d1385d8 – Stammdaten und Webseite als Kacheln unter Einstellungen, Excel-Import gelöscht ist online.
