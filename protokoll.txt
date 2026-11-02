@@ -1,18 +1,18 @@
-Ergebnis: OK (02.11.2026 22:32)
+Ergebnis: OK (02.11.2026 22:42)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    3328015 Merge pull request #14 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+Ziel:    102f898 Merge pull request #15 from Loqmanbaris/ccr-ef75b8df-4kmjqe
 
-=================== 02.11.2026 22:32:03 ===================
+=================== 02.11.2026 22:42:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Merge pull request #14 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - Heller und dunkler Modus im CRM (Profilmenü → Darstellung: Hell, Dunkel, Auto)
+  - Merge pull request #15 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - Schreiben an Mieter: Kündigungsbestätigung und Terminankündigung
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-2232.bkp (7,5 MB, 89 Tabellen, 1091 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-2242.bkp (7,5 MB, 89 Tabellen, 1092 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -66,4 +66,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 3328015 – Merge pull request #14 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
+FERTIG: Neuer Stand 102f898 – Merge pull request #15 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
