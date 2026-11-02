@@ -30,6 +30,7 @@
           ['Interessenten', 'applicants.index', ['applicants.*'], 0, false],
           ['Mieterhöhungen', 'rent_increase.index', ['rent_increase.*'], 0, false],
           ['Kautionen', 'deposit.index', ['deposit.*'], 0, false],
+          ['Bescheinigungen', 'bescheinigung.choose', ['bescheinigung.*'], 0, false],
       ],
       'Nebenkosten' => [
           ['Nebenkosten', 'nk.index', ['nk.index', 'nk.show', 'nk.print'], 0, false],
@@ -92,6 +93,7 @@
       'maintenance.index' => '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/>',
       'listings.index' => '<path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/><path d="M7 7h.01"/>',
       'inquiries.index' => '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+      'bescheinigung.choose' => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><circle cx="12" cy="14" r="3"/><path d="M10.5 16.5L9 21l3-1.5 3 1.5-1.5-4.5"/>',
       'site.edit' => '<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
   ];
   $ico = fn (string $route) => '<span class="sb-ic" aria-hidden="true"><svg viewBox="0 0 24 24">'.($icPaths[$route] ?? '<circle cx="12" cy="12" r="3"/>').'</svg></span>';

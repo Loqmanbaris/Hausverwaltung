@@ -29,8 +29,8 @@ class BescheinigungSelbsttest extends Command
             'Personen je Zeile' => Bescheinigung::personen("  Anna  Muster \n\nBen Muster\r\nAnna Muster\n") === ['Anna Muster', 'Ben Muster'],
             'Datum deutsch' => Bescheinigung::de('2026-11-02') === '02.11.2026' && Bescheinigung::de('x') === '',
             'Geschoss' => Bescheinigung::geschoss('2') === '2. OG' && Bescheinigung::geschoss('0') === 'EG' && Bescheinigung::geschoss('-1') === '1. UG' && Bescheinigung::geschoss('DG') === 'DG',
-            'Seiten' => Route::has('bescheinigung.index') && Route::has('bescheinigung.wohnungsgeber') && Route::has('bescheinigung.mietschuldenfrei'),
-            'Ansichten' => $compiles('bescheinigung.index') && $compiles('bescheinigung.wohnungsgeber') && $compiles('bescheinigung.mietschuldenfrei') && $compiles('bescheinigung._druck'),
+            'Seiten' => Route::has('bescheinigung.choose') && Route::has('bescheinigung.index') && Route::has('bescheinigung.wohnungsgeber') && Route::has('bescheinigung.mietschuldenfrei'),
+            'Ansichten' => $compiles('bescheinigung.choose') && $compiles('bescheinigung.index') && $compiles('bescheinigung.wohnungsgeber') && $compiles('bescheinigung.mietschuldenfrei') && $compiles('bescheinigung._druck'),
         ];
         $this->line('Selbsttest Paket 44 (Bescheinigungen)');
         $failed = 0;

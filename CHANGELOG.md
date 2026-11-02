@@ -2,6 +2,10 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Bescheinigungen im Menü
+Neuer Menüpunkt Vermietung → Bescheinigungen: Mietvertrag suchen und auswählen (laufende, künftige und im letzten Jahr beendete), dann Wohnungsgeberbestätigung oder Mietschuldenfreiheitsbescheinigung erstellen. Bevorstehende Ein- und Auszüge sind markiert.
+Keine Migration. Selbsttest: bescheinigung:selbsttest
+
 ## Neues Logo „Haus mit B“
 1. Seitenleiste im CRM, Anmeldeseite und Webseite zeigen das Logo (Dach in der Akzentfarbe, Haus mit „B“), solange unter Webseite gestalten kein eigenes Logo hochgeladen ist. Ein hochgeladenes Logo hat weiterhin Vorrang.
 2. App-Symbol (Startbildschirm) und Browser-Symbol zeigen jetzt das Logo auf orangem Grund.
