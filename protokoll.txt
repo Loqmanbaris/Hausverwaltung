@@ -1,17 +1,17 @@
-Ergebnis: OK (02.11.2026 09:27)
+Ergebnis: OK (02.11.2026 11:57)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    d1385d8 Stammdaten und Webseite als Kacheln unter Einstellungen, Excel-Import gelöscht
+Ziel:    1a8edde Ein Menü: Umschalter „Alltag“/„Verwaltung“ entfernt, Seitenmenü zeigt immer alles
 
-=================== 02.11.2026 09:27:03 ===================
+=================== 02.11.2026 11:57:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Stammdaten und Webseite als Kacheln unter Einstellungen, Excel-Import gelöscht
+  - Ein Menü: Umschalter „Alltag“/„Verwaltung“ entfernt, Seitenmenü zeigt immer alles
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-0927.bkp (7,4 MB, 88 Tabellen, 2195 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-1157.bkp (7,4 MB, 88 Tabellen, 2477 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -64,4 +64,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand d1385d8 – Stammdaten und Webseite als Kacheln unter Einstellungen, Excel-Import gelöscht ist online.
+FERTIG: Neuer Stand 1a8edde – Ein Menü: Umschalter „Alltag“/„Verwaltung“ entfernt, Seitenmenü zeigt immer alles ist online.
