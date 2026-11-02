@@ -39,6 +39,7 @@ th{font-size:8.5pt;color:#444;border-bottom:.8pt solid #333}
 @endphp
 <div class="toolbar"><button type="button" onclick="window.print()">Drucken / als PDF speichern</button><span>{{ $title }}</span></div>
 <div class="page">
+  @include('partials.briefkopf', ['bk' => \App\Support\Briefkopf::daten($s)])
   <div class="sender">{{ $s['name'] }} · {{ $s['street'] }} · {{ $s['zip'] }} {{ $s['city'] }}</div>
   <div class="addr">{{ $b['name'] ?? '' }}<br>{{ $b['street'] ?? '' }}<br>{{ $b['zip'] ?? '' }} {{ $b['city'] ?? '' }}</div>
   <div class="meta">{{ $s['city'] }}, {{ $de($inv->issued_on) }}</div>
@@ -69,6 +70,7 @@ th{font-size:8.5pt;color:#444;border-bottom:.8pt solid #333}
   @if (! empty($s['note']))<p class="small">{{ $s['note'] }}</p>@endif
   <p class="small">{{ $s['name'] }} · @if (! empty($s['vat_id']))USt-IdNr. {{ $s['vat_id'] }}@endif @if (! empty($s['tax_number']))Steuernummer {{ $s['tax_number'] }}@endif @if (! empty($b['vat_id'])) · USt-IdNr. des Empfängers {{ $b['vat_id'] }}@endif · {{ $s['phone'] }} · {{ $s['email'] }}</p>
   @if ($inv->xml)<p class="small">Die maßgebliche Rechnung ist die mitgesandte XML-Datei (XRechnung). Diese Seite ist die lesbare Ansicht.</p>@endif
+  @include('partials.brieffuss', ['bk' => \App\Support\Briefkopf::daten($s)])
 </div>
 </body>
 </html>

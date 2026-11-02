@@ -55,6 +55,7 @@ tr{page-break-inside:avoid}
   @php($tenant = $lease?->tenant)
   @php($contact = $tenant?->type === 'firma' ? $tenant->contacts->firstWhere('receives_invoices', true) : null)
   <div class="page">
+    @include('partials.briefkopf', ['bk' => \App\Support\Briefkopf::daten($owner)])
     <div class="sender">{{ $owner?->name }} · {{ $owner?->street }} · {{ trim(($owner?->zip ?? '').' '.($owner?->city ?? '')) }}</div>
     <div class="addr">
       {{ $tenant?->type === 'firma' ? $tenant->company_name : trim(($tenant?->first_name ?? '').' '.($tenant?->last_name ?? '')) }}<br>
@@ -145,6 +146,7 @@ tr{page-break-inside:avoid}
     </p>
     @if ($settlement->note)<p style="white-space:pre-line">{{ $settlement->note }}</p>@endif
     <p>Mit freundlichen Grüßen<br><br>{{ $owner?->name }}</p>
+    @include('partials.brieffuss', ['bk' => \App\Support\Briefkopf::daten($owner)])
   </div>
 @endforeach
 </body>

@@ -1,4 +1,5 @@
 {{-- Briefkopf für Schreiben an den Mieter. Erwartet $owner, $mieter, $tenant, $property, $briefdatum --}}
+@include('partials.briefkopf', ['bk' => \App\Support\Briefkopf::daten($owner)])
 @php($bfOwnerAddr = trim(($owner?->street ?? '').', '.trim(($owner?->zip ?? '').' '.($owner?->city ?? '')), ', '))
 <div class="sender">{{ $owner?->name }} · {{ $bfOwnerAddr }}</div>
 <div class="addr">

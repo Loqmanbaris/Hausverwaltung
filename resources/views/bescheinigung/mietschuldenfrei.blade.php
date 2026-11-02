@@ -7,6 +7,7 @@
 @endphp
 @include('bescheinigung._druck')
 <div class="page">
+  @include('partials.briefkopf', ['bk' => \App\Support\Briefkopf::daten($owner)])
   <div class="sender">{{ $owner?->name }} · {{ $bsOwnerAddr }}</div>
   <div class="addr">
     {{ $mieter }}<br>
@@ -38,6 +39,7 @@
     <div>Ort, Datum: {{ $owner?->city ? $owner->city.', ' : '' }}{{ date('d.m.Y') }}</div>
     <div>Unterschrift des Vermieters</div>
   </div>
+  @include('partials.brieffuss', ['bk' => \App\Support\Briefkopf::daten($owner)])
 </div>
 </body>
 </html>
