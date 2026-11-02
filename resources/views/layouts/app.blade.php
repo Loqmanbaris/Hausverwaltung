@@ -46,6 +46,14 @@ body{min-height:100vh;font-family:"Roboto",system-ui,-apple-system,"Segoe UI","H
 .sb-fold[open]>summary{color:rgba(255,255,255,.6)}
 .sb-fold>summary .sb-sum{order:2;margin-left:auto}
 .sb-fold[data-on]>summary{color:#fff}
+/* Gruppen-Überschriften gut erkennbar: hell, fett, Trennlinie darüber, Farbstrich links; Punkte darunter eingerückt */
+.sb-fold{margin:.35rem 0 0;padding-top:.35rem;border-top:1px solid rgba(255,255,255,.09)}
+.sb-fold>summary.sb-title{font-size:12.5px;font-weight:700;letter-spacing:.07em;color:rgba(255,255,255,.92);padding:.6rem .7rem .6rem .8rem;position:relative}
+.sb-fold>summary.sb-title::before{content:"";position:absolute;left:0;top:.55rem;bottom:.55rem;width:3px;border-radius:2px;background:var(--brand)}
+.sb-fold[open]>summary.sb-title{color:#fff}
+.sb-fold>summary.sb-title:hover{color:#fff;background:rgba(255,255,255,.07)}
+.sb-fold>summary.sb-title::after{color:rgba(255,255,255,.7);font-size:1.15rem}
+.sb-fold>.sb-link{margin-left:.55rem;padding-left:.75rem}
 .sb-link{display:flex;align-items:center;gap:.7rem;padding:.5rem .7rem;margin:1px 0;border-radius:8px;color:rgba(255,255,255,.82);text-decoration:none;font-size:.93rem;position:relative;transition:background .12s}
 .sb-link>.sb-ic+span{flex:1;min-width:0}
 .sb-link:hover{background:rgba(255,255,255,.07);color:#fff}
