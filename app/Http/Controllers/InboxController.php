@@ -209,6 +209,29 @@ class InboxController extends Controller
             ->with('status', $mail->archived ? 'Ins Archiv verschoben.' : 'Zurück in den Posteingang.');
     }
 
+    /**
+     * E-Mail im CRM löschen (samt Anhängen). Im Postfach bei IONOS bleibt sie liegen; der Abruf holt nur neuere
+     * Nachrichten, deshalb kommt sie nicht wieder.
+     */
+    public function destroy(int $id)
+    {
+        $mail = $this->find($id);
+        $folder = $mail->archived ? 'archiv' : 'eingang';
+        foreach ($mail->attachments ?? [] as $a) {
+            try {
+                if (! empty($a['path'])) {
+                    Storage::disk('local')->delete($a['path']);
+                }
+            } catch (\Throwable) {
+                // Ein fehlender Anhang hindert das Löschen nicht
+            }
+        }
+        Audit::log('mail.deleted', null, 'E-Mail gelöscht: „'.mb_substr((string) $mail->subject, 0, 120).'“ von '.$mail->from_address);
+        $mail->delete();
+
+        return redirect()->route('inbox.index', ['ordner' => $folder])->with('status', 'E-Mail gelöscht.');
+    }
+
     public function unread(int $id)
     {
         $mail = $this->find($id);

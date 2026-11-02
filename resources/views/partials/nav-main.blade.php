@@ -13,7 +13,11 @@
   ];
   // [Bezeichnung, Route, aktiv bei, Badge, nur Admin]
   $groups = [
-      // Alles rund ums Geld steht seit 02.11.2026 gesammelt unter „Finanzen“, ganz oben
+      '' => [
+          ['Mein Tag', 'tag.index', ['tag.*'], $badge['day'] ?? 0, false],
+          ['E-Mails', 'inbox.index', ['inbox.*', 'mail.index', 'mail.compose', 'mail.write'], $badge['mail'] ?? 0, false],
+      ],
+      // Alles rund ums Geld steht seit 02.11.2026 gesammelt unter „Finanzen“ (unter Mein Tag und E-Mails)
       'Finanzen' => [
           ['Rechnungen schreiben', 'invoices.index', ['invoices.*'], 0, true],
           ['Umsätze', 'bank.transactions', ['bank.index', 'bank.transactions', 'bank.edit', 'bank.expenses*', 'recurring.*'], $badge['bank'] + $badge['expenses'], false],
@@ -25,10 +29,6 @@
           ['Anlage V', 'anlage-v.index', ['anlage-v.*'], 0, false],
           ['Jahresbericht', 'report.index', ['report.*'], 0, false],
           ['DATEV-Export', 'datev.index', ['datev.*'], 0, true],
-      ],
-      '' => [
-          ['Mein Tag', 'tag.index', ['tag.*'], $badge['day'] ?? 0, false],
-          ['E-Mails', 'inbox.index', ['inbox.*', 'mail.index', 'mail.compose', 'mail.write'], $badge['mail'] ?? 0, false],
       ],
       'Vermietung' => [
           ['Mietverträge', 'leases.index', ['leases.*', 'contracts.*', 'handover.*', 'interest.*', 'installments.*'], 0, false],

@@ -36,7 +36,7 @@ class PosteingangSelbsttest extends Command
         $checks = [
             'Tabelle' => Schema::hasTable('received_emails') && Schema::hasColumn('received_emails', 'uidvalidity'),
             'Seiten' => Route::has('inbox.index') && Route::has('inbox.show') && Route::has('inbox.fetch') && Route::has('inbox.reply')
-                && Route::has('inbox.attachment') && Route::has('mail.write') && Route::has('mail.write.send') && Route::has('mail.test.receive'),
+                && Route::has('inbox.attachment') && Route::has('inbox.destroy') && Route::has('mail.write') && Route::has('mail.write.send') && Route::has('mail.test.receive'),
             'Ansichten' => view()->exists('mail.outlook'),
             'HTML-Ansicht abgeschottet' => Route::has('inbox.html') && ! str_contains(\App\Support\Mail\MailView::safeHtml(new \App\Models\ReceivedEmail(['body_html' => '<p onclick="x()">Hallo</p><script>alert(1)</script><a href="javascript:x()">y</a>'])), 'script')
                 && ! str_contains(\App\Support\Mail\MailView::safeHtml(new \App\Models\ReceivedEmail(['body_html' => '<p onclick="x()">Hallo</p>'])), 'onclick'),

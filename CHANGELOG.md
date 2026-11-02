@@ -2,6 +2,11 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## E-Mails löschen, Menü-Reihenfolge
+1. E-Mails lassen sich löschen: Knopf „Löschen“ neben „Archivieren“ (mit Rückfrage). Die E-Mail und ihre Anhänge verschwinden aus dem CRM, der Vorgang steht im Protokoll. Im Postfach bei IONOS bleibt sie liegen und wird nicht noch einmal abgerufen.
+2. Seitenmenü: ganz oben Mein Tag, darunter E-Mails, dann Finanzen.
+Keine Migration. Selbsttest: posteingang:selbsttest, design:selbsttest
+
 ## Kontoauszug einlesen: 500-Fehler behoben, „Offene Posten“ aus dem Menü
 1. Behoben: Die Seite Umsätze → Kontoauszug einlesen brach mit „500 Server Error“ ab, sobald schon Dateien eingelesen waren. Ursache war eine Blade-Schreibweise („@php(…)“ vor einem „@php … @endphp“-Block), die Blade falsch übersetzt.
 2. design:selbsttest übersetzt jetzt alle Vorlagen und schlägt bei diesem Fehler an.
