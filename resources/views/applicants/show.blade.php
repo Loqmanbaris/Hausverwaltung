@@ -8,7 +8,7 @@
   use App\Models\Applicant;
   use App\Models\ApplicantViewing;
   use App\Support\Interessenten\Interessenten;
-  $box = 'padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit';
+  $box = 'padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit';
   $filled = $d && $d->isFilled();
   $showValue = fn ($k, $v) => match ($k) {
     'net_income' => number_format((float) $v, 2, ',', '.').' €',

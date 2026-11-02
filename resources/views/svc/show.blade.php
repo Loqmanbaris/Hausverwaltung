@@ -7,7 +7,7 @@
 @php
   $eur = fn ($v) => number_format((float) $v, 2, ',', '.').' €';
   $de = fn ($d) => $d ? \Carbon\Carbon::parse($d)->format('d.m.Y') : '–';
-  $box = 'padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit';
+  $box = 'padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit';
 @endphp
 <div class="sd-head">
   <h1>{{ $c->title }}</h1>

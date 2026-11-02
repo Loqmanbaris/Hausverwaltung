@@ -15,7 +15,7 @@
   <div class="sd-actions">
     @if ($owners->count() > 1)
       <form method="GET" style="display:inline">
-        <select name="eigentuemer" onchange="this.form.submit()" aria-label="Eigentümer" style="padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit">
+        <select name="eigentuemer" onchange="this.form.submit()" aria-label="Eigentümer" style="padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit">
           <option value="">Alle Eigentümer</option>
           @foreach ($owners as $o)<option value="{{ $o->id }}" @selected($ownerId === $o->id)>{{ $o->name }}</option>@endforeach
         </select>
@@ -83,7 +83,7 @@
                 @elseif ($p['kind'] === 'staffel')
                   {{ $p['earliest'] ? 'nächste Staffel '.Regeln::de($p['earliest']) : ($p['note'] ?? '–') }}
                 @elseif ($p['ready'])
-                  <span class="sd-badge" style="background:#ecfdf5;color:#065f46">jetzt möglich</span>
+                  <span class="sd-badge" style="background:var(--ok-bg);color:var(--ok)">jetzt möglich</span>
                 @else
                   Erklärung ab {{ Regeln::de($p['earliest']) }}
                 @endif
@@ -133,7 +133,7 @@
     <p class="sd-muted" style="margin-top:0">Die geplante Begrenzung von Indexmieten („Mietrecht II“) ist noch nicht in Kraft (Stand Oktober 2026: Bundestag hat den Entwurf beraten, Beschluss steht aus). Standard ist deshalb keine Begrenzung. Wenn das Gesetz gilt, kannst du hier das passende Modell wählen, es gilt für neue Berechnungen.</p>
     <form method="POST" action="{{ route('rent_increase.settings') }}" style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center">
       @csrf
-      <select name="rent_index_cap_mode" aria-label="Begrenzung" style="padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit">
+      <select name="rent_index_cap_mode" aria-label="Begrenzung" style="padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit">
         @foreach (Regeln::INDEX_CAP_MODES as $k => $label)<option value="{{ $k }}" @selected($indexMode === $k)>{{ $label }}</option>@endforeach
       </select>
       <button class="sd-btn small" type="submit">Speichern</button>

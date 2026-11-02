@@ -11,7 +11,7 @@
 @section('content')
 @include('partials.sd-flash')
 <style>
-.pf{--pf-acc:var(--brand);--pf-s2:#f6f7f9;display:grid;grid-template-columns:minmax(0,1fr);background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 1px 2px rgba(17,24,39,.04);overflow:hidden;min-height:calc(100dvh - 140px)}
+.pf{--pf-acc:var(--brand);--pf-s2:#f6f7f9;display:grid;grid-template-columns:minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 1px 2px rgba(17,24,39,.04);overflow:hidden;min-height:calc(100dvh - 140px)}
 .pf .ic{margin:0;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .pf a{text-decoration:none}
 .pf-ordnerspalte{display:none;flex-direction:column;gap:6px;padding:14px 10px;background:var(--pf-s2);border-right:1px solid var(--line);min-height:0}
@@ -22,8 +22,8 @@
 .pf-ordnerliste a,.pf-unten a,.pf-unten button{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;color:var(--ink);font-size:14.5px;background:none;border:0;font:inherit;cursor:pointer;width:100%;text-align:left}
 .pf-ordnerliste a span{flex:1}
 .pf-ordnerliste a b{font-size:13px;color:var(--pf-acc)}
-.pf-ordnerliste a:hover,.pf-unten a:hover,.pf-unten button:hover{background:#fff}
-.pf-ordnerliste a[aria-current="page"]{background:#fff;font-weight:600;box-shadow:inset 3px 0 0 var(--pf-acc)}
+.pf-ordnerliste a:hover,.pf-unten a:hover,.pf-unten button:hover{background:var(--surface)}
+.pf-ordnerliste a[aria-current="page"]{background:var(--surface);font-weight:600;box-shadow:inset 3px 0 0 var(--pf-acc)}
 .pf-ordnerliste .ic,.pf-unten .ic{color:var(--pf-acc)}
 .pf-unten{margin-top:auto;display:flex;flex-direction:column;gap:2px;font-size:13.5px}
 .pf-unten a,.pf-unten button{color:var(--muted);font-size:13.5px}
@@ -37,7 +37,7 @@
 .pf-suchzeile{display:flex;gap:8px;align-items:center}
 .pf-suchzeile .pf-suche{flex:1;min-width:0}
 .pf-abruf{margin:0;display:flex}
-.pf-pillen a[aria-current="page"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.pf-pillen a[aria-current="page"]{background:var(--primary);border-color:var(--ink);color:var(--on-primary)}
 .pf-pillen a b{color:inherit;opacity:.85}
 .pf-klein{display:inline-flex;align-items:center;justify-content:center;padding:8px 10px;border-radius:999px;border:0;background:var(--pf-acc);color:#fff!important;cursor:pointer}
 .pf-klein.sec{background:var(--pf-s2);color:var(--ink)!important}
@@ -47,7 +47,7 @@
 .pf-suche a{color:var(--muted);display:inline-flex}
 .pf-ordnertitel{margin:4px 2px 0;font-size:17px}
 .pf-liste{flex:1;min-height:0;overflow:auto}
-.pf-gruppe{position:sticky;top:0;z-index:1;background:#fff;padding:10px 14px 4px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.pf-gruppe{position:sticky;top:0;z-index:1;background:var(--surface);padding:10px 14px 4px;font-size:12.5px;font-weight:600;color:var(--muted)}
 .pf-eintrag{display:grid;grid-template-columns:38px minmax(0,1fr);column-gap:10px;padding:9px 12px 10px 11px;border-left:3px solid transparent;border-bottom:1px solid var(--line);color:var(--ink)}
 .pf-eintrag:hover{background:var(--pf-s2)}
 .pf-eintrag.aktiv{background:color-mix(in srgb,var(--pf-acc) 11%,#fff)}
@@ -60,8 +60,8 @@
 .pf-betr{font-size:14px}
 .pf-zeit{font-size:12.5px;color:var(--muted);white-space:nowrap}
 .pf-zeichen{display:inline-flex;gap:4px;color:var(--muted);align-items:center}.pf-zeichen .ic{width:14px;height:14px}
-.pf-marke{font-size:11px;font-weight:700;border-radius:999px;padding:0 .45rem;background:#eef2ff;color:#3730a3;white-space:nowrap}
-.pf-marke.err{background:#fde8e7;color:#b42318}
+.pf-marke{font-size:11px;font-weight:700;border-radius:999px;padding:0 .45rem;background:var(--info-bg);color:var(--info);white-space:nowrap}
+.pf-marke.err{background:var(--danger-bg);color:var(--danger)}
 .pf-vorschau{grid-column:2;font-size:13.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pf-eintrag.neu .pf-wer{font-weight:700}
 .pf-eintrag.neu .pf-betr{font-weight:600;color:var(--pf-acc)}
@@ -70,13 +70,13 @@
 .pf-blaettern{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:10px 12px;font-size:13.5px;color:var(--muted)}
 .pf-blaettern a{border:1px solid var(--line);border-radius:6px;padding:4px 10px;color:var(--ink)}
 .pf-lesespalte{display:none;flex-direction:column;min-width:0;min-height:0}
-.pf-leiste{display:flex;align-items:center;gap:2px;padding:8px 10px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;background:#fff}
+.pf-leiste{display:flex;align-items:center;gap:2px;padding:8px 10px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;background:var(--surface)}
 .pf-leiste form{display:contents}
 .pf-platz{flex:1}
 .pf-knopf{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:6px;border:0;background:transparent;color:var(--ink)!important;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
 .pf-knopf:hover{background:var(--pf-s2)}
 .pf-knopf .ic{color:var(--pf-acc)}
-.pf-gefahr .ic{color:#b42318}
+.pf-gefahr .ic{color:var(--danger)}
 .pf-senden{display:inline-flex;align-items:center;gap:8px;margin-right:6px;padding:.5rem .95rem;border-radius:8px;border:0;background:var(--pf-acc);color:#fff;font:inherit;font-weight:600;cursor:pointer}
 .pf-senden:disabled{opacity:.6;cursor:default}
 .pf-datei{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
@@ -89,19 +89,19 @@
 .pf-empf{font-size:13.5px;margin-top:2px;overflow-wrap:anywhere;color:var(--muted)}
 .pf-datum{font-size:13px;white-space:nowrap;color:var(--muted)}
 .pf-bezug{display:flex;flex-wrap:wrap;gap:6px}
-.pf-kunde{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#e7f6ec;color:#067647!important;font-size:13.5px;font-weight:600}
+.pf-kunde{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--ok-bg);color:var(--ok)!important;font-size:13.5px;font-weight:600}
 .pf-kunde .ic{width:15px;height:15px}
 .pf-anhaenge{display:flex;flex-wrap:wrap;gap:8px}
 .pf-anhaenge:empty{display:none}
-.pf-anhang{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;color:var(--ink);max-width:280px;background:#fff;font-size:13.5px}
+.pf-anhang{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;color:var(--ink);max-width:280px;background:var(--surface);font-size:13.5px}
 .pf-anhang:hover{border-color:var(--muted)}
 .pf-anhang>span{display:flex;flex-direction:column;min-width:0}
 .pf-anhang-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
 .pf-anhang .ic{width:24px;height:24px;color:var(--pf-acc)}
 .pf-anhaenge-neu{padding:8px 14px 0}
 .pf-hinweis{background:var(--pf-s2);border-radius:6px;padding:8px 12px;font-size:13.5px}
-.pf-hinweis.err{background:#fde8e7;color:#b42318}
-.pf-html{width:100%;min-height:200px;height:420px;border:0;border-radius:6px;background:#fff;display:block}
+.pf-hinweis.err{background:var(--danger-bg);color:var(--danger)}
+.pf-html{width:100%;min-height:200px;height:420px;border:0;border-radius:6px;background:var(--surface);display:block}
 .pf-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;font-size:15px}
 .pf-text blockquote{margin:6px 0 6px 2px;padding-left:12px;border-left:2px solid var(--line);color:var(--muted);white-space:pre-wrap}
 .pf-trenner{border:0;border-top:1px solid var(--line);margin:10px 0 4px}

@@ -5,7 +5,7 @@
 @include('partials.rent-styles')
 @include('partials.sd-flash')
 @php use App\Models\UnitBooking; use App\Http\Controllers\BookingController; @endphp
-<style>.bk-date{width:100%;padding:.5rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit}</style>
+<style>.bk-date{width:100%;padding:.5rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit}</style>
 <div class="sd-head">
   <h1>Belegung {{ $unit->label }}</h1>
   <div class="sd-actions">
@@ -62,7 +62,7 @@
                 @if ($p['booking'])
                   <form method="POST" action="{{ route('bookings.update', [$unit, $p['booking']]) }}" class="sd-inline">
                     @csrf @method('PUT')
-                    <select name="status" onchange="this.form.submit()" aria-label="Status" style="padding:.3rem;border:1px solid #c5ccd3;border-radius:.3rem;font:inherit">
+                    <select name="status" onchange="this.form.submit()" aria-label="Status" style="padding:.3rem;border:1px solid var(--line-strong);border-radius:.3rem;font:inherit">
                       @foreach (UnitBooking::STATUS as $k => $v)<option value="{{ $k }}" @selected($p['status'] === $k)>{{ $v }}</option>@endforeach
                     </select>
                   </form>

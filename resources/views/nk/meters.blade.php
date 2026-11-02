@@ -78,7 +78,7 @@
   @foreach ($meters as $m)
     <details style="margin-bottom:.5rem" id="zaehler-{{ $m->id }}">
       <summary><strong>{{ $m->unit?->label }}</strong>: {{ $m->title() }} <span class="sd-muted">({{ $m->readings->count() }} Stände{{ $m->calibrated_until ? ', geeicht bis '.$m->calibrated_until : '' }}{{ $m->isHeat() ? ($m->remote ? ', fernablesbar' : ', nicht fernablesbar') : '' }})</span></summary>
-      <form method="POST" action="{{ route('nk.meters.update', [$property, $m]) }}" style="margin:.5rem 0;padding:.6rem;background:#f7f9fb;border-radius:.5rem">
+      <form method="POST" action="{{ route('nk.meters.update', [$property, $m]) }}" style="margin:.5rem 0;padding:.6rem;background:var(--surface-2);border-radius:.5rem">
         @csrf @method('PUT')
         <div class="sd-grid">
           <div class="sd-field"><label for="m{{ $m->id }}-label">Bezeichnung</label><input id="m{{ $m->id }}-label" name="label" value="{{ $m->label }}"></div>

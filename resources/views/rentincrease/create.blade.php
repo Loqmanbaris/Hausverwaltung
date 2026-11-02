@@ -12,7 +12,7 @@
   $v = fn ($k, $d = '') => old($k, $values[$k] ?? $d);
   $cur = $lease->currentRent();
   $area = $lease->unit?->area_sqm;
-  $input = 'padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;width:100%';
+  $input = 'padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;width:100%';
 @endphp
 <div class="sd-head">
   <h1>Mieterhöhung vorbereiten</h1>

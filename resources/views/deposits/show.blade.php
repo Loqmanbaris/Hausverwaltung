@@ -8,7 +8,7 @@
   use App\Models\Deposit;
   use App\Support\Kaution\Kaution;
   $eur = fn ($c) => number_format($c / 100, 2, ',', '.').' €';
-  $box = 'padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit';
+  $box = 'padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit';
   $ended = $lease->end_date !== null && $lease->end_date->format('Y-m-d') < date('Y-m-d');
   $lines = $form['lines'] ?? [];
   while (count($lines) < 3) { $lines[] = ['reason' => '', 'amount' => '']; }
@@ -22,8 +22,8 @@
 
 <div class="sd-card">
   <dl class="sd-dl">
-    <dt>Vereinbart</dt><dd>{{ $eur($s['agreed']) }}@if ($s['too_high']) <span class="sd-badge" style="background:#fffbeb;color:#92400e">mehr als drei Kaltmieten (§ 551 BGB)</span>@endif</dd>
-    <dt>Eingezahlt</dt><dd>{{ $eur($s['paid']) }}@if ($s['overdue'] > 0) <span class="sd-badge" style="background:#fef2f2;color:#b91c1c">{{ $eur($s['overdue']) }} überfällig</span>@elseif ($s['open'] > 0 && $s['next']) <span class="sd-muted">· nächste Rate {{ $eur($s['next']['cents']) }} am {{ \Carbon\Carbon::parse($s['next']['due_on'])->format('d.m.Y') }}</span>@endif</dd>
+    <dt>Vereinbart</dt><dd>{{ $eur($s['agreed']) }}@if ($s['too_high']) <span class="sd-badge" style="background:var(--brass-bg);color:var(--brass)">mehr als drei Kaltmieten (§ 551 BGB)</span>@endif</dd>
+    <dt>Eingezahlt</dt><dd>{{ $eur($s['paid']) }}@if ($s['overdue'] > 0) <span class="sd-badge" style="background:var(--danger-bg);color:var(--danger)">{{ $eur($s['overdue']) }} überfällig</span>@elseif ($s['open'] > 0 && $s['next']) <span class="sd-muted">· nächste Rate {{ $eur($s['next']['cents']) }} am {{ \Carbon\Carbon::parse($s['next']['due_on'])->format('d.m.Y') }}</span>@endif</dd>
     <dt>Zinsen</dt><dd>{{ $eur($s['interest']) }}</dd>
     @if ($s['withheld'] > 0)<dt>Einbehalten</dt><dd>{{ $eur($s['withheld']) }}</dd>@endif
     @if ($s['returned'] > 0)<dt>Ausgezahlt</dt><dd>{{ $eur($s['returned']) }}</dd>@endif

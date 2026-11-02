@@ -4,7 +4,7 @@
 @include('partials.sd-styles')
 @include('partials.sd-flash')
 @php
-  $input = 'padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;width:100%';
+  $input = 'padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;width:100%';
 @endphp
 <div class="sd-head">
   <h1>Updates von GitHub</h1>

@@ -4,15 +4,15 @@
 @include('partials.sd-styles')
 @include('partials.sd-flash')
 <style>
-.su-bar{height:10px;background:#eef0f3;border-radius:10px;overflow:hidden;margin:.5rem 0 .3rem}
+.su-bar{height:10px;background:var(--surface-2);border-radius:10px;overflow:hidden;margin:.5rem 0 .3rem}
 .su-bar i{display:block;height:100%;background:#067647;border-radius:10px}
 .su-list{list-style:none;margin:0;padding:0}
 .su-list li{display:grid;grid-template-columns:2rem minmax(0,1fr) auto;gap:.7rem;align-items:start;padding:.7rem .2rem;border-top:1px solid var(--line)}
 .su-list li:first-child{border-top:0}
 .su-ico{width:1.7rem;height:1.7rem;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem}
-.su-ico.ok{background:#e7f6ec;color:#067647}
-.su-ico.offen{background:#fde8e7;color:#b42318}
-.su-ico.optional{background:#f3f4f6;color:#6b7280}
+.su-ico.ok{background:var(--ok-bg);color:var(--ok)}
+.su-ico.offen{background:var(--danger-bg);color:var(--danger)}
+.su-ico.optional{background:var(--surface-2);color:var(--muted)}
 .su-t{font-weight:650}
 .su-d{font-size:.88rem;color:var(--muted)}
 </style>

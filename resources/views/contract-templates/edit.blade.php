@@ -5,14 +5,14 @@
 @include('partials.sd-flash')
 @include('contracts.document-styles')
 <style>
-.tp-sec{border:1px solid #e3e6ea;border-radius:.6rem;padding:.7rem .9rem;margin:0 0 .8rem;background:#fff}
+.tp-sec{border:1px solid var(--line);border-radius:.6rem;padding:.7rem .9rem;margin:0 0 .8rem;background:var(--surface)}
 .tp-sec.off{opacity:.55}
 .tp-top{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
-.tp-top input[type=text]{flex:1 1 16rem;min-width:0;padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;font-weight:600}
-.tp-sec textarea{width:100%;box-sizing:border-box;min-height:9rem;margin-top:.5rem;padding:.5rem;border:1px solid #c5ccd3;border-radius:.4rem;font:13px/1.45 ui-monospace,Consolas,monospace}
+.tp-top input[type=text]{flex:1 1 16rem;min-width:0;padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;font-weight:600}
+.tp-sec textarea{width:100%;box-sizing:border-box;min-height:9rem;margin-top:.5rem;padding:.5rem;border:1px solid var(--line-strong);border-radius:.4rem;font:13px/1.45 ui-monospace,Consolas,monospace}
 .tp-ph{columns:2 18rem;font-size:.88rem;margin:0;padding-left:1rem}
-.tp-ph code{background:#f1f3f5;padding:.05rem .25rem;border-radius:.2rem}
-.tp-prev{background:#fff;border:1px solid #e3e6ea;border-radius:.6rem;padding:1rem 1.2rem;max-height:70vh;overflow:auto}
+.tp-ph code{background:var(--surface-2);padding:.05rem .25rem;border-radius:.2rem}
+.tp-prev{background:var(--surface);border:1px solid var(--line);border-radius:.6rem;padding:1rem 1.2rem;max-height:70vh;overflow:auto}
 </style>
 <div class="sd-head">
   <h1>Vorlage {{ $label }}</h1>

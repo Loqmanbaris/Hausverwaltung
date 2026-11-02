@@ -5,7 +5,7 @@
 @include('partials.sd-flash')
 @php
   use App\Models\ServiceContract;
-  $box = 'padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;width:100%';
+  $box = 'padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;width:100%';
   $v = fn ($k) => old($k, $c->{$k} instanceof \Carbon\CarbonInterface ? $c->{$k}->format('Y-m-d') : $c->{$k});
 @endphp
 <div class="sd-head">

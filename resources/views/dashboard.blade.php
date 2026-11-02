@@ -4,11 +4,11 @@
 @include('partials.sd-styles')
 <style>
 .db-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:.9rem;margin:1rem 0}
-.db-stat{background:#fff;border:1px solid #e3e6ea;border-radius:.6rem;padding:.9rem 1rem}
+.db-stat{background:var(--surface);border:1px solid var(--line);border-radius:.6rem;padding:.9rem 1rem}
 .db-stat strong{display:block;font-size:1.7rem;line-height:1.1;color:var(--ink)}
-.db-stat span{color:#4b5563;font-size:.92rem}
+.db-stat span{color:var(--muted);font-size:.92rem}
 .db-filter{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.5rem 0 0}
-.db-filter select{padding:.5rem;border:1px solid #c5ccd3;border-radius:.45rem;font:inherit;background:#fff}
+.db-filter select{padding:.5rem;border:1px solid var(--line-strong);border-radius:.45rem;font:inherit;background:var(--surface)}
 .db-list{margin:.4rem 0 0;padding-left:1.2rem}
 .db-list li{margin:.15rem 0}
 .db-num{text-align:right;white-space:nowrap}
@@ -18,15 +18,15 @@
 .ck-head .db-filter{margin:0;flex-wrap:nowrap}
 .ck-head .db-filter select{max-width:16rem}
 .ck-money{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.9rem;margin:0 0 1rem}
-.ck-tile{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;text-decoration:none;color:inherit;display:block;box-shadow:0 1px 2px rgba(17,24,39,.04)}
+.ck-tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem;text-decoration:none;color:inherit;display:block;box-shadow:0 1px 2px rgba(17,24,39,.04)}
 a.ck-tile:hover{border-color:var(--line-strong)}
 .ck-tile .k{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
 .ck-tile .v{display:block;font-size:1.65rem;font-weight:750;line-height:1.15;margin:.3rem 0 .2rem;color:var(--ink)}
 .ck-tile .s{font-size:.88rem;color:var(--muted)}
-.ck-bar{height:6px;background:#eef0f3;border-radius:6px;overflow:hidden;margin-top:.55rem}
+.ck-bar{height:6px;background:var(--surface-2);border-radius:6px;overflow:hidden;margin-top:.55rem}
 .ck-bar i{display:block;height:100%;background:var(--brand);border-radius:6px}
-.ck-red{color:#b42318 !important}
-.ck-green{color:#067647 !important}
+.ck-red{color:var(--danger) !important}
+.ck-green{color:var(--ok) !important}
 .ck-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem;align-items:stretch}
 .ck-block{min-width:0}
 .ck-block.wide{grid-column:1/-1}
@@ -44,14 +44,14 @@ a.ck-tile:hover{border-color:var(--line-strong)}
 .ck-block > .ck-money{margin:0}
 .ck-tools{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
 .ck-quick{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
-.ck-qbtn{display:inline-flex;align-items:center;gap:.4rem;background:#fff;border:1px solid var(--line-strong);border-radius:999px;padding:.45rem .95rem;text-decoration:none;color:var(--ink);font-weight:600;font-size:.92rem}
+.ck-qbtn{display:inline-flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--line-strong);border-radius:999px;padding:.45rem .95rem;text-decoration:none;color:var(--ink);font-weight:600;font-size:.92rem}
 .ck-qbtn::before{content:"+";color:var(--brand);font-weight:800}
 .ck-qbtn:hover{border-color:var(--brand);color:var(--ink)}
 .ck-qedit{font-size:.85rem;color:var(--muted);margin-left:.3rem}
 .ck-mini{display:grid;grid-template-columns:repeat(12,1fr);gap:.3rem;align-items:end;height:90px;margin:.6rem 0 .4rem}
 .ck-mcol{display:flex;flex-direction:column;align-items:center;height:100%;gap:.2rem}
 .ck-mcol span{font-size:.72rem;color:var(--muted)}
-.ck-mbar{flex:1;width:100%;display:flex;align-items:flex-end;background:#f6f7f9;border-radius:4px}
+.ck-mbar{flex:1;width:100%;display:flex;align-items:flex-end;background:var(--surface-2);border-radius:4px}
 .ck-mbar i{display:block;width:100%;background:var(--brand);border-radius:4px}
 .ck-cats{list-style:none;margin:.6rem 0 0;padding:0}
 .ck-cats li{padding:.35rem 0}
@@ -60,18 +60,18 @@ a.ck-tile:hover{border-color:var(--line-strong)}
 .ck-todo li{border-top:1px solid var(--line)}
 .ck-todo li:first-child{border-top:0}
 .ck-todo a{display:flex;align-items:center;gap:.7rem;padding:.6rem .1rem;text-decoration:none;color:var(--ink)}
-.ck-todo a:hover{background:#fafafa}
-.ck-num{min-width:2rem;height:1.6rem;padding:0 .45rem;border-radius:1rem;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;background:#eef2f7;color:#1f2937;flex:none}
-.ck-num.warn{background:#fde8e7;color:#b42318}
-.ck-todo .go{margin-left:auto;color:#9ca3af}
-.ck-done{display:flex;align-items:center;gap:.6rem;color:#067647;font-weight:600;margin:.2rem 0}
+.ck-todo a:hover{background:var(--surface-2)}
+.ck-num{min-width:2rem;height:1.6rem;padding:0 .45rem;border-radius:1rem;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;background:var(--surface-2);color:var(--ink);flex:none}
+.ck-num.warn{background:var(--danger-bg);color:var(--danger)}
+.ck-todo .go{margin-left:auto;color:var(--muted)}
+.ck-done{display:flex;align-items:center;gap:.6rem;color:var(--ok);font-weight:600;margin:.2rem 0}
 .ck-dates{list-style:none;margin:0;padding:0}
 .ck-dates li{display:grid;grid-template-columns:3.4rem minmax(0,1fr);gap:.8rem;padding:.55rem 0;border-top:1px solid var(--line)}
 .ck-dates li:first-child{border-top:0}
-.ck-day{text-align:center;border:1px solid var(--line);border-radius:8px;padding:.2rem 0;line-height:1.1;background:#fafafa}
+.ck-day{text-align:center;border:1px solid var(--line);border-radius:8px;padding:.2rem 0;line-height:1.1;background:var(--surface-2)}
 .ck-day b{display:block;font-size:1.1rem}
 .ck-day span{font-size:.7rem;text-transform:uppercase;color:var(--muted);letter-spacing:.04em}
-.ck-day.warn{border-color:#f5c2be;background:#fff6f5}
+.ck-day.warn{border-color:#f5c2be;background:var(--danger-bg)}
 .ck-dates a{color:var(--ink);font-weight:600;text-decoration:none}
 .ck-dates a:hover{text-decoration:underline}
 .ck-dates .d{font-size:.88rem;color:var(--muted)}
@@ -84,9 +84,9 @@ a.ck-tile:hover{border-color:var(--line-strong)}
 .ck-vac{list-style:none;margin:.6rem 0 0;padding:0}
 .ck-vac li{display:flex;justify-content:space-between;gap:.6rem;padding:.45rem 0;border-top:1px solid var(--line);font-size:.93rem}
 .ck-tag{font-size:.75rem;font-weight:700;border-radius:1rem;padding:.08rem .5rem;white-space:nowrap;align-self:center}
-.ck-tag.on{background:#e7f6ec;color:#067647}
-.ck-tag.off{background:#f3f4f6;color:#6b7280}
-.ck-tag.next{background:#eef2ff;color:#3730a3}
+.ck-tag.on{background:var(--ok-bg);color:var(--ok)}
+.ck-tag.off{background:var(--surface-2);color:var(--muted)}
+.ck-tag.next{background:var(--info-bg);color:var(--info)}
 .ck-sub{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:1rem 0 .2rem}
 details.ck-more > summary{cursor:pointer;font-weight:700;font-size:1.05rem;list-style:none}
 details.ck-more > summary::after{content:" ▾";color:var(--muted)}
@@ -133,14 +133,14 @@ details.ck-more[open] > summary::after{content:" ▴"}
 @endif
 
 @if ($backupAttention)
-  <div class="sd-err" style="background:#fffaf0;border-color:#f0d9a8;color:#7a4b00">
+  <div class="sd-err" style="background:var(--brass-bg);border-color:var(--brass-line);color:var(--brass)">
     <strong>Sicherung:</strong> {{ $backupAttention }}
     <a href="{{ route('backups.index') }}">Zu den Sicherungen</a>
   </div>
 @endif
 
 @if ($imprintIncomplete)
-  <div class="sd-err" style="background:#fffaf0;border-color:#f0d9a8;color:#7a4b00">
+  <div class="sd-err" style="background:var(--brass-bg);border-color:var(--brass-line);color:var(--brass)">
     <strong>Impressum und Startseite sind noch nicht ausgefüllt.</strong>
     Ohne diese Angaben darf die Webseite nicht öffentlich erreichbar sein.
     <a href="{{ route('settings.edit') }}">Jetzt unter „Einstellungen“ eintragen</a>

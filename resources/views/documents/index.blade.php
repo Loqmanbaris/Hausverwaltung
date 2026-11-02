@@ -6,12 +6,12 @@
 @include('documents.styles')
 <style>
 .dk-filter{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:0 0 1rem}
-.dk-filter input,.dk-filter select{width:auto;max-width:100%;font:inherit;padding:.45rem .6rem;border:1px solid var(--line-strong);border-radius:8px;background:#fff}
+.dk-filter input,.dk-filter select{width:auto;max-width:100%;font:inherit;padding:.45rem .6rem;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface)}
 .dk-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
-.dk-chip{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--line-strong);border-radius:999px;padding:.35rem .85rem;text-decoration:none;color:var(--ink);font-weight:600;font-size:.9rem;background:#fff}
-.dk-chip.on{border-color:var(--ink);background:var(--ink);color:#fff}
-.dk-chip b{background:#fde8e7;color:#b42318;border-radius:1rem;padding:0 .45rem;font-size:.8rem}
-.dk-chip.on b{background:#fff}
+.dk-chip{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--line-strong);border-radius:999px;padding:.35rem .85rem;text-decoration:none;color:var(--ink);font-weight:600;font-size:.9rem;background:var(--surface)}
+.dk-chip.on{border-color:var(--ink);background:var(--primary);color:var(--on-primary)}
+.dk-chip b{background:var(--danger-bg);color:var(--danger);border-radius:1rem;padding:0 .45rem;font-size:.8rem}
+.dk-chip.on b{background:var(--surface)}
 </style>
 <div class="sd-head">
   <h1>Dokumente</h1>

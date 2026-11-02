@@ -11,7 +11,7 @@
 .pl-free{display:inline-block;background:var(--ok-bg);color:var(--ok);border-radius:1rem;padding:.05rem .55rem;font-size:.85rem;font-weight:600;margin-top:.3rem}
 .pl-form .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.7rem}
 .pl-form label{display:block;font-weight:600;margin:.6rem 0 .2rem}
-.pl-form input[type=text],.pl-form input[type=email],.pl-form input[type=tel],.pl-form input[type=date],.pl-form input[type=number],.pl-form textarea{width:100%;padding:.6rem;border:1px solid var(--line);border-radius:6px;font:inherit;background:#fff}
+.pl-form input[type=text],.pl-form input[type=email],.pl-form input[type=tel],.pl-form input[type=date],.pl-form input[type=number],.pl-form textarea{width:100%;padding:.6rem;border:1px solid var(--line);border-radius:6px;font:inherit;background:var(--surface)}
 .pl-form textarea{min-height:8rem}
 .pl-form .check{display:flex;gap:.5rem;align-items:flex-start;font-weight:400;margin:.8rem 0}
 .pl-form .check input{margin-top:.25rem}

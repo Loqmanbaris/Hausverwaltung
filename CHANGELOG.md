@@ -2,6 +2,11 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Heller und dunkler Modus
+1. Im Profilmenü (rundes Zeichen oben rechts) unter „Darstellung“: Hell, Dunkel oder Auto (folgt der Einstellung von Handy/iPad/PC). Die Wahl gilt je Gerät; ohne Wahl gilt Auto.
+2. Alle Verwaltungsseiten nutzen dafür Farbvariablen statt fester Farben. Druckseiten und Briefe, Webseite und Mieterportal bleiben immer hell.
+Keine Migration. Selbsttest: design:selbsttest
+
 ## Briefkopf mit Logo
 1. Alle Schreiben (Mahnung, Nebenkosten- und Verbrauchsabrechnung, Mieterhöhung, Kaution, CO2, Bewerber, Rechnungen, E-Rechnung, Bescheinigungen, Abmahnung, Kündigung) haben einen einheitlichen Briefkopf: links immer das Logo „Haus mit B“ mit „Baris Hausverwaltung“, rechts Name, Anschrift, Telefon und E-Mail des jeweiligen Eigentümers.
 2. Neue Fußzeile mit Anschrift, Kontakt, Bankverbindung (Hauptkonto des Eigentümers) und Steuernummer/USt-IdNr.

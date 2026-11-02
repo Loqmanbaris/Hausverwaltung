@@ -10,7 +10,7 @@
   <input type="text" name="q" value="{{ $q }}" maxlength="100" autofocus
          placeholder="Name, Ort, Straße, E-Mail oder Telefon"
          aria-label="Suchbegriff"
-         style="flex:1;min-width:240px;padding:.6rem;border:1px solid #c5ccd3;border-radius:.45rem;font:inherit">
+         style="flex:1;min-width:240px;padding:.6rem;border:1px solid var(--line-strong);border-radius:.45rem;font:inherit">
   <button class="sd-btn" type="submit">Suchen</button>
 </form>
 

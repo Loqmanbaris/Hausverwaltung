@@ -4,7 +4,7 @@
 @include('partials.sd-styles')
 @include('partials.sd-flash')
 <style>
-.dv-acc input[type=text]{width:7rem;padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit}
+.dv-acc input[type=text]{width:7rem;padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit}
 </style>
 <div class="sd-head">
   <h1>Konten der Kostenarten</h1>

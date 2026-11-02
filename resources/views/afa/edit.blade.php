@@ -8,7 +8,7 @@
   use App\Support\Money;
   use App\Support\Tax\Afa;
   $eur = fn ($c) => number_format($c / 100, 2, ',', '.').' €';
-  $input = 'padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;width:100%';
+  $input = 'padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;width:100%';
   $rateNow = rtrim(rtrim(number_format((float) old('rate', $a->rate ?? 2), 2, '.', ''), '0'), '.');
 @endphp
 <div class="sd-head">

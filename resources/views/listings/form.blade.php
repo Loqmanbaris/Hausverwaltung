@@ -12,20 +12,20 @@
 @endphp
 <style>
 .ls-kind{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 .6rem}
-.ls-kind label{display:flex;gap:.4rem;align-items:center;border:1px solid #c5ccd3;border-radius:.5rem;padding:.45rem .8rem;background:#fff;cursor:pointer}
+.ls-kind label{display:flex;gap:.4rem;align-items:center;border:1px solid var(--line-strong);border-radius:.5rem;padding:.45rem .8rem;background:var(--surface);cursor:pointer}
 .ls-feat{display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:.3rem .8rem;margin:.4rem 0}
 .ls-feat label{display:flex;gap:.45rem;align-items:center}
-.ls-date{width:100%;padding:.5rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit}
+.ls-date{width:100%;padding:.5rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit}
 .ls-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(11rem,1fr));gap:.8rem}
-.ls-photo{border:1px solid #e3e6ea;border-radius:.5rem;overflow:hidden;background:#fff}
-.ls-photo img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#f1f3f5}
+.ls-photo{border:1px solid var(--line);border-radius:.5rem;overflow:hidden;background:var(--surface)}
+.ls-photo img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--surface-2)}
 .ls-photo .b{padding:.4rem;display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
-.ls-photo input[type=text]{width:100%;padding:.3rem;border:1px solid #c5ccd3;border-radius:.3rem;font:inherit;font-size:.9rem}
+.ls-photo input[type=text]{width:100%;padding:.3rem;border:1px solid var(--line-strong);border-radius:.3rem;font:inherit;font-size:.9rem}
 .ls-first{position:relative}
-.ls-first::after{content:"Titelbild";position:absolute;top:.4rem;left:.4rem;background:var(--ink);color:#fff;font-size:.8rem;padding:.1rem .45rem;border-radius:.3rem}
+.ls-first::after{content:"Titelbild";position:absolute;top:.4rem;left:.4rem;background:var(--primary);color:var(--on-primary);font-size:.8rem;padding:.1rem .45rem;border-radius:.3rem}
 .ls-state{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
-.ls-missing{background:#fffaeb;border:1px solid #fedf89;border-radius:.6rem;padding:.6rem .9rem;margin:0 0 1rem}
-.ls-count{font-size:.85rem;color:#667085;float:right}
+.ls-missing{background:var(--brass-bg);border:1px solid var(--brass-line);border-radius:.6rem;padding:.6rem .9rem;margin:0 0 1rem}
+.ls-count{font-size:.85rem;color:var(--muted);float:right}
 </style>
 
 <div class="sd-head">

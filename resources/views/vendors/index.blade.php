@@ -13,7 +13,7 @@
 <p class="sd-muted">Lieferanten entstehen automatisch, wenn du bei einem Beleg einen neuen Namen eintippst. Hier kannst du Anschrift, Kontakt und die übliche Kostenart ergänzen. Die Liste gilt für alle Eigentümer, die Zahl der Belege zählt nur die Belege, die du sehen darfst.</p>
 
 <form method="GET" action="{{ route('vendors.index') }}" style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.2rem 0 1rem">
-  <input type="text" name="q" value="{{ $q }}" maxlength="100" placeholder="Name, Ort oder E-Mail" aria-label="Lieferanten suchen" style="padding:.5rem;border:1px solid #c5ccd3;border-radius:.45rem;font:inherit">
+  <input type="text" name="q" value="{{ $q }}" maxlength="100" placeholder="Name, Ort oder E-Mail" aria-label="Lieferanten suchen" style="padding:.5rem;border:1px solid var(--line-strong);border-radius:.45rem;font:inherit">
   <label class="sd-check" style="margin:0;font-weight:400"><input type="checkbox" name="alle" value="1" @checked($all)> auch stillgelegte</label>
   <button class="sd-btn sec small" type="submit">Anzeigen</button>
 </form>

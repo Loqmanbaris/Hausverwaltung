@@ -6,7 +6,7 @@
 @include('partials.sd-flash')
 @php
   $eur = fn ($v) => number_format((float) $v, 2, ',', '.').' €';
-  $sel = 'padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit';
+  $sel = 'padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit';
 @endphp
 <div class="sd-head"><h1>Jahresbericht</h1></div>
 <p class="sd-muted">Ein Bericht je Eigentümer und Jahr für Gespräche mit dem Eigentümer: Ergebnis, Vermietung, Mieteingang, Nebenkosten, Darlehen und Instandhaltung. Die Zahlen kommen aus den Daten im CRM. Sie ersetzen keine Steuererklärung.</p>

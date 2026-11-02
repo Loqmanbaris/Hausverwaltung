@@ -5,7 +5,7 @@
   $odLast = $odStatus['last'];
   $odPending = $od ? count(OneDrive::pending()) : 0;
   $bag = $errors->getBag('onedrive');
-  $in = 'padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;width:100%';
+  $in = 'padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;width:100%';
   $val = fn ($k, $d = '') => old($k, \App\Support\Settings::get('onedrive_'.$k, $d));
 @endphp
 <div class="sd-card" id="onedrive">
@@ -24,8 +24,8 @@
       <dd>
         @if ($odLast)
           {{ \Illuminate\Support\Carbon::parse($odLast['at'])->timezone('Europe/Berlin')->format('d.m.Y H:i') }}:
-          @if ($odLast['ok']) <span class="sd-badge" style="background:#ecfdf5;color:#065f46">in Ordnung</span> {{ $odLast['file'] }}
-          @else <span class="sd-badge" style="background:#fef2f2;color:#b91c1c">fehlgeschlagen</span> {{ $odLast['message'] }}@endif
+          @if ($odLast['ok']) <span class="sd-badge" style="background:var(--ok-bg);color:var(--ok)">in Ordnung</span> {{ $odLast['file'] }}
+          @else <span class="sd-badge" style="background:var(--danger-bg);color:var(--danger)">fehlgeschlagen</span> {{ $odLast['message'] }}@endif
         @else noch keiner @endif
       </dd>
       <dt>Noch nicht hochgeladen</dt><dd>{{ $odPending }} Sicherung(en)</dd>

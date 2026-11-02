@@ -5,10 +5,10 @@
 @include('partials.sd-flash')
 <style>
 .ei-list{list-style:none;margin:0;padding:0}
-.ei-list li{border:1px solid #e3e6ea;border-radius:.5rem;padding:.6rem .8rem;margin-bottom:.5rem;background:#fff}
+.ei-list li{border:1px solid var(--line);border-radius:.5rem;padding:.6rem .8rem;margin-bottom:.5rem;background:var(--surface)}
 .ei-ok{border-left:4px solid #067647!important}
 .ei-bad{border-left:4px solid #b42318!important}
-.ei-warn{color:#7a4b00;margin:.3rem 0 0}
+.ei-warn{color:var(--brass);margin:.3rem 0 0}
 .ei-name{font-weight:600;word-break:break-all}
 .ei-files{margin:.3rem 0 0;padding-left:1.1rem;font-size:.9rem}
 </style>
@@ -42,7 +42,7 @@
               <div class="ei-warn">Bitte prüfen: {{ $w }}</div>
             @endforeach
           @else
-            <span style="color:#b42318">Nicht gespeichert.</span> {{ $r['message'] }}
+            <span style="color:var(--danger)">Nicht gespeichert.</span> {{ $r['message'] }}
           @endif
         </li>
       @endforeach

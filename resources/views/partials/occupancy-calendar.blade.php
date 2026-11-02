@@ -3,15 +3,15 @@
 .oc-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:1rem}
 .oc-month h3{font-size:1rem;margin:0 0 .3rem}
 .oc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;font-size:.85rem;text-align:center}
-.oc-grid .h{color:#667085;font-size:.75rem;padding:.15rem 0}
-.oc-grid .d{padding:.3rem 0;border-radius:.25rem;background:#ecfdf3;color:#067647}
-.oc-grid .d.belegt{background:#fdecec;color:#b42318;text-decoration:line-through}
-.oc-grid .d.reserviert{background:#fff4e5;color:#8a5a12}
-.oc-grid .d.gesperrt{background:#e4e7ec;color:#475467;text-decoration:line-through}
+.oc-grid .h{color:var(--muted);font-size:.75rem;padding:.15rem 0}
+.oc-grid .d{padding:.3rem 0;border-radius:.25rem;background:var(--ok-bg);color:var(--ok)}
+.oc-grid .d.belegt{background:var(--danger-bg);color:var(--danger);text-decoration:line-through}
+.oc-grid .d.reserviert{background:var(--brass-bg);color:var(--brass)}
+.oc-grid .d.gesperrt{background:var(--surface-2);color:var(--muted);text-decoration:line-through}
 .oc-grid .d.past{opacity:.4}
 .oc-legend{display:flex;flex-wrap:wrap;gap:.8rem;font-size:.85rem;margin:.6rem 0 0}
 .oc-legend span::before{content:"";display:inline-block;width:.8rem;height:.8rem;border-radius:.2rem;margin-right:.3rem;vertical-align:-.1rem}
-.oc-legend .f::before{background:#ecfdf3;border:1px solid #abefc6}.oc-legend .b::before{background:#fdecec}.oc-legend .r::before{background:#fff4e5}.oc-legend .g::before{background:#e4e7ec}
+.oc-legend .f::before{background:var(--ok-bg);border:1px solid #abefc6}.oc-legend .b::before{background:var(--danger-bg)}.oc-legend .r::before{background:var(--brass-bg)}.oc-legend .g::before{background:var(--surface-2)}
 </style>
 <div class="oc-wrap">
   @foreach ($calendar as $m)

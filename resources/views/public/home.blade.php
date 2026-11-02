@@ -49,7 +49,7 @@
 .hm-objects img,.hm-objects .ph{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--soft)}
 .hm-objects strong{display:block;margin-top:.6rem;font-size:1.05rem}
 .hm-objects span{color:var(--muted);font-size:.93rem}
-.hm-contact{background:var(--ink);color:#fff;margin-top:3.5rem;padding:2.2rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem}
+.hm-contact{background:var(--primary);color:var(--on-primary);margin-top:3.5rem;padding:2.2rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem}
 .hm-contact h2{color:#fff;margin:0;font-size:1.6rem}
 .hm-contact p{margin:.3rem 0 0;color:#d1d5db}
 </style>

@@ -7,7 +7,7 @@
 <title>Selbstauskunft</title>
 @include('partials.styles')
 @include('partials.sd-styles')
-<style>.vp{max-width:720px;margin:0 auto;padding:1.2rem 1rem 3rem}.vp h1{font-size:1.4rem}.small{font-size:.85rem;color:#4b5563}</style>
+<style>.vp{max-width:720px;margin:0 auto;padding:1.2rem 1rem 3rem}.vp h1{font-size:1.4rem}.small{font-size:.85rem;color:var(--muted)}</style>
 </head>
 <body>
 <main class="vp">

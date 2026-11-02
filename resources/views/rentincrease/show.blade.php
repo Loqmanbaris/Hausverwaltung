@@ -10,7 +10,7 @@
   $lease = $inc->lease;
   $d = $inc->data ?? [];
   $ownerCan = auth()->user()->isAdmin();
-  $input = 'padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit';
+  $input = 'padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit';
   $needsConsent = $inc->needsConsent();
 @endphp
 <div class="sd-head">

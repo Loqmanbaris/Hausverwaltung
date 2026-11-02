@@ -5,7 +5,7 @@
 @include('partials.rent-styles')
 @include('partials.sd-flash')
 @php
-  $box = 'padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit';
+  $box = 'padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit';
   $de = fn ($d) => $d ? \Carbon\Carbon::parse($d)->format('d.m.Y') : '–';
 @endphp
 <div class="sd-head"><h1>Löschfristen für ehemalige Mieter</h1></div>
@@ -36,7 +36,7 @@
             <td>Stufe {{ $p['stage'] }}</td>
             <td>
               Kontakte {{ $p['counts']['contacts'] }}, E-Mails {{ $p['counts']['emails'] }}, Dokumente {{ $p['stage'] === 2 ? $p['counts']['docs1'] + $p['counts']['docs2'] : $p['counts']['docs1'] }}
-              @foreach ($p['blocked'] as $b)<br><span class="sd-badge" style="background:#fffbeb;color:#92400e">gesperrt: {{ $b }}</span>@endforeach
+              @foreach ($p['blocked'] as $b)<br><span class="sd-badge" style="background:var(--brass-bg);color:var(--brass)">gesperrt: {{ $b }}</span>@endforeach
             </td>
             <td style="white-space:nowrap">
               @if ($p['blocked'] === [])

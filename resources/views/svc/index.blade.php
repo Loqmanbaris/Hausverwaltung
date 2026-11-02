@@ -7,8 +7,8 @@
 @php
   use App\Models\ServiceContract;
   $eur = fn ($v) => number_format((float) $v, 2, ',', '.').' €';
-  $sel = 'padding:.35rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit';
-  $stateStyle = ['dringend' => 'background:#fef2f2;color:#b91c1c', 'bald' => 'background:#fffbeb;color:#92400e', 'abgelaufen' => 'background:#fef2f2;color:#b91c1c', 'ok' => '', 'jederzeit' => '', 'gekuendigt' => 'background:#eef2ff;color:#3730a3', 'beendet' => ''];
+  $sel = 'padding:.35rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit';
+  $stateStyle = ['dringend' => 'background:var(--danger-bg);color:var(--danger)', 'bald' => 'background:var(--brass-bg);color:var(--brass)', 'abgelaufen' => 'background:var(--danger-bg);color:var(--danger)', 'ok' => '', 'jederzeit' => '', 'gekuendigt' => 'background:var(--info-bg);color:var(--info)', 'beendet' => ''];
 @endphp
 <div class="sd-head">
   <h1>Laufende Verträge</h1>

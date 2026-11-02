@@ -16,7 +16,7 @@
     <p class="sd-muted" style="margin-top:0">Der Mieter kann sich ohne Passwort per Link anmelden, sein Konto und freigegebene Dokumente sehen, Zählerstände und Schäden melden. Adresse, an die der Anmelde-Link geht:</p>
     <form method="POST" action="{{ route('portal.admin.enable', $tenant) }}" style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:flex-end">
       @csrf
-      <div style="flex:1 1 16rem"><label for="pa-mail" class="sd-muted">E-Mail des Mieters</label><input id="pa-mail" type="email" name="email" required value="{{ old('email', $defaultMail) }}" style="padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;width:100%"></div>
+      <div style="flex:1 1 16rem"><label for="pa-mail" class="sd-muted">E-Mail des Mieters</label><input id="pa-mail" type="email" name="email" required value="{{ old('email', $defaultMail) }}" style="padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;width:100%"></div>
       <label style="display:flex;gap:.4rem;align-items:center"><input type="checkbox" name="invite" value="1" checked> Gleich einladen</label>
       <button class="sd-btn" type="submit">Portal freigeben</button>
     </form>

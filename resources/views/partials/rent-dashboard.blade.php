@@ -4,7 +4,7 @@
     <h2>Mieten</h2>
     <div class="db-stats" style="margin:.2rem 0 .8rem">
       <a class="db-stat" href="{{ route('rent.open') }}" style="text-decoration:none">
-        <strong style="{{ $rd['overdue_sum'] > 0.004 ? 'color:#b42318' : 'color:#067647' }}">{{ \App\Support\Money::format($rd['overdue_sum']) }}</strong>
+        <strong style="{{ $rd['overdue_sum'] > 0.004 ? 'color:var(--danger)' : 'color:var(--ok)' }}">{{ \App\Support\Money::format($rd['overdue_sum']) }}</strong>
         <span>überfällig{{ $rd['overdue_leases'] > 0 ? ' bei '.$rd['overdue_leases'].' Vertr'.($rd['overdue_leases'] === 1 ? 'ag' : 'ägen') : '' }}</span>
       </a>
       <a class="db-stat" href="{{ route('leases.index') }}" style="text-decoration:none"><strong>{{ $rd['active'] }}</strong><span>laufende Verträge</span></a>

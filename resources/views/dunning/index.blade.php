@@ -19,16 +19,16 @@
 @endphp
 <style>
 .dn-level{display:inline-block;border-radius:1rem;padding:.05rem .55rem;font-size:.85rem;font-weight:600;white-space:nowrap}
-.dn-l1{background:#eef4fb;color:var(--ink)}
-.dn-l2{background:#fff4e5;color:#8a5a12}
-.dn-l3{background:#fdecec;color:#b42318}
-.dn-off{background:#f1f3f5;color:#667085;text-decoration:line-through}
-.dn-hint{display:block;color:#b42318;font-size:.88rem;margin-top:.2rem}
-.dn-sel{padding:.35rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;background:#fff;max-width:100%}
-.dn-new{background:#ecfdf3;border:1px solid #abefc6;border-radius:.6rem;padding:.7rem 1rem;margin:0 0 1rem}
+.dn-l1{background:var(--surface-2);color:var(--ink)}
+.dn-l2{background:var(--brass-bg);color:var(--brass)}
+.dn-l3{background:var(--danger-bg);color:var(--danger)}
+.dn-off{background:var(--surface-2);color:var(--muted);text-decoration:line-through}
+.dn-hint{display:block;color:var(--danger);font-size:.88rem;margin-top:.2rem}
+.dn-sel{padding:.35rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;background:var(--surface);max-width:100%}
+.dn-new{background:var(--ok-bg);border:1px solid #abefc6;border-radius:.6rem;padding:.7rem 1rem;margin:0 0 1rem}
 .dn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.8rem}
-.dn-grid label{display:block;font-size:.9rem;color:#475467;margin-bottom:.2rem}
-.dn-grid input{width:100%;padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit}
+.dn-grid label{display:block;font-size:.9rem;color:var(--muted);margin-bottom:.2rem}
+.dn-grid input{width:100%;padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit}
 </style>
 
 <div class="sd-head">
@@ -207,8 +207,8 @@
   @if (auth()->user()->isAdmin())
     <form method="POST" action="{{ route('interest.rates.store') }}" style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:flex-end;margin-top:.8rem">
       @csrf
-      <div><label for="br-from" style="display:block;font-size:.9rem">gültig ab</label><input id="br-from" type="date" name="valid_from" required style="padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit"></div>
-      <div><label for="br-rate" style="display:block;font-size:.9rem">Basiszinssatz in %</label><input id="br-rate" type="text" name="rate" inputmode="decimal" required placeholder="z. B. 1,52" style="width:8rem;padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit"></div>
+      <div><label for="br-from" style="display:block;font-size:.9rem">gültig ab</label><input id="br-from" type="date" name="valid_from" required style="padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit"></div>
+      <div><label for="br-rate" style="display:block;font-size:.9rem">Basiszinssatz in %</label><input id="br-rate" type="text" name="rate" inputmode="decimal" required placeholder="z. B. 1,52" style="width:8rem;padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit"></div>
       <button class="sd-btn sec" type="submit">Eintragen</button>
     </form>
   @endif
