@@ -59,6 +59,7 @@ class ProfileSettingsController extends Controller
                 ['Finanzierung', 'Darlehen, Tilgungspläne, Werte und Rendite', '🏦', $link('finance.index')],
                 ['Anlage V', 'Einnahmen und Werbungskosten je Objekt für die Steuer', '🧮', $link('anlage-v.index')],
                 ['Jahresbericht', 'Jahresübersicht je Eigentümer zum Ausdrucken', '📊', $link('report.index')],
+                ['DATEV-Export', 'Buchungen für den Steuerberater', '📤', $link('datev.index', true)],
             ]],
             ['Webseite', [
                 ['Inserate', 'Freie Wohnungen und Gewerbe online stellen', '🏷️', $link('listings.index')],

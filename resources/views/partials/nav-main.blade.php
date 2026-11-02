@@ -25,7 +25,6 @@
           ['Mahnwesen', 'dunning.index', ['dunning.*'], 0, false],
           ['Belege', 'receipts.index', ['receipts.*', 'einvoice.*'], 0, false],
           ['E-Rechnung (Mieten)', 'erechnung.index', ['erechnung.*'], 0, false],
-          ['DATEV-Export', 'datev.index', ['datev.*'], 0, true],
       ],
       'Vermietung' => [
           ['Interessenten', 'applicants.index', ['applicants.*'], 0, false],
@@ -42,7 +41,7 @@
           ['Laufende Verträge', 'svc.index', ['svc.*'], 0, false],
           ['Lieferanten', 'vendors.index', ['vendors.*'], 0, false],
       ],
-      // Mietverträge, Finanzierung, Anlage V und Jahresbericht stehen seit 02.11.2026 als Kacheln unter Einstellungen
+      // Mietverträge, Finanzierung, Anlage V, Jahresbericht und DATEV-Export stehen seit 02.11.2026 als Kacheln unter Einstellungen
       // Gruppen „Stammdaten“, „Webseite“ und „Verwaltung“ stehen seit 02.11.2026 als Kacheln unter Profilmenü → Einstellungen
   ];
   // Ein Menü für alle: Die frühere Trennung „Alltag“/„Verwaltung“ gibt es seit 02.11.2026 nicht mehr, es steht immer alles da.

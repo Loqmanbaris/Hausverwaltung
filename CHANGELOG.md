@@ -2,6 +2,10 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## DATEV-Export unter Einstellungen
+Der DATEV-Export steht nicht mehr im Seitenmenü, sondern als Kachel unter Einstellungen → Finanzen und Steuer (nur Administrator).
+Keine Migration. Selbsttest: design:selbsttest
+
 ## Mietverträge, Finanzierung, Anlage V, Jahresbericht unter Einstellungen
 1. Diese vier Punkte stehen nicht mehr im Seitenmenü, sondern als Kacheln unter Profilmenü → Einstellungen: Mietverträge bei „Stammdaten“, Finanzierung, Anlage V und Jahresbericht in der neuen Gruppe „Finanzen und Steuer“.
 2. Seitenmenü jetzt: Mein Tag, E-Mails, Finanzen (Rechnungen schreiben, Umsätze, Mieteingang, Mahnwesen, Belege, E-Rechnung, DATEV-Export), Vermietung (Interessenten, Mieterhöhungen, Kautionen), Nebenkosten, Instandhaltung und Dienstleister.
