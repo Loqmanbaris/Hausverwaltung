@@ -1,17 +1,17 @@
-Ergebnis: OK (01.11.2026 23:57)
+Ergebnis: OK (02.11.2026 09:22)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    d3f6b40 Aussehen wie im Portal: Kopfleiste und Menü in Anthrazit, Symbole, Farbe der Hausverwaltung
+Ziel:    e997811 Kontoumsätze bearbeiten: Angaben korrigieren, Zuordnungen einzeln ändern
 
-=================== 01.11.2026 23:57:03 ===================
+=================== 02.11.2026 09:22:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Aussehen wie im Portal: Kopfleiste und Menü in Anthrazit, Symbole, Farbe der Hausverwaltung
+  - Kontoumsätze bearbeiten: Angaben korrigieren, Zuordnungen einzeln ändern
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-01-2357.bkp (7,3 MB, 88 Tabellen, 2097 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-0922.bkp (7,4 MB, 88 Tabellen, 2184 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -65,4 +65,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand d3f6b40 – Aussehen wie im Portal: Kopfleiste und Menü in Anthrazit, Symbole, Farbe der Hausverwaltung ist online.
+FERTIG: Neuer Stand e997811 – Kontoumsätze bearbeiten: Angaben korrigieren, Zuordnungen einzeln ändern ist online.
