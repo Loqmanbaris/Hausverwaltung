@@ -1,25 +1,23 @@
-Ergebnis: OK (02.11.2026 12:37)
+Ergebnis: OK (02.11.2026 12:47)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    ed78ca6 Gutschrift aufteilen wie bei Objego: Einnahmeart, Vertrag, Monat, Betrag, Notiz je Zeile
+Ziel:    b77bf93 Miete korrigieren: jede Zeile im Mietverlauf änderbar, auch die Miete zum Vertragsbeginn
 
-=================== 02.11.2026 12:37:02 ===================
+=================== 02.11.2026 12:47:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Gutschrift aufteilen wie bei Objego: Einnahmeart, Vertrag, Monat, Betrag, Notiz je Zeile
+  - Miete korrigieren: jede Zeile im Mietverlauf änderbar, auch die Miete zum Vertragsbeginn
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-1237.bkp (7,4 MB, 88 Tabellen, 2489 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-1247.bkp (7,4 MB, 89 Tabellen, 2492 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
 Datenbank umstellen ...
 
-   INFO  Running migrations.  
-
-  2026_11_19_000001_add_income_kinds_to_bank_assignments ........ 40.23ms DONE
+   INFO  Nothing to migrate.  
 
 
 Selbsttests ...
@@ -66,4 +64,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand ed78ca6 – Gutschrift aufteilen wie bei Objego: Einnahmeart, Vertrag, Monat, Betrag, Notiz je Zeile ist online.
+FERTIG: Neuer Stand b77bf93 – Miete korrigieren: jede Zeile im Mietverlauf änderbar, auch die Miete zum Vertragsbeginn ist online.
