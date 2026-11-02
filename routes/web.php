@@ -104,3 +104,4 @@ require __DIR__ . '/meintag.php';
 require __DIR__ . '/pwa.php';
 require __DIR__ . '/rechnungen.php';
 require __DIR__ . '/scan.php';
+require __DIR__ . '/bescheinigungen.php';
