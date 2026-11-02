@@ -14,7 +14,7 @@
   <div style="display:flex;flex-wrap:wrap;gap:.4rem;align-items:center">
     @foreach ($tabs as $k => $label)<a class="sd-btn small {{ $tab === $k ? '' : 'sec' }}" href="{{ route('deposit.index', array_filter(['stand' => $k, 'eigentuemer' => $ownerId])) }}">{{ $label }}</a>@endforeach
     @if ($owners->count() > 1)
-      <form method="GET" style="margin-left:auto"><input type="hidden" name="stand" value="{{ $tab }}"><select name="eigentuemer" onchange="this.form.submit()" aria-label="Eigentümer" style="padding:.35rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit"><option value="">Alle Eigentümer</option>@foreach ($owners as $o)<option value="{{ $o->id }}" @selected($ownerId === $o->id)>{{ $o->name }}</option>@endforeach</select></form>
+      <form method="GET" style="margin-left:auto"><input type="hidden" name="stand" value="{{ $tab }}"><select name="eigentuemer" onchange="this.form.submit()" aria-label="Eigentümer" style="padding:.35rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit"><option value="">Alle Eigentümer</option>@foreach ($owners as $o)<option value="{{ $o->id }}" @selected($ownerId === $o->id)>{{ $o->name }}</option>@endforeach</select></form>
     @endif
   </div>
 </div>
@@ -37,10 +37,10 @@
             <td class="rt-num">{{ $eur($s['held']) }}</td>
             <td>
               @if ($s['settled']) <span class="sd-badge">abgerechnet</span>
-              @elseif ($r['ended']) <span class="sd-badge" style="background:#fffbeb;color:#92400e">Abrechnung offen</span>
-              @elseif ($s['overdue'] > 0) <span class="sd-badge" style="background:#fef2f2;color:#b91c1c">{{ $eur($s['overdue']) }} überfällig</span>
+              @elseif ($r['ended']) <span class="sd-badge" style="background:var(--brass-bg);color:var(--brass)">Abrechnung offen</span>
+              @elseif ($s['overdue'] > 0) <span class="sd-badge" style="background:var(--danger-bg);color:var(--danger)">{{ $eur($s['overdue']) }} überfällig</span>
               @elseif ($s['open'] > 0) <span class="sd-badge">{{ $eur($s['open']) }} noch offen</span>
-              @else <span class="sd-badge" style="background:#ecfdf5;color:#065f46">vollständig</span> @endif
+              @else <span class="sd-badge" style="background:var(--ok-bg);color:var(--ok)">vollständig</span> @endif
             </td>
           </tr>
         @endforeach

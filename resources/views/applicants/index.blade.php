@@ -40,7 +40,7 @@
       <a class="sd-btn small {{ $status === $k ? '' : 'sec' }}" href="{{ route('applicants.index', array_filter(['stand' => $k, 'eigentuemer' => $ownerId])) }}">{{ $label }} ({{ (int) ($counts[$k] ?? 0) }})</a>
     @endforeach
     @if ($owners->count() > 1)
-      <form method="GET" style="margin-left:auto"><input type="hidden" name="stand" value="{{ $status }}"><select name="eigentuemer" onchange="this.form.submit()" aria-label="Eigentümer" style="padding:.35rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit"><option value="">Alle Eigentümer</option>@foreach ($owners as $o)<option value="{{ $o->id }}" @selected($ownerId === $o->id)>{{ $o->name }}</option>@endforeach</select></form>
+      <form method="GET" style="margin-left:auto"><input type="hidden" name="stand" value="{{ $status }}"><select name="eigentuemer" onchange="this.form.submit()" aria-label="Eigentümer" style="padding:.35rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit"><option value="">Alle Eigentümer</option>@foreach ($owners as $o)<option value="{{ $o->id }}" @selected($ownerId === $o->id)>{{ $o->name }}</option>@endforeach</select></form>
     @endif
   </div>
 </div>

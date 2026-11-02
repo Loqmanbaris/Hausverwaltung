@@ -47,7 +47,7 @@
   <h2>Cron-Adresse</h2>
   <p class="sd-muted" style="margin-top:0">Diese Adresse ruft der Cronjob bei IONOS einmal täglich auf (HTTP GET). Sie wirkt wie ein Schlüssel: bitte nicht weitergeben.</p>
   <p style="display:flex;flex-wrap:wrap;gap:.4rem;align-items:center">
-    <input id="cron-url" type="text" readonly value="{{ $cronUrl }}" style="flex:1 1 22rem;min-width:0;padding:.5rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;background:#fbfcfd">
+    <input id="cron-url" type="text" readonly value="{{ $cronUrl }}" style="flex:1 1 22rem;min-width:0;padding:.5rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;background:var(--surface-2)">
     <button class="sd-btn sec small" type="button" onclick="var f=document.getElementById('cron-url');f.select();(navigator.clipboard&&window.isSecureContext?navigator.clipboard.writeText(f.value):document.execCommand('copy'));this.textContent='Kopiert ✓'">Kopieren</button>
   </p>
   <form method="POST" action="{{ route('status.cron') }}" onsubmit="return confirm('Neue Cron-Adresse erzeugen? Die alte funktioniert dann sofort nicht mehr und muss bei IONOS ausgetauscht werden.')">

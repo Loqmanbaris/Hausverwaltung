@@ -56,7 +56,7 @@
           @foreach ($charges as $c)
             @php($ownerName = $c->lease?->owner?->name)
             @if ($owners->count() > 1 && ! $ownerId && $ownerName !== $lastOwner)
-              <tr><td colspan="5" style="background:#f4f6f8;font-weight:700">{{ $ownerName }}</td></tr>
+              <tr><td colspan="5" style="background:var(--surface-2);font-weight:700">{{ $ownerName }}</td></tr>
               @php($lastOwner = $ownerName)
             @endif
             <tr id="posten-{{ $c->id }}">

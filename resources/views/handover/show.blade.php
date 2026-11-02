@@ -44,7 +44,7 @@
     </div>
   @endif
 @endif
-<div style="background:#fff;border:1px solid #e3e6ea;border-radius:.6rem;padding:1.2rem 1.4rem;max-width:56rem;overflow-x:auto">
+<div style="background:var(--surface);border:1px solid var(--line);border-radius:.6rem;padding:1.2rem 1.4rem;max-width:56rem;overflow-x:auto">
   @include('handover.body')
 </div>
 @endsection

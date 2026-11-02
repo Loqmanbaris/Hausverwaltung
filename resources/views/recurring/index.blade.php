@@ -4,10 +4,10 @@
 @include('partials.sd-styles')
 @include('partials.sd-flash')
 <style>
-.rx-ok{color:#067647;font-weight:600}
-.rx-soon{color:#4b5563;font-weight:600}
-.rx-due{color:#7a4b00;font-weight:600}
-.rx-miss{color:#b42318;font-weight:600}
+.rx-ok{color:var(--ok);font-weight:600}
+.rx-soon{color:var(--muted);font-weight:600}
+.rx-due{color:var(--brass);font-weight:600}
+.rx-miss{color:var(--danger);font-weight:600}
 .rx-num{white-space:nowrap}
 </style>
 @php

@@ -29,6 +29,6 @@
 </svg>
 <div class="ck-legend">
   <span><i style="background:var(--brand)"></i>bezahlt</span>
-  <span><i style="background:#e5e7eb"></i>Soll</span>
+  <span><i style="background:var(--surface-2)"></i>Soll</span>
   <span><i style="background:#b42318;border-radius:50%"></i>Monat nicht voll bezahlt</span>
 </div>

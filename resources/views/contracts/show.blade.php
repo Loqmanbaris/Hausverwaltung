@@ -5,11 +5,11 @@
 @include('partials.sd-flash')
 @include('contracts.document-styles')
 <style>
-.cs-paper{background:#fff;border:1px solid #e3e6ea;border-radius:.6rem;padding:1.4rem 1.6rem;max-width:52rem}
+.cs-paper{background:var(--surface);border:1px solid var(--line);border-radius:.6rem;padding:1.4rem 1.6rem;max-width:52rem}
 @media (max-width:640px){.cs-paper{padding:1rem}}
 .cs-st{display:inline-block;border-radius:1rem;padding:.05rem .6rem;font-size:.85rem;font-weight:600}
-.cs-entwurf{background:#f1f3f5;color:#475467}.cs-unterschrieben{background:#ecfdf3;color:#067647}.cs-storniert{background:#fdecec;color:#b42318}
-.cs-hint{background:#fffaeb;border:1px solid #fedf89;border-radius:.6rem;padding:.6rem .9rem;margin:0 0 1rem;color:#7a4b00}
+.cs-entwurf{background:var(--surface-2);color:var(--muted)}.cs-unterschrieben{background:var(--ok-bg);color:var(--ok)}.cs-storniert{background:var(--danger-bg);color:var(--danger)}
+.cs-hint{background:var(--brass-bg);border:1px solid var(--brass-line);border-radius:.6rem;padding:.6rem .9rem;margin:0 0 1rem;color:var(--brass)}
 </style>
 <div class="sd-head">
   <h1>{{ $c->title() }}</h1>

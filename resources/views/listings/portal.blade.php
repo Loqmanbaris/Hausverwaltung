@@ -6,12 +6,12 @@
 <style>
 .pt-box{position:relative;margin:0 0 .9rem}
 .pt-box label{display:block;font-weight:600;margin-bottom:.25rem}
-.pt-box textarea,.pt-box input{width:100%;padding:.5rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;background:#fbfcfd}
+.pt-box textarea,.pt-box input{width:100%;padding:.5rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;background:var(--surface-2)}
 .pt-box textarea{min-height:7rem}
 .pt-copy{margin-top:.3rem}
-.pt-len{color:#667085;font-size:.85rem;margin-left:.4rem}
+.pt-len{color:var(--muted);font-size:.85rem;margin-left:.4rem}
 .pt-facts{display:grid;grid-template-columns:max-content 1fr;gap:.25rem 1rem;margin:0}
-.pt-facts dt{color:#475467}
+.pt-facts dt{color:var(--muted)}
 .pt-facts dd{margin:0}
 </style>
 <div class="sd-head">
@@ -23,7 +23,7 @@
 </div>
 <p class="sd-muted">{{ $listing->title }} · {{ $listing->unit?->label }}, {{ $listing->unit?->property?->name }}. Auf „Kopieren“ tippen und im Portal in das passende Feld einfügen. Fotos in der Reihenfolge 01, 02 … hochladen, das erste ist das Titelbild.</p>
 @if (! empty($missing))
-  <div class="sd-err" style="background:#fffaeb;border-color:#fedf89;color:#7a4b00">Noch nicht vollständig: {{ implode(', ', $missing) }}.</div>
+  <div class="sd-err" style="background:var(--brass-bg);border-color:var(--brass-line);color:var(--brass)">Noch nicht vollständig: {{ implode(', ', $missing) }}.</div>
 @endif
 
 <div class="sd-card">

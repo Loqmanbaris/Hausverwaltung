@@ -5,13 +5,13 @@
 @include('partials.sd-flash')
 @include('contracts.document-styles')
 <style>
-.sg-paper{background:#fff;border:1px solid #e3e6ea;border-radius:.6rem;padding:1.2rem 1.4rem;max-height:60vh;overflow:auto;margin-bottom:1rem}
-.sg-pad{border:2px dashed #98a2b3;border-radius:.6rem;background:#fff;position:relative;touch-action:none}
+.sg-paper{background:var(--surface);border:1px solid var(--line);border-radius:.6rem;padding:1.2rem 1.4rem;max-height:60vh;overflow:auto;margin-bottom:1rem}
+.sg-pad{border:2px dashed #98a2b3;border-radius:.6rem;background:var(--surface);position:relative;touch-action:none}
 .sg-pad canvas{display:block;width:100%;height:180px;touch-action:none;cursor:crosshair}
 .sg-pad .x{position:absolute;left:1rem;right:1rem;bottom:2.4rem;border-bottom:1px solid #d0d5dd;pointer-events:none}
 .sg-pad .hint{position:absolute;left:1rem;bottom:.5rem;color:#98a2b3;font-size:.85rem;pointer-events:none}
 .sg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:1rem}
-.sg-hint{background:#fffaeb;border:1px solid #fedf89;border-radius:.6rem;padding:.6rem .9rem;margin:0 0 1rem;color:#7a4b00}
+.sg-hint{background:var(--brass-bg);border:1px solid var(--brass-line);border-radius:.6rem;padding:.6rem .9rem;margin:0 0 1rem;color:var(--brass)}
 </style>
 <div class="sd-head">
   <h1>Vertrag unterschreiben</h1>

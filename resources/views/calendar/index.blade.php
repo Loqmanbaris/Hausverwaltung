@@ -3,7 +3,7 @@
 @section('content')
 @include('partials.sd-styles')
 @include('partials.sd-flash')
-@php $box = 'padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;width:100%'; @endphp
+@php $box = 'padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;width:100%'; @endphp
 <div class="sd-head"><h1>Kalender-Abo</h1></div>
 <p class="sd-muted">Fristen und Termine aus dem CRM erscheinen in deinem Handy- oder Computer-Kalender: Vertragsbeginn und -ende, Mieterhöhungen, Kündigungsfristen, Wartungen, Handwerker, Besichtigungen, Zinsbindungen und ablaufende Dokumente. Du siehst nur Termine zu den Eigentümern, für die du freigegeben bist.</p>
 

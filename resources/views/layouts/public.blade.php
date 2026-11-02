@@ -54,8 +54,8 @@ h1,h2,h3{letter-spacing:-.02em;color:var(--ink)}
 .btn,.pub-btn{display:inline-block;background:var(--accent);color:#fff;border:2px solid var(--accent);border-radius:0;padding:.7rem 1.3rem;font-weight:650;text-decoration:none;cursor:pointer;font:inherit;font-weight:650}
 .btn:hover,.pub-btn:hover{background:var(--accent-dark);border-color:var(--accent-dark);color:#fff}
 .pub-btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
-.pub-btn.ghost:hover{background:var(--ink);color:#fff}
-.pub-head{border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:20}
+.pub-btn.ghost:hover{background:var(--primary);color:var(--on-primary)}
+.pub-head{border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:20}
 .pub-head-inner{max-width:1180px;margin:0 auto;padding:.9rem 1.25rem;display:flex;align-items:center;gap:1.5rem}
 .pub-brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--ink);font-weight:800;font-size:1.15rem;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
 .pub-brand img{height:38px;width:auto;display:block}
@@ -67,7 +67,7 @@ h1,h2,h3{letter-spacing:-.02em;color:var(--ink)}
 .pub-menu{display:none;margin-left:auto}
 .pub-menu summary{list-style:none;cursor:pointer;font-weight:650;padding:.3rem .6rem;border:1.5px solid var(--ink)}
 .pub-menu summary::-webkit-details-marker{display:none}
-.pub-menu[open] .pub-nav{display:flex;position:absolute;left:0;right:0;top:100%;background:#fff;border-bottom:1px solid var(--line);flex-direction:column;align-items:flex-start;padding:1rem 1.25rem;gap:.6rem}
+.pub-menu[open] .pub-nav{display:flex;position:absolute;left:0;right:0;top:100%;background:var(--surface);border-bottom:1px solid var(--line);flex-direction:column;align-items:flex-start;padding:1rem 1.25rem;gap:.6rem}
 @media (max-width:860px){.pub-head-inner>.pub-nav{display:none}.pub-menu{display:block}.pub-head-inner{position:relative}}
 .pub-main{max-width:1180px;margin:0 auto;padding:2.2rem 1.25rem 4rem}
 .pub-text{max-width:46rem}
@@ -81,7 +81,7 @@ h1,h2,h3{letter-spacing:-.02em;color:var(--ink)}
 .pub-foot a{color:#fff;text-decoration:none}
 .pub-foot a:hover{color:#fff;text-decoration:underline}
 .pub-foot strong{color:#fff;display:block;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.08em;font-size:.82rem}
-.pub-foot .bar{border-top:1px solid #374151;grid-column:1/-1;padding-top:1rem;color:#9ca3af;font-size:.85rem}
+.pub-foot .bar{border-top:1px solid #374151;grid-column:1/-1;padding-top:1rem;color:var(--muted);font-size:.85rem}
 .test-banner{position:relative;z-index:30}
 </style>
 </head>

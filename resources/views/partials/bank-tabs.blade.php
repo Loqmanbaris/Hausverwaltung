@@ -10,7 +10,7 @@
   ];
 @endphp
 <style>
-.kz-tabs{display:flex;gap:.2rem;margin:0 0 1.1rem;border-bottom:1px solid var(--line,#e3e6ea);overflow-x:auto}
+.kz-tabs{display:flex;gap:.2rem;margin:0 0 1.1rem;border-bottom:1px solid var(--line);overflow-x:auto}
 .kz-tabs a{display:flex;align-items:center;gap:.45rem;padding:.6rem .9rem;margin-bottom:-1px;border-bottom:3px solid transparent;color:var(--muted,#6b7280);text-decoration:none;font-weight:500;white-space:nowrap}
 .kz-tabs a:hover{color:var(--ink,#111827)}
 .kz-tabs a.on{color:var(--ink,#111827);border-bottom-color:var(--brand,#f97316);font-weight:600}

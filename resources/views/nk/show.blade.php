@@ -59,7 +59,7 @@
               <td style="white-space:nowrap"><a class="sd-btn sec small" href="{{ route('nk.print', ['settlement' => $settlement, 'vertrag' => $id]) }}" target="_blank" rel="noopener">Drucken</a>@if ($settlement->isFinal()) <a class="sd-btn sec small" href="{{ route('mail.compose', ['art' => 'nk', 'ids' => $settlement->id, 'vertrag' => $id]) }}">E-Mail</a>@endif</td>
             </tr>
             @if ($final && $l['suggest']['active'])
-              <tr><td colspan="6" style="background:#f7f9fb">
+              <tr><td colspan="6" style="background:var(--surface-2)">
                 <form class="rt-pay" method="POST" action="{{ route('nk.suggest', [$settlement, $id]) }}">
                   @csrf
                   <span>Neue Vorauszahlung (bisher NK {{ Money::format($l['suggest']['current_operating']) }}, HK {{ Money::format($l['suggest']['current_heating']) }}{{ $l['vat_rate'] > 0 ? ', netto' : '' }}): ab</span>

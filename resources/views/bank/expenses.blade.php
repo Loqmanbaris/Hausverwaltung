@@ -13,20 +13,20 @@
 @endphp
 <style>
 .bk-tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 1rem}
-.bk-tabs a{padding:.4rem .8rem;border:1px solid #c5ccd3;border-radius:2rem;text-decoration:none;color:var(--ink);background:#fff}
-.bk-tabs a.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.bk-tx{border:1px solid #e3e6ea;border-radius:.6rem;padding:.8rem 1rem;margin:0 0 .8rem;background:#fff}
-.bk-tx.bk-target{border-color:#e0b100;background:#fffdf3}
+.bk-tabs a{padding:.4rem .8rem;border:1px solid var(--line-strong);border-radius:2rem;text-decoration:none;color:var(--ink);background:var(--surface)}
+.bk-tabs a.on{background:var(--primary);color:var(--on-primary);border-color:var(--ink)}
+.bk-tx{border:1px solid var(--line);border-radius:.6rem;padding:.8rem 1rem;margin:0 0 .8rem;background:var(--surface)}
+.bk-tx.bk-target{border-color:#e0b100;background:var(--brass-bg)}
 .bk-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem}
 .bk-right{display:flex;flex-direction:column;align-items:flex-end;gap:.2rem}
-.bk-edit{font-size:.85rem;color:var(--muted);text-decoration:none;border:1px solid var(--line-strong);border-radius:1rem;padding:.1rem .6rem;white-space:nowrap;background:#fff}
+.bk-edit{font-size:.85rem;color:var(--muted);text-decoration:none;border:1px solid var(--line-strong);border-radius:1rem;padding:.1rem .6rem;white-space:nowrap;background:var(--surface)}
 .bk-edit:hover{color:var(--ink);border-color:var(--ink)}
-.bk-amt{font-size:1.15rem;font-weight:700;white-space:nowrap;color:#b42318}
-.bk-sug{background:#f4f8fc;border-radius:.45rem;padding:.5rem .7rem;margin:.4rem 0}
+.bk-amt{font-size:1.15rem;font-weight:700;white-space:nowrap;color:var(--danger)}
+.bk-sug{background:var(--surface-2);border-radius:.45rem;padding:.5rem .7rem;margin:.4rem 0}
 .bk-form{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-top:.4rem}
-.bk-form select{flex:1 1 16rem;min-width:0;width:auto;padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;background:#fff}
-.bk-form input[type=text]{width:7rem;padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit}
-.bk-sure{display:inline-block;background:#ecfdf3;color:#067647;border-radius:1rem;padding:.05rem .5rem;font-size:.85rem;font-weight:600}
+.bk-form select{flex:1 1 16rem;min-width:0;width:auto;padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;background:var(--surface)}
+.bk-form input[type=text]{width:7rem;padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit}
+.bk-sure{display:inline-block;background:var(--ok-bg);color:var(--ok);border-radius:1rem;padding:.05rem .5rem;font-size:.85rem;font-weight:600}
 </style>
 
 @php

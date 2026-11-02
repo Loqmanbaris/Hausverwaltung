@@ -11,8 +11,8 @@
 @endphp
 <style>
 .iq-tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 1rem}
-.iq-tabs a{padding:.4rem .8rem;border:1px solid #c5ccd3;border-radius:2rem;text-decoration:none;color:var(--ink);background:#fff}
-.iq-tabs a.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.iq-tabs a{padding:.4rem .8rem;border:1px solid var(--line-strong);border-radius:2rem;text-decoration:none;color:var(--ink);background:var(--surface)}
+.iq-tabs a.on{background:var(--primary);color:var(--on-primary);border-color:var(--ink)}
 .iq-neu{font-weight:700}
 </style>
 <div class="sd-head">
@@ -36,7 +36,7 @@
           @foreach ($items as $i)
             <tr @class(['iq-neu' => $i->status === 'neu'])>
               <td>{{ $i->created_at->format('d.m.Y H:i') }}</td>
-              <td>@if ($i->topic === 'schaden')<span class="sd-badge" style="background:#fdecec;color:#b42318">Schaden</span> @endif<a href="{{ route('inquiries.show', $i) }}">{{ $i->name }}</a>{{ $i->company ? ', '.$i->company : '' }}<br><span class="sd-muted">{{ \Illuminate\Support\Str::limit($i->message, 80) }}</span></td>
+              <td>@if ($i->topic === 'schaden')<span class="sd-badge" style="background:var(--danger-bg);color:var(--danger)">Schaden</span> @endif<a href="{{ route('inquiries.show', $i) }}">{{ $i->name }}</a>{{ $i->company ? ', '.$i->company : '' }}<br><span class="sd-muted">{{ \Illuminate\Support\Str::limit($i->message, 80) }}</span></td>
               <td>{{ $i->listing?->title ?? 'allgemeine Anfrage' }}@if ($i->date_from)<br><span class="sd-muted">{{ $i->date_from->format('d.m.') }}–{{ $i->date_to?->format('d.m.Y') }}</span>@endif</td>
               <td>{{ Inquiry::STATUS[$i->status] ?? $i->status }}</td>
             </tr>

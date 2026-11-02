@@ -4,11 +4,11 @@
 @include('partials.sd-styles')
 @include('partials.sd-flash')
 <style>
-.rc-warn{background:#fffaf0;border:1px solid #f0d9a8;color:#7a4b00;padding:.7rem 1rem;border-radius:.5rem;margin-bottom:1rem}
+.rc-warn{background:var(--brass-bg);border:1px solid var(--brass-line);color:var(--brass);padding:.7rem 1rem;border-radius:.5rem;margin-bottom:1rem}
 .rc-pages{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:1rem}
-.rc-page{border:1px solid #e3e6ea;border-radius:.6rem;padding:.7rem;background:#fff}
-.rc-page img{display:block;max-width:100%;height:auto;border-radius:.3rem;background:#f4f6f8}
-.rc-pdfbox{display:flex;align-items:center;justify-content:center;height:8rem;background:#f4f6f8;border-radius:.3rem;font-weight:700;color:#4b5563}
+.rc-page{border:1px solid var(--line);border-radius:.6rem;padding:.7rem;background:var(--surface)}
+.rc-page img{display:block;max-width:100%;height:auto;border-radius:.3rem;background:var(--surface-2)}
+.rc-pdfbox{display:flex;align-items:center;justify-content:center;height:8rem;background:var(--surface-2);border-radius:.3rem;font-weight:700;color:var(--muted)}
 .rc-page .sd-actions{margin-top:.6rem}
 </style>
 @php($isAdmin = auth()->user()->isAdmin())

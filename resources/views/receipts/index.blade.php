@@ -7,10 +7,10 @@
 .rc-filter{display:flex;flex-wrap:wrap;gap:.5rem;align-items:end;margin:.2rem 0 1rem}
 .rc-filter .f{display:flex;flex-direction:column}
 .rc-filter label{font-size:.85rem;margin:0 0 .15rem}
-.rc-filter select,.rc-filter input[type=text]{padding:.5rem;border:1px solid #c5ccd3;border-radius:.45rem;font:inherit;background:#fff}
-.rc-badge-ok{color:#067647;font-weight:600}
-.rc-badge-open{color:#7a4b00;font-weight:600}
-.rc-warn{background:#fffaf0;border:1px solid #f0d9a8;color:#7a4b00;padding:.7rem 1rem;border-radius:.5rem;margin-bottom:1rem}
+.rc-filter select,.rc-filter input[type=text]{padding:.5rem;border:1px solid var(--line-strong);border-radius:.45rem;font:inherit;background:var(--surface)}
+.rc-badge-ok{color:var(--ok);font-weight:600}
+.rc-badge-open{color:var(--brass);font-weight:600}
+.rc-warn{background:var(--brass-bg);border:1px solid var(--brass-line);color:var(--brass);padding:.7rem 1rem;border-radius:.5rem;margin-bottom:1rem}
 .rc-num{text-align:right;white-space:nowrap}
 </style>
 

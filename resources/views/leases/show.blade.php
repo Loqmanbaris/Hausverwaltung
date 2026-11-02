@@ -275,12 +275,12 @@
       <input type="hidden" name="back" value="vertrag">
       <p style="margin:0 0 .4rem">Überfällig: <strong class="rt-late">{{ \App\Support\Money::format($dnOverdue) }}</strong></p>
       <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:flex-start">
-        <select name="level[{{ $lease->id }}]" aria-label="Stufe" style="padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit">
+        <select name="level[{{ $lease->id }}]" aria-label="Stufe" style="padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit">
           @foreach (\App\Models\DunningNotice::LEVELS as $lv => $label)
             <option value="{{ $lv }}" @selected($lv === $dnNext)>{{ $label }}</option>
           @endforeach
         </select>
-        <textarea name="note" rows="2" maxlength="2000" placeholder="Zusätzlicher Text im Schreiben (freiwillig)" style="flex:1 1 18rem;min-width:0;padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit"></textarea>
+        <textarea name="note" rows="2" maxlength="2000" placeholder="Zusätzlicher Text im Schreiben (freiwillig)" style="flex:1 1 18rem;min-width:0;padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit"></textarea>
         <button class="sd-btn" type="submit">Schreiben erstellen</button>
       </div>
       @if ($dnLast && $dnLast->pay_by->format('Y-m-d') >= $today)

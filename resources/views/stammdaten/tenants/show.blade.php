@@ -107,7 +107,7 @@
               <td style="white-space:nowrap">{{ $m->created_at->timezone('Europe/Berlin')->format('d.m.Y H:i') }}</td>
               <td>{{ $m->kindLabel() }}</td>
               <td>{{ $m->subject }}</td>
-              <td>{!! $m->status === 'gesendet' ? '<span style="color:#067647;font-weight:600">gesendet</span>' : '<span style="color:#b42318;font-weight:600">Fehler</span>' !!}</td>
+              <td>{!! $m->status === 'gesendet' ? '<span style="color:var(--ok);font-weight:600">gesendet</span>' : '<span style="color:var(--danger);font-weight:600">Fehler</span>' !!}</td>
             </tr>
           @endforeach
         </tbody>

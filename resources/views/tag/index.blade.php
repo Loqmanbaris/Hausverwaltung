@@ -9,7 +9,7 @@
   $months = ['', 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
   $label = fn ($d) => $wd[(int) date('w', strtotime($d))].', '.date('d.m.Y', strtotime($d));
   $long = fn ($d) => $wd[(int) date('w', strtotime($d))].', '.(int) date('j', strtotime($d)).'. '.$months[(int) date('n', strtotime($d))].' '.date('Y', strtotime($d));
-  $box = 'padding:.6rem;border:1px solid #c5ccd3;border-radius:.6rem;font:inherit;width:100%;box-sizing:border-box';
+  $box = 'padding:.6rem;border:1px solid var(--line-strong);border-radius:.6rem;font:inherit;width:100%;box-sizing:border-box';
   $editing = $item !== null;
   $val = function (string $key, $default = '') use ($item, $editing) {
       if (! $editing) {
@@ -39,7 +39,7 @@
 @endphp
 <style>
   .mt-pills{display:flex;gap:.5rem;margin:0 0 1rem}
-  .mt-pills a,.mt-pills button{flex:1;text-align:center;padding:.8rem .4rem;background:#fff;border:1px solid var(--line);border-radius:14px;font:inherit;font-weight:700;color:var(--ink);text-decoration:none;cursor:pointer;white-space:nowrap}
+  .mt-pills a,.mt-pills button{flex:1;text-align:center;padding:.8rem .4rem;background:var(--surface);border:1px solid var(--line);border-radius:14px;font:inherit;font-weight:700;color:var(--ink);text-decoration:none;cursor:pointer;white-space:nowrap}
   .mt-pills .on{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
   @@media (min-width:961px){.mt-pills .more{display:none}}
   .mt-hero{background:linear-gradient(160deg,#141b2d 0%,#26345a 100%);color:#fff;border-radius:24px;padding:1.2rem 1.2rem 1.3rem;margin-bottom:1rem;box-shadow:0 8px 24px rgba(20,27,45,.25)}
@@ -49,7 +49,7 @@
   .mt-sub{color:#aab3c5;font-size:1.02rem}
   .mt-ctrl{display:flex;gap:.45rem;align-items:center}
   .mt-ctrl select,.mt-ctrl a{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:12px;padding:.55rem .8rem;font:inherit;font-weight:700;text-decoration:none;line-height:1.2}
-  .mt-ctrl select option{color:#111827}
+  .mt-ctrl select option{color:var(--ink)}
   .mt-ctrl a{min-width:2.5rem;text-align:center}
   .mt-chips{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.1rem}
   .mt-chip{display:flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:.55rem 1rem;font-size:1.05rem}
@@ -63,21 +63,21 @@
   .mt-tile span{display:block;font-size:1.08rem;margin-top:.15rem}
   .mt-tile.green{background:#1e8a4c}.mt-tile.brown{background:#a8541b}.mt-tile.orange{background:#f47b14}
   .mt-tile.purple{background:#6b42bd}.mt-tile.teal{background:#0f8b8d}.mt-tile.pink{background:#d614b5}
-  .mt-tile.white{background:#fff;color:#111827;border-color:var(--line)}
+  .mt-tile.white{background:var(--surface);color:var(--ink);border-color:var(--line)}
   .mt-tile.zero{opacity:.82}
   .mt-day{margin-bottom:1rem;border-radius:16px}
   .mt-day h2{margin:0 0 .5rem;font-size:1.05rem}
-  .mt-day.today h2{color:#1d4ed8}
+  .mt-day.today h2{color:var(--info)}
   .mt-row{display:flex;gap:.6rem;align-items:flex-start;padding:.6rem 0;border-top:1px solid #e5e8ec}
   .mt-row:first-of-type{border-top:0}
-  .mt-time{min-width:3.6rem;font-variant-numeric:tabular-nums;color:#374151;font-weight:600}
+  .mt-time{min-width:3.6rem;font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
   .mt-main{flex:1;min-width:0;overflow-wrap:anywhere}
   .mt-done .mt-title{text-decoration:line-through;color:#8a94a0}
-  .mt-tag{display:inline-block;font-size:.72rem;padding:.05rem .45rem;border-radius:1rem;background:#eef1f5;color:#4b5563;margin-right:.3rem}
-  .mt-tag.warn{background:#fdecea;color:#b42318}
-  .mt-tag.todo{background:#e8f1fe;color:#1d4ed8}
-  .mt-check{border:1px solid #c5ccd3;background:#fff;border-radius:.6rem;width:2.4rem;height:2.4rem;font-size:1.1rem;cursor:pointer}
-  .mt-banner{background:#fff7e6;border:1px solid #f5c26b;border-radius:14px;padding:.7rem .9rem;margin-bottom:1rem}
+  .mt-tag{display:inline-block;font-size:.72rem;padding:.05rem .45rem;border-radius:1rem;background:var(--surface-2);color:var(--muted);margin-right:.3rem}
+  .mt-tag.warn{background:var(--danger-bg);color:var(--danger)}
+  .mt-tag.todo{background:var(--info-bg);color:var(--info)}
+  .mt-check{border:1px solid var(--line-strong);background:var(--surface);border-radius:.6rem;width:2.4rem;height:2.4rem;font-size:1.1rem;cursor:pointer}
+  .mt-banner{background:var(--brass-bg);border:1px solid #f5c26b;border-radius:14px;padding:.7rem .9rem;margin-bottom:1rem}
   .mt-form{display:grid;gap:.8rem}
   .mt-two{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
   .mt-kind label{margin-right:1rem}
@@ -144,7 +144,7 @@
 
   @if ($overdue->count() > 0)
     <div class="sd-card mt-day">
-      <h2 style="color:#b42318">Überfällig</h2>
+      <h2 style="color:var(--danger)">Überfällig</h2>
       @foreach ($overdue as $o)
         <div class="mt-row">
           <form method="POST" action="{{ route('tag.done', $o->id) }}">@csrf<button class="mt-check" type="submit" title="Erledigt">○</button></form>
@@ -174,7 +174,7 @@
           @else
             <div style="width:2.4rem"></div>
           @endif
-          <div class="mt-time">{{ $r['time'] ?? 'ganztägig' }}@if ($r['end'])<br><span style="font-weight:400;color:#6b7280">bis {{ $r['end'] }}</span>@endif</div>
+          <div class="mt-time">{{ $r['time'] ?? 'ganztägig' }}@if ($r['end'])<br><span style="font-weight:400;color:var(--muted)">bis {{ $r['end'] }}</span>@endif</div>
           <div class="mt-main">
             @if ($r['source'] === 'own' && ! empty($r['recurring']))<span class="mt-tag">↻ {{ $r['repeat'] }}</span>@endif
             @if ($r['source'] === 'frist')<span class="mt-tag {{ $r['tone'] === 'warn' ? 'warn' : '' }}">Frist</span>@elseif ($r['kind'] === 'todo')<span class="mt-tag todo">To-do</span>@else<span class="mt-tag">Termin</span>@endif
@@ -184,7 +184,7 @@
               @if ($r['remind'] !== '')<div class="sd-muted">Erinnerung: {{ MeinTag::REMINDERS[$r['remind']] ?? '' }}</div>@endif
               <a class="mt-link" href="{{ route('tag.edit', $r['id']) }}">bearbeiten{{ ! empty($r['recurring']) ? ' (ganze Serie)' : '' }}</a>
               @if (! empty($r['recurring']))
-                <form method="POST" action="{{ route('tag.skip', $r['id']) }}" style="display:inline" onsubmit="return confirm('Nur diesen Tag auslassen?')">@csrf<input type="hidden" name="datum" value="{{ $r['date'] }}"><button type="submit" class="mt-link" style="background:none;border:0;padding:0 0 0 .6rem;color:#4b5563;text-decoration:underline;cursor:pointer;font:inherit;font-size:.85rem">diesen Tag auslassen</button></form>
+                <form method="POST" action="{{ route('tag.skip', $r['id']) }}" style="display:inline" onsubmit="return confirm('Nur diesen Tag auslassen?')">@csrf<input type="hidden" name="datum" value="{{ $r['date'] }}"><button type="submit" class="mt-link" style="background:none;border:0;padding:0 0 0 .6rem;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit;font-size:.85rem">diesen Tag auslassen</button></form>
               @endif
             @endif
           </div>
@@ -208,23 +208,23 @@
     <div>
       <label for="mt-title">Titel *</label>
       <input id="mt-title" name="title" type="text" maxlength="190" required value="{{ $val('title') }}" style="{{ $box }}">
-      @error('title')<small style="color:#b42318">{{ $message }}</small>@enderror
+      @error('title')<small style="color:var(--danger)">{{ $message }}</small>@enderror
     </div>
     <div>
       <label for="mt-due">Tag *</label>
       <input id="mt-due" name="due_on" type="date" required value="{{ $val('due_on', $formDate) }}" style="{{ $box }}">
-      @error('due_on')<small style="color:#b42318">{{ $message }}</small>@enderror
+      @error('due_on')<small style="color:var(--danger)">{{ $message }}</small>@enderror
     </div>
     <div class="mt-two">
       <div>
         <label for="mt-start">Uhrzeit (leer = ganztägig)</label>
         <input id="mt-start" name="start_time" type="time" value="{{ $val('start_time') }}" style="{{ $box }}">
-        @error('start_time')<small style="color:#b42318">{{ $message }}</small>@enderror
+        @error('start_time')<small style="color:var(--danger)">{{ $message }}</small>@enderror
       </div>
       <div>
         <label for="mt-end">Bis (freiwillig)</label>
         <input id="mt-end" name="end_time" type="time" value="{{ $val('end_time') }}" style="{{ $box }}">
-        @error('end_time')<small style="color:#b42318">{{ $message }}</small>@enderror
+        @error('end_time')<small style="color:var(--danger)">{{ $message }}</small>@enderror
       </div>
     </div>
     <div>

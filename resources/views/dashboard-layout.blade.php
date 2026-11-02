@@ -4,7 +4,7 @@
 @include('partials.sd-styles')
 <style>
 .dl-list{list-style:none;margin:0;padding:0}
-.dl-item{display:flex;align-items:center;gap:.8rem;padding:.65rem .2rem;border-top:1px solid var(--line);background:#fff}
+.dl-item{display:flex;align-items:center;gap:.8rem;padding:.65rem .2rem;border-top:1px solid var(--line);background:var(--surface)}
 .dl-item:first-child{border-top:0}
 .dl-item.off .dl-txt{opacity:.5}
 .dl-txt{flex:1;min-width:0}
@@ -12,12 +12,12 @@
 .dl-txt span{font-size:.88rem;color:var(--muted)}
 .dl-size{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border:1px solid var(--line);border-radius:1rem;padding:.05rem .5rem;white-space:nowrap}
 .dl-move{display:flex;gap:.25rem}
-.dl-move button{width:2.1rem;height:2.1rem;border:1px solid var(--line-strong);background:#fff;border-radius:8px;cursor:pointer;font-size:1rem;line-height:1}
+.dl-move button{width:2.1rem;height:2.1rem;border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;cursor:pointer;font-size:1rem;line-height:1}
 .dl-move button:hover{border-color:var(--ink)}
 .dl-move button:disabled{opacity:.3;cursor:default}
 .dl-color{display:flex;align-items:center;gap:.4rem}
-.dl-color select{font:inherit;font-size:.9rem;padding:.35rem .5rem;border:1px solid var(--line-strong);border-radius:8px;background:#fff;max-width:13rem}
-.dl-dot{width:1.1rem;height:1.1rem;border-radius:50%;border:1px solid var(--line-strong);flex:none;background:#fff}
+.dl-color select{font:inherit;font-size:.9rem;padding:.35rem .5rem;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);max-width:13rem}
+.dl-dot{width:1.1rem;height:1.1rem;border-radius:50%;border:1px solid var(--line-strong);flex:none;background:var(--surface)}
 .dl-item{border-left:4px solid transparent;padding-left:.5rem}
 .dl-switch{display:flex;align-items:center;gap:.4rem;margin:0;font-weight:600;font-size:.9rem;white-space:nowrap}
 .dl-switch input{width:1.15rem;height:1.15rem;accent-color:var(--brand)}

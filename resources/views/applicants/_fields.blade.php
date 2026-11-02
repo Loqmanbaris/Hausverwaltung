@@ -1,6 +1,6 @@
 @php
   use App\Support\Interessenten\Interessenten;
-  $box = 'padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;width:100%';
+  $box = 'padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;width:100%';
   $val = fn ($k) => old($k, $values[$k] ?? '');
 @endphp
 <div class="sd-grid">

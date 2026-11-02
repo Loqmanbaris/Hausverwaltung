@@ -62,7 +62,7 @@
     <form method="POST" action="{{ route('invoices.finalize', $inv) }}" style="display:grid;gap:.5rem" onsubmit="return confirm('Festschreiben? Danach ist die Rechnung unveränderlich und bekommt ihre Nummer.')">
       @csrf
       <label for="issued_on">Rechnungsdatum</label>
-      <input id="issued_on" name="issued_on" type="date" value="{{ $inv->issued_on?->format('Y-m-d') ?? date('Y-m-d') }}" style="padding:.55rem;border:1px solid #c5ccd3;border-radius:.5rem;font:inherit">
+      <input id="issued_on" name="issued_on" type="date" value="{{ $inv->issued_on?->format('Y-m-d') ?? date('Y-m-d') }}" style="padding:.55rem;border:1px solid var(--line-strong);border-radius:.5rem;font:inherit">
       <button class="sd-btn" type="submit" @disabled(count($problems) > 0)>Festschreiben und Nummer vergeben</button>
       <small class="sd-muted">Festgeschriebene Rechnungen werden nicht geändert und nicht gelöscht (Aufbewahrung 8 Jahre). Fehler korrigierst du mit einer Gutschrift und einer neuen Rechnung.</small>
     </form>
@@ -82,9 +82,9 @@
     <h3 style="margin:.4rem 0">Per E-Mail senden</h3>
     <form method="POST" action="{{ route('invoices.mail', $inv) }}" style="display:grid;gap:.5rem">
       @csrf
-      <input name="to" type="email" required value="{{ old('to', $b['email'] ?? '') }}" placeholder="E-Mail-Adresse" style="padding:.55rem;border:1px solid #c5ccd3;border-radius:.5rem;font:inherit">
-      <input name="subject" required value="{{ old('subject', $inv->kindLabel().' '.$inv->number) }}" style="padding:.55rem;border:1px solid #c5ccd3;border-radius:.5rem;font:inherit">
-      <textarea name="body" rows="6" required style="padding:.55rem;border:1px solid #c5ccd3;border-radius:.5rem;font:inherit">{{ old('body', $mailBody) }}</textarea>
+      <input name="to" type="email" required value="{{ old('to', $b['email'] ?? '') }}" placeholder="E-Mail-Adresse" style="padding:.55rem;border:1px solid var(--line-strong);border-radius:.5rem;font:inherit">
+      <input name="subject" required value="{{ old('subject', $inv->kindLabel().' '.$inv->number) }}" style="padding:.55rem;border:1px solid var(--line-strong);border-radius:.5rem;font:inherit">
+      <textarea name="body" rows="6" required style="padding:.55rem;border:1px solid var(--line-strong);border-radius:.5rem;font:inherit">{{ old('body', $mailBody) }}</textarea>
       <button class="sd-btn" type="submit">Senden mit PDF@if ($inv->xml) und XML@endif</button>
     </form>
   @endif

@@ -5,9 +5,9 @@
 @endphp
 <style>
 .bf{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:0 0 1rem}
-.bf select{width:auto;min-width:0;padding:.45rem .6rem;border:1px solid var(--line-strong,#c5ccd3);border-radius:8px;font:inherit;background:#fff}
+.bf select{width:auto;min-width:0;padding:.45rem .6rem;border:1px solid var(--line-strong);border-radius:8px;font:inherit;background:var(--surface)}
 .bf-month{display:flex;align-items:center;gap:.25rem}
-.bf-arrow{display:inline-flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border:1px solid var(--line-strong,#c5ccd3);border-radius:8px;background:#fff;color:var(--ink,#111827);text-decoration:none;font-size:1.1rem}
+.bf-arrow{display:inline-flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink,#111827);text-decoration:none;font-size:1.1rem}
 .bf-arrow.off{opacity:.35;pointer-events:none}
 </style>
 <form class="bf" method="GET" action="{{ route($filterRoute) }}">

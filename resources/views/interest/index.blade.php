@@ -16,7 +16,7 @@
 
 <div class="sd-card">
   <form class="rt-filter" method="GET" action="{{ route('interest.index', $lease) }}" style="flex-wrap:wrap">
-    <label>Zinsen bis <input type="date" name="bis" value="{{ $until }}" max="{{ date('Y-m-d') }}" style="padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit"></label>
+    <label>Zinsen bis <input type="date" name="bis" value="{{ $until }}" max="{{ date('Y-m-d') }}" style="padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit"></label>
     <select name="modus" aria-label="Zinssatz">
       @foreach (Verzugszinsen::MODES as $k => $label)<option value="{{ $k }}" @selected($mode === $k)>{{ $label }}</option>@endforeach
     </select>

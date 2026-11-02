@@ -10,36 +10,36 @@
   $isOut = $p->kind === 'auszug';
 @endphp
 <style>
-.ho-room{border:1px solid #e3e6ea;border-radius:.7rem;background:#fff;padding:.8rem 1rem;margin:0 0 1rem}
+.ho-room{border:1px solid var(--line);border-radius:.7rem;background:var(--surface);padding:.8rem 1rem;margin:0 0 1rem}
 .ho-room-head{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.4rem}
-.ho-room-head input{flex:1 1 12rem;min-width:0;font-weight:700;font-size:1.05rem;padding:.4rem .5rem;border:1px solid #c5ccd3;border-radius:.4rem}
+.ho-room-head input{flex:1 1 12rem;min-width:0;font-weight:700;font-size:1.05rem;padding:.4rem .5rem;border:1px solid var(--line-strong);border-radius:.4rem}
 .ho-item{display:grid;grid-template-columns:minmax(9rem,1.1fr) auto minmax(8rem,1fr);gap:.4rem .6rem;align-items:center;padding:.45rem 0;border-top:1px solid #f1f3f5}
 @media (max-width:1100px){.ho-item{grid-template-columns:1fr;gap:.35rem}}
-.ho-item input[type=text]{width:100%;padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit}
+.ho-item input[type=text]{width:100%;padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit}
 .ho-item .nm{border-color:transparent!important;background:transparent;font-weight:600;padding-left:0!important}
 .ho-seg{display:flex;flex-wrap:wrap;gap:.25rem}
 .ho-seg label{position:relative}
 .ho-seg input{position:absolute;opacity:0;width:1px;height:1px}
-.ho-seg span{display:inline-block;padding:.4rem .6rem;border:1px solid #c5ccd3;border-radius:.4rem;font-size:.9rem;cursor:pointer;background:#fff;white-space:nowrap}
-.ho-seg input:checked+span.s-gut{background:#ecfdf3;border-color:#12b76a;color:#067647;font-weight:600}
-.ho-seg input:checked+span.s-gebrauch{background:#fffaeb;border-color:#f79009;color:#93370d;font-weight:600}
-.ho-seg input:checked+span.s-mangel{background:#fef3f2;border-color:#f04438;color:#b42318;font-weight:600}
-.ho-seg input:checked+span.s-na{background:#f2f4f7;border-color:#98a2b3;color:#344054;font-weight:600}
+.ho-seg span{display:inline-block;padding:.4rem .6rem;border:1px solid var(--line-strong);border-radius:.4rem;font-size:.9rem;cursor:pointer;background:var(--surface);white-space:nowrap}
+.ho-seg input:checked+span.s-gut{background:var(--ok-bg);border-color:#12b76a;color:var(--ok);font-weight:600}
+.ho-seg input:checked+span.s-gebrauch{background:var(--brass-bg);border-color:#f79009;color:#93370d;font-weight:600}
+.ho-seg input:checked+span.s-mangel{background:var(--danger-bg);border-color:#f04438;color:var(--danger);font-weight:600}
+.ho-seg input:checked+span.s-na{background:var(--surface-2);border-color:#98a2b3;color:#344054;font-weight:600}
 .ho-seg input:focus-visible+span{outline:3px solid #2f6fd0}
-.ho-prev{grid-column:1/-1;font-size:.85rem;color:#667085;margin-top:-.2rem}
-.ho-prev.new{color:#b42318;font-weight:600}
+.ho-prev{grid-column:1/-1;font-size:.85rem;color:var(--muted);margin-top:-.2rem}
+.ho-prev.new{color:var(--danger);font-weight:600}
 .ho-photos{display:flex;flex-wrap:wrap;gap:.5rem;margin:.5rem 0}
 .ho-photos figure{margin:0;position:relative}
-.ho-photos img{width:110px;height:82px;object-fit:cover;border-radius:.35rem;display:block;background:#f1f3f5}
+.ho-photos img{width:110px;height:82px;object-fit:cover;border-radius:.35rem;display:block;background:var(--surface-2)}
 .ho-photos button{position:absolute;top:2px;right:2px;border:0;background:rgba(0,0,0,.6);color:#fff;border-radius:.3rem;font-size:.75rem;padding:.1rem .35rem;cursor:pointer}
-.ho-cam{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .8rem;border:1px dashed #98a2b3;border-radius:.5rem;cursor:pointer;color:var(--ink);background:#f8fafc}
+.ho-cam{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .8rem;border:1px dashed #98a2b3;border-radius:.5rem;cursor:pointer;color:var(--ink);background:var(--surface-2)}
 .ho-cam input{display:none}
 .ho-keys{display:grid;grid-template-columns:1fr 6rem;gap:.4rem .6rem;max-width:30rem}
-.ho-keys input{width:100%;padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit}
+.ho-keys input{width:100%;padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit}
 .ho-meter{display:grid;grid-template-columns:1fr 10rem;gap:.4rem .8rem;align-items:center;padding:.35rem 0;border-top:1px solid #f1f3f5}
-.ho-meter input{width:100%;padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;text-align:right}
-.ho-bar{position:sticky;bottom:0;background:#fff;border-top:1px solid #e3e6ea;padding:.6rem 0;display:flex;flex-wrap:wrap;gap:.5rem;z-index:5}
-.ho-date{padding:.5rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit}
+.ho-meter input{width:100%;padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;text-align:right}
+.ho-bar{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:.6rem 0;display:flex;flex-wrap:wrap;gap:.5rem;z-index:5}
+.ho-date{padding:.5rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit}
 </style>
 
 <div class="sd-head">
@@ -131,14 +131,14 @@
 
   <div class="sd-card">
     <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center">
-      <input type="text" name="new_room" placeholder="Name des Raums, z. B. Abstellraum" style="flex:1 1 14rem;min-width:0;padding:.5rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit">
+      <input type="text" name="new_room" placeholder="Name des Raums, z. B. Abstellraum" style="flex:1 1 14rem;min-width:0;padding:.5rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit">
       <button class="sd-btn sec" type="submit" name="action" value="add_room">Raum hinzufügen</button>
     </div>
   </div>
 
   <div class="sd-card">
     <h2>Allgemeine Bemerkungen</h2>
-    <textarea name="note" rows="4" style="width:100%;box-sizing:border-box;padding:.5rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit" placeholder="z. B. vereinbarte Arbeiten, Fristen, Übernahme von Einrichtungsgegenständen">{{ old('note', $p->note) }}</textarea>
+    <textarea name="note" rows="4" style="width:100%;box-sizing:border-box;padding:.5rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit" placeholder="z. B. vereinbarte Arbeiten, Fristen, Übernahme von Einrichtungsgegenständen">{{ old('note', $p->note) }}</textarea>
   </div>
 
   <div class="ho-bar">

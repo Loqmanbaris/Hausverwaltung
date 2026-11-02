@@ -5,8 +5,8 @@
 @include('partials.sd-flash')
 @include('handover.body-styles')
 <style>
-.sg-paper{background:#fff;border:1px solid #e3e6ea;border-radius:.6rem;padding:1rem 1.2rem;max-height:55vh;overflow:auto;margin-bottom:1rem}
-.sg-pad{border:2px dashed #98a2b3;border-radius:.6rem;background:#fff;position:relative;touch-action:none}
+.sg-paper{background:var(--surface);border:1px solid var(--line);border-radius:.6rem;padding:1rem 1.2rem;max-height:55vh;overflow:auto;margin-bottom:1rem}
+.sg-pad{border:2px dashed #98a2b3;border-radius:.6rem;background:var(--surface);position:relative;touch-action:none}
 .sg-pad canvas{display:block;width:100%;height:170px;touch-action:none}
 .sg-pad .x{position:absolute;left:1rem;right:1rem;bottom:2.2rem;border-bottom:1px solid #d0d5dd;pointer-events:none}
 .sg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:1rem}

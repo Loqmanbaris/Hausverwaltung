@@ -25,7 +25,7 @@
   </dl>
   @if ($update->output)
     <details @if ($test && ! $test['ok']) open @endif style="margin-top:.8rem"><summary class="sd-muted">Protokoll</summary>
-      <pre style="white-space:pre-wrap;font-size:.85rem;background:#f4f6f8;padding:.7rem;border-radius:.4rem">{{ $update->output }}</pre>
+      <pre style="white-space:pre-wrap;font-size:.85rem;background:var(--surface-2);padding:.7rem;border-radius:.4rem">{{ $update->output }}</pre>
     </details>
   @endif
 </div>

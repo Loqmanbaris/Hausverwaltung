@@ -4,7 +4,7 @@
 @include('partials.sd-styles')
 @include('partials.sd-flash')
 @php use App\Models\Inquiry; $l = $inquiry->listing; @endphp
-<style>.iq-dl{display:grid;grid-template-columns:max-content 1fr;gap:.3rem 1rem;margin:0}.iq-dl dt{color:#475467}.iq-dl dd{margin:0;overflow-wrap:anywhere}</style>
+<style>.iq-dl{display:grid;grid-template-columns:max-content 1fr;gap:.3rem 1rem;margin:0}.iq-dl dt{color:var(--muted)}.iq-dl dd{margin:0;overflow-wrap:anywhere}</style>
 <div class="sd-head">
   <h1>Anfrage von {{ $inquiry->name }}</h1>
   <div class="sd-actions">

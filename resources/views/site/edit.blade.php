@@ -6,16 +6,16 @@
 @php use App\Support\Site\SiteSettings; @endphp
 <style>
 .ws-tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 1rem}
-.ws-tabs a{padding:.4rem .8rem;border:1px solid #c5ccd3;border-radius:2rem;text-decoration:none;color:var(--ink);background:#fff}
+.ws-tabs a{padding:.4rem .8rem;border:1px solid var(--line-strong);border-radius:2rem;text-decoration:none;color:var(--ink);background:var(--surface)}
 .ws-colors{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
-.ws-colors label{display:flex;align-items:center;gap:.35rem;border:1px solid #d0d5dd;border-radius:.5rem;padding:.35rem .6rem;cursor:pointer;background:#fff}
+.ws-colors label{display:flex;align-items:center;gap:.35rem;border:1px solid #d0d5dd;border-radius:.5rem;padding:.35rem .6rem;cursor:pointer;background:var(--surface)}
 .ws-colors .sw{width:1.2rem;height:1.2rem;border-radius:.25rem;display:inline-block}
 .ws-img{display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap}
-.ws-img img{max-width:240px;max-height:160px;border:1px solid #e3e6ea;border-radius:.4rem;background:repeating-linear-gradient(45deg,#f3f4f6 0 8px,#fff 8px 16px)}
-.ws-svc{border:1px solid #e3e6ea;border-radius:.6rem;padding:.6rem .8rem;margin:0 0 .6rem;background:#fff}
-.ws-svc input,.ws-svc textarea,.ws-obj input[type=text],.ws-obj textarea{width:100%;box-sizing:border-box;padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit}
+.ws-img img{max-width:240px;max-height:160px;border:1px solid var(--line);border-radius:.4rem;background:repeating-linear-gradient(45deg,#f3f4f6 0 8px,#fff 8px 16px)}
+.ws-svc{border:1px solid var(--line);border-radius:.6rem;padding:.6rem .8rem;margin:0 0 .6rem;background:var(--surface)}
+.ws-svc input,.ws-svc textarea,.ws-obj input[type=text],.ws-obj textarea{width:100%;box-sizing:border-box;padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit}
 .ws-svc textarea,.ws-obj textarea{min-height:4.5rem;margin-top:.4rem}
-.ws-obj{border:1px solid #e3e6ea;border-radius:.6rem;padding:.8rem 1rem;margin:0 0 .8rem;background:#fff}
+.ws-obj{border:1px solid var(--line);border-radius:.6rem;padding:.8rem 1rem;margin:0 0 .8rem;background:var(--surface)}
 .ws-obj.off{opacity:.7}
 .ws-photos{display:flex;flex-wrap:wrap;gap:.5rem;margin:.5rem 0}
 .ws-photos figure{margin:0;position:relative}
@@ -136,7 +136,7 @@
   @endif
   <form method="POST" action="{{ route('site.upload') }}" enctype="multipart/form-data" style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center">
     @csrf<input type="hidden" name="kind" value="download">
-    <input type="text" name="title" placeholder="Titel, z. B. Hausordnung" maxlength="190" required style="padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit">
+    <input type="text" name="title" placeholder="Titel, z. B. Hausordnung" maxlength="190" required style="padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit">
     <input type="file" name="files[]" accept="application/pdf" required>
     <button class="sd-btn sec small" type="submit">Hochladen</button>
   </form>

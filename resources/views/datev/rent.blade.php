@@ -5,12 +5,12 @@
 @include('partials.sd-flash')
 @php use App\Support\Money; @endphp
 <style>
-.dv-warn{background:#fffaf0;border:1px solid #f0d9a8;color:#7a4b00;padding:.7rem 1rem;border-radius:.5rem;margin-bottom:1rem}
+.dv-warn{background:var(--brass-bg);border:1px solid var(--brass-line);color:var(--brass);padding:.7rem 1rem;border-radius:.5rem;margin-bottom:1rem}
 .dv-num{text-align:right;white-space:nowrap}
 .dv-form{display:flex;flex-wrap:wrap;gap:.7rem;align-items:end}
 .dv-form .f{display:flex;flex-direction:column}
 .dv-form label{font-size:.9rem;margin:0 0 .15rem;font-weight:600}
-.dv-form input[type=date],.dv-form select{width:auto;padding:.5rem;border:1px solid #c5ccd3;border-radius:.45rem;font:inherit;background:#fff}
+.dv-form input[type=date],.dv-form select{width:auto;padding:.5rem;border:1px solid var(--line-strong);border-radius:.45rem;font:inherit;background:var(--surface)}
 </style>
 
 <div class="sd-head">

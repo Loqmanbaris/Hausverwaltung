@@ -9,7 +9,7 @@
 </div>
 
 @if ($configured)
-  <div class="sd-card" style="border-left:4px solid #067647"><strong style="color:#067647">Der E-Mail-Versand ist eingerichtet.</strong> Mit einer Test-E-Mail prüfst du, ob die Verbindung klappt, mit „Verbindung prüfen“ den Empfang.</div>
+  <div class="sd-card" style="border-left:4px solid #067647"><strong style="color:var(--ok)">Der E-Mail-Versand ist eingerichtet.</strong> Mit einer Test-E-Mail prüfst du, ob die Verbindung klappt, mit „Verbindung prüfen“ den Empfang.</div>
 @else
   <div class="sd-card" style="border-left:4px solid #b54708"><strong>Noch nicht eingerichtet.</strong> Trage hier die Zugangsdaten deines Postfachs ein. Bei IONOS: Benutzername ist die vollständige E-Mail-Adresse, Passwort ist das Passwort des Postfachs. Server und Ports sind schon richtig vorbelegt.</div>
 @endif
@@ -59,7 +59,7 @@
       </label>
     </div>
     @if ($lastFetch)
-      <p class="sd-muted" style="margin:.6rem 0 0;font-size:.88rem">Letzter Abruf: {{ \Illuminate\Support\Carbon::parse($lastFetch)->timezone('Europe/Berlin')->format('d.m.Y H:i') }} Uhr @if ($lastError)<br><span style="color:#b42318">Fehler: {{ $lastError }}</span>@endif</p>
+      <p class="sd-muted" style="margin:.6rem 0 0;font-size:.88rem">Letzter Abruf: {{ \Illuminate\Support\Carbon::parse($lastFetch)->timezone('Europe/Berlin')->format('d.m.Y H:i') }} Uhr @if ($lastError)<br><span style="color:var(--danger)">Fehler: {{ $lastError }}</span>@endif</p>
     @endif
   </div>
 

@@ -10,8 +10,8 @@
 @endphp
 <style>
 .cf-sum{display:grid;grid-template-columns:max-content 1fr;gap:.3rem 1rem;margin:0}
-.cf-sum dt{color:#475467}.cf-sum dd{margin:0;white-space:pre-line}
-.cf-warn{background:#fffaeb;border:1px solid #fedf89;border-radius:.6rem;padding:.6rem .9rem;margin:0 0 1rem;color:#7a4b00}
+.cf-sum dt{color:var(--muted)}.cf-sum dd{margin:0;white-space:pre-line}
+.cf-warn{background:var(--brass-bg);border:1px solid var(--brass-line);border-radius:.6rem;padding:.6rem .9rem;margin:0 0 1rem;color:var(--brass)}
 .cf-warn ul{margin:.3rem 0 0;padding-left:1.1rem}
 </style>
 <div class="sd-head">

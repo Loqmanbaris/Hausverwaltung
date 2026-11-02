@@ -6,6 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#202c34">
+<script>
+/* Hell/Dunkel (02.11.2026): Wahl je Gerät im Profilmenü, „auto“ folgt der Einstellung des Geräts */
+(function(){var t='auto';try{t=localStorage.getItem('hvTheme')||'auto';}catch(e){}
+var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+function apply(){var d=t==='dark'||(t==='auto'&&mq&&mq.matches);document.documentElement.setAttribute('data-theme',d?'dark':'light');document.documentElement.setAttribute('data-theme-pref',t);}
+apply();if(mq&&mq.addEventListener){mq.addEventListener('change',apply);}
+window.hvSetTheme=function(v){t=v;try{localStorage.setItem('hvTheme',v);}catch(e){}apply();};})();
+</script>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/app-icon-192.png">
 <meta name="mobile-web-app-capable" content="yes">
@@ -33,7 +41,7 @@ body{min-height:100vh;font-family:"Roboto",system-ui,-apple-system,"Segoe UI","H
 .sb{background:var(--hv-dark);color:#fff;position:sticky;top:0;height:100vh;overflow-y:auto;padding:0 .75rem 1.2rem;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
 .sb-brand{display:flex;align-items:center;gap:.6rem;height:60px;margin:0 -.75rem .9rem;padding:0 1.2rem;text-decoration:none;color:#fff;font-weight:700;letter-spacing:.03em;text-transform:uppercase;font-size:.95rem;border-bottom:1px solid rgba(255,255,255,.06);flex:none}
 .sb-brand:hover{color:#fff}
-.sb-brand img{max-height:34px;max-width:170px;width:auto;background:#fff;border-radius:7px;padding:3px 7px}
+.sb-brand img{max-height:34px;max-width:170px;width:auto;background:var(--surface);border-radius:7px;padding:3px 7px}
 .sb-brand .dot{width:.7rem;height:.7rem;border-radius:3px;background:var(--brand);flex:none}
 .sb-group{margin:.2rem 0 .7rem}
 .sb-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.45);padding:.45rem .7rem .3rem}
@@ -63,7 +71,7 @@ body{min-height:100vh;font-family:"Roboto",system-ui,-apple-system,"Segoe UI","H
 .sb-link.on{background:linear-gradient(135deg,var(--brand),color-mix(in srgb,var(--brand) 72%,#000));color:#fff;font-weight:600;box-shadow:0 2px 8px color-mix(in srgb,var(--brand) 35%,transparent)}
 .sb-link.on .sb-ic{color:#fff}
 .sb-badge{background:var(--brand);color:#fff;border-radius:1rem;font-size:.72rem;font-weight:700;padding:.05rem .45rem;line-height:1.4}
-.sb-link.on .sb-badge{background:#fff;color:var(--brand)}
+.sb-link.on .sb-badge{background:var(--surface);color:var(--brand)}
 .sb-foot{margin-top:auto;padding:.9rem .7rem 0;border-top:1px solid rgba(255,255,255,.08);font-size:.85rem;color:rgba(255,255,255,.55)}
 .sb-foot a{color:rgba(255,255,255,.65);text-decoration:none}
 .sb-foot a:hover{color:#fff}
@@ -89,13 +97,16 @@ body{min-height:100vh;font-family:"Roboto",system-ui,-apple-system,"Segoe UI","H
 .pm .av{position:relative}
 .pm-dot{position:absolute;top:-2px;right:-2px;width:.62rem;height:.62rem;border-radius:50%;background:#facc15;border:2px solid var(--hv-dark)}
 .pm-caret{color:rgba(255,255,255,.6);font-size:.75rem}
-.pm-box{position:absolute;right:0;top:calc(100% + .45rem);min-width:15rem;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:.35rem;z-index:30;white-space:normal}
+.pm-box{position:absolute;right:0;top:calc(100% + .45rem);min-width:15rem;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:.35rem;z-index:30;white-space:normal}
 .pm-head{display:flex;flex-direction:column;padding:.5rem .65rem .6rem;border-bottom:1px solid var(--line);margin-bottom:.3rem}
 .pm-head small{color:var(--muted);font-weight:500}
 .pm-box a,.pm-box button{display:flex;align-items:center;gap:.6rem;width:100%;padding:.55rem .65rem;border-radius:8px;color:var(--ink);text-decoration:none;background:none;border:0;font:inherit;text-align:left;cursor:pointer}
-.pm-box a:hover,.pm-box button:hover{background:#f3f4f6;color:var(--ink)}
+.pm-box a:hover,.pm-box button:hover{background:var(--surface-2);color:var(--ink)}
 .pm-box a .sb-badge{margin-left:auto}
 .pm-sep{height:1px;background:var(--line);margin:.3rem 0}
+.pm-theme{display:flex;gap:.25rem;padding:.35rem .4rem .45rem}
+.pm-theme button{flex:1;justify-content:center;gap:.3rem;padding:.4rem .3rem!important;border:1px solid var(--line)!important;border-radius:8px;font-size:.84rem}
+html[data-theme-pref=light] .pm-theme [data-t=light],html[data-theme-pref=dark] .pm-theme [data-t=dark],html[data-theme-pref=auto] .pm-theme [data-t=auto]{background:var(--primary)!important;color:var(--on-primary)!important;border-color:var(--primary)!important}
 .menu-btn{display:none;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff;border-radius:8px;padding:.42rem .7rem;font:inherit;font-weight:500;cursor:pointer}
 .sb-close{display:none}
 .sb-shade{display:none}
@@ -155,6 +166,13 @@ body.sb-min .sb{display:none}
             <a href="{{ route('profile.settings') }}"><span>⚙️</span><span>Einstellungen</span>@if ($pmBadge > 0)<span class="sb-badge">{{ $pmBadge }}</span>@endif</a>
             <a href="{{ route('password.change') }}"><span>🔑</span><span>Passwort ändern</span></a>
             <a href="#" data-install><span>📱</span><span>App installieren</span></a>
+            <div class="pm-sep"></div>
+            <div class="pm-head" style="border:0;padding-bottom:0;margin:0"><small>Darstellung</small></div>
+            <div class="pm-theme" role="group" aria-label="Darstellung">
+              <button type="button" data-t="light" onclick="hvSetTheme('light')">☀️ Hell</button>
+              <button type="button" data-t="dark" onclick="hvSetTheme('dark')">🌙 Dunkel</button>
+              <button type="button" data-t="auto" onclick="hvSetTheme('auto')">🔄 Auto</button>
+            </div>
             <div class="pm-sep"></div>
             <form method="POST" action="{{ route('logout') }}">
               @csrf

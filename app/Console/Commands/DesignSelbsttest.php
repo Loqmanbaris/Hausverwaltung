@@ -55,6 +55,8 @@ class DesignSelbsttest extends Command
             'Briefkopf mit Logo' => $compiles('partials.briefkopf') && $compiles('partials.brieffuss')
                 && \App\Support\Briefkopf::daten(['name' => 'A', 'vat' => 'DE1', 'iban' => 'de89 3704'])['vat_id'] === 'DE1'
                 && \App\Support\Briefkopf::daten(['name' => 'A', 'iban' => 'de89 3704'])['iban'] === 'DE893704',
+            'Hell/Dunkel umschaltbar' => str_contains((string) @file_get_contents(resource_path('views/partials/styles.blade.php')), 'html[data-theme=dark]')
+                && str_contains((string) @file_get_contents(resource_path('views/layouts/app.blade.php')), 'hvSetTheme'),
             'Seitenmenü einklappbar' => str_contains((string) @file_get_contents(resource_path('views/layouts/app.blade.php')), 'data-sb-toggle'),
             'Menüpunkte ('.count($m[1]).')' => count($m[1]) >= 12 && $missing === [],   // seit 02.11.2026 schlanker, vieles unter Einstellungen
         ];

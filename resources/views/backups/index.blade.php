@@ -16,7 +16,7 @@
 </div>
 
 @if ($attention)
-  <div class="sd-err" style="background:#fffaf0;border-color:#f0d9a8;color:#7a4b00"><strong>Bitte beachten:</strong> {{ $attention }}</div>
+  <div class="sd-err" style="background:var(--brass-bg);border-color:var(--brass-line);color:var(--brass)"><strong>Bitte beachten:</strong> {{ $attention }}</div>
 @endif
 
 <div class="sd-card">

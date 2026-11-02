@@ -17,7 +17,7 @@
   <div class="sd-card"><p class="sd-muted" style="margin:0">Zurzeit gibt es keinen Mietvertrag mit Umsatzsteuer und einem Unternehmen als Mieter. Dann brauchst du nichts zu tun.</p></div>
 @else
   @foreach ($issues as $i)
-    <div class="sd-card" style="border-color:#fde68a;background:#fffbeb">
+    <div class="sd-card" style="border-color:var(--brass-line);background:var(--brass-bg)">
       <strong>{{ $i['owner']->name }}: Angaben für die Rechnung fehlen</strong>
       <ul style="margin:.4rem 0 0;padding-left:1.2rem">@foreach ($i['items'] as $m)<li>{{ $m }}</li>@endforeach</ul>
       <p style="margin:.4rem 0 0"><a href="{{ route('owners.edit', $i['owner']) }}">Eigentümer bearbeiten</a></p>

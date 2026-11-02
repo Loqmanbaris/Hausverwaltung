@@ -17,23 +17,23 @@
 @endphp
 <style>
 .bk-tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 1rem}
-.bk-tabs a{padding:.4rem .8rem;border:1px solid #c5ccd3;border-radius:2rem;text-decoration:none;color:var(--ink);background:#fff}
-.bk-tabs a.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.bk-tx{border:1px solid #e3e6ea;border-radius:.6rem;padding:.8rem 1rem;margin:0 0 .8rem;background:#fff}
-.bk-tx.bk-target{border-color:#e0b100;background:#fffdf3}
+.bk-tabs a{padding:.4rem .8rem;border:1px solid var(--line-strong);border-radius:2rem;text-decoration:none;color:var(--ink);background:var(--surface)}
+.bk-tabs a.on{background:var(--primary);color:var(--on-primary);border-color:var(--ink)}
+.bk-tx{border:1px solid var(--line);border-radius:.6rem;padding:.8rem 1rem;margin:0 0 .8rem;background:var(--surface)}
+.bk-tx.bk-target{border-color:#e0b100;background:var(--brass-bg)}
 .bk-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem}
 .bk-amt{font-size:1.15rem;font-weight:700;white-space:nowrap}
-.bk-amt.in{color:#067647}.bk-amt.out{color:#b42318}
+.bk-amt.in{color:var(--ok)}.bk-amt.out{color:var(--danger)}
 .bk-purpose{margin:.25rem 0 .4rem;word-break:break-word}
-.bk-sug{background:#f4f8fc;border-radius:.45rem;padding:.5rem .7rem;margin:.4rem 0}
+.bk-sug{background:var(--surface-2);border-radius:.45rem;padding:.5rem .7rem;margin:.4rem 0}
 .bk-form{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-top:.4rem}
-.bk-form select{flex:1 1 16rem;min-width:0;width:auto;padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;background:#fff}
-.bk-form input[name=amount]{width:7rem;padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;text-align:right}
-.bk-form input[name=note]{flex:1 1 10rem;width:auto;padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit}
+.bk-form select{flex:1 1 16rem;min-width:0;width:auto;padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;background:var(--surface)}
+.bk-form input[name=amount]{width:7rem;padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;text-align:right}
+.bk-form input[name=note]{flex:1 1 10rem;width:auto;padding:.4rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit}
 .bk-right{display:flex;flex-direction:column;align-items:flex-end;gap:.2rem}
-.bk-edit{font-size:.85rem;color:var(--muted);text-decoration:none;border:1px solid var(--line-strong);border-radius:1rem;padding:.1rem .6rem;white-space:nowrap;background:#fff}
+.bk-edit{font-size:.85rem;color:var(--muted);text-decoration:none;border:1px solid var(--line-strong);border-radius:1rem;padding:.1rem .6rem;white-space:nowrap;background:var(--surface)}
 .bk-edit:hover{color:var(--ink);border-color:var(--ink)}
-.bk-sure{display:inline-block;background:#ecfdf3;color:#067647;border-radius:1rem;padding:.05rem .5rem;font-size:.85rem;font-weight:600}
+.bk-sure{display:inline-block;background:var(--ok-bg);color:var(--ok);border-radius:1rem;padding:.05rem .5rem;font-size:.85rem;font-weight:600}
 </style>
 
 @php
@@ -152,15 +152,15 @@
 .sp-form{padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:.7rem}
 .sp-head{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
 .sp-x{border:0;background:none;font-size:1.1rem;cursor:pointer;color:var(--muted)}
-.sp-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) auto;gap:.5rem .6rem;align-items:end;border:1px solid var(--line,#e3e6ea);border-radius:10px;padding:.7rem;margin-bottom:.5rem;background:#fafbfc}
+.sp-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) auto;gap:.5rem .6rem;align-items:end;border:1px solid var(--line);border-radius:10px;padding:.7rem;margin-bottom:.5rem;background:var(--surface-2)}
 .sp-f{grid-column:span 2;display:flex;flex-direction:column;gap:.2rem;min-width:0}
 .sp-f.sp-wide{grid-column:span 4}
 .sp-f label{font-size:.82rem;color:var(--muted);margin:0}
-.sp-f select,.sp-f input{width:100%;min-width:0;padding:.45rem .55rem;border:1px solid var(--line-strong,#c5ccd3);border-radius:8px;font:inherit;background:#fff}
+.sp-f select,.sp-f input{width:100%;min-width:0;padding:.45rem .55rem;border:1px solid var(--line-strong);border-radius:8px;font:inherit;background:var(--surface)}
 .sp-amt input{text-align:right}
 .sp-del{border:0;background:none;cursor:pointer;font-size:1rem;padding:.4rem;grid-row:1;grid-column:7}
 .sp-sum{text-align:right;font-size:1.05rem}
-.sp-sum .bad{color:#b42318}
+.sp-sum .bad{color:var(--danger)}
 .sp-foot{display:flex;justify-content:flex-end;gap:.5rem}
 @media (max-width:640px){.sp-row{grid-template-columns:1fr 1fr auto}.sp-f,.sp-f.sp-wide{grid-column:span 2}.sp-del{grid-column:3}}
 </style>

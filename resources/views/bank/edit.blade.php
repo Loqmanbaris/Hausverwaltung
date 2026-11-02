@@ -13,20 +13,20 @@
 <style>
 .be-sum{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem;align-items:flex-start}
 .be-amt{font-size:1.5rem;font-weight:700;white-space:nowrap}
-.be-amt.in{color:#067647}.be-amt.out{color:#b42318}
-.be-st{display:inline-block;border-radius:1rem;padding:.08rem .6rem;font-size:.82rem;font-weight:700;background:#eef2ff;color:#3730a3}
-.be-st.offen,.be-st.teilweise{background:#fff7ed;color:#b54708}
-.be-st.zugeordnet{background:#ecfdf3;color:#067647}
+.be-amt.in{color:var(--ok)}.be-amt.out{color:var(--danger)}
+.be-st{display:inline-block;border-radius:1rem;padding:.08rem .6rem;font-size:.82rem;font-weight:700;background:var(--info-bg);color:var(--info)}
+.be-st.offen,.be-st.teilweise{background:var(--brass-bg);color:var(--brass)}
+.be-st.zugeordnet{background:var(--ok-bg);color:var(--ok)}
 .be-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.2rem 1rem}
 .be-grid .wide{grid-column:1/-1}
 .be-grid textarea{width:100%;font:inherit;padding:.55rem .7rem;border:1px solid var(--line-strong);border-radius:8px;min-height:5rem}
 .be-pay{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;padding:.7rem 0;border-top:1px solid var(--line)}
 .be-pay:first-of-type{border-top:0}
 .be-pay form{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:0;flex:1 1 30rem}
-.be-pay select{flex:1 1 18rem;min-width:0;width:auto;padding:.45rem;border:1px solid var(--line-strong);border-radius:8px;font:inherit;background:#fff}
+.be-pay select{flex:1 1 18rem;min-width:0;width:auto;padding:.45rem;border:1px solid var(--line-strong);border-radius:8px;font:inherit;background:var(--surface)}
 .be-pay input[name=amount]{width:7.5rem;padding:.45rem;border:1px solid var(--line-strong);border-radius:8px;font:inherit;text-align:right}
 .be-pay input[name=note]{flex:1 1 14rem;width:auto;padding:.45rem;border:1px solid var(--line-strong);border-radius:8px;font:inherit}
-.be-warn{font-size:.85rem;color:#b54708;width:100%}
+.be-warn{font-size:.85rem;color:var(--brass);width:100%}
 .be-meta{display:grid;grid-template-columns:auto 1fr;gap:.15rem .9rem;font-size:.9rem;margin:.6rem 0 0}
 .be-meta dt{color:var(--muted)}.be-meta dd{margin:0;overflow-wrap:anywhere}
 </style>

@@ -5,7 +5,7 @@
 @include('partials.rent-styles')
 @include('partials.sd-flash')
 @php use App\Support\Money; @endphp
-<style>.pf-in{padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;width:100%}</style>
+<style>.pf-in{padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;width:100%}</style>
 <div class="sd-head">
   <h1>Ratenvereinbarung</h1>
   <div class="sd-actions"><a class="sd-btn sec" href="{{ route('leases.show', $lease) }}#zinsen">Zum Mietvertrag</a></div>

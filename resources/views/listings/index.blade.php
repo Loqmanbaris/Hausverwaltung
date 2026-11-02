@@ -7,12 +7,12 @@
 @php use App\Support\Listings\Listings; @endphp
 <style>
 .li-row{display:flex;gap:.8rem;align-items:flex-start}
-.li-row img{width:96px;height:72px;object-fit:cover;border-radius:.35rem;background:#f1f3f5;flex:none}
-.li-ph{width:96px;height:72px;border-radius:.35rem;background:#f1f3f5;flex:none;display:flex;align-items:center;justify-content:center;color:#98a2b3;font-size:.8rem}
+.li-row img{width:96px;height:72px;object-fit:cover;border-radius:.35rem;background:var(--surface-2);flex:none}
+.li-ph{width:96px;height:72px;border-radius:.35rem;background:var(--surface-2);flex:none;display:flex;align-items:center;justify-content:center;color:#98a2b3;font-size:.8rem}
 .li-st{display:inline-block;border-radius:1rem;padding:.05rem .55rem;font-size:.85rem;font-weight:600}
-.li-online{background:#ecfdf3;color:#067647}.li-entwurf{background:#f1f3f5;color:#475467}.li-offline{background:#fff4e5;color:#8a5a12}
+.li-online{background:var(--ok-bg);color:var(--ok)}.li-entwurf{background:var(--surface-2);color:var(--muted)}.li-offline{background:var(--brass-bg);color:var(--brass)}
 .li-new{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
-.li-new select{flex:1 1 18rem;min-width:0;padding:.45rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;background:#fff}
+.li-new select{flex:1 1 18rem;min-width:0;padding:.45rem;border:1px solid var(--line-strong);border-radius:.4rem;font:inherit;background:var(--surface)}
 </style>
 <div class="sd-head">
   <h1>Inserate</h1>

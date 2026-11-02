@@ -9,7 +9,7 @@
   $bsAuszug = $ende && $ende <= date('Y-m-d', strtotime('+3 months'));
 @endphp
 <style>
-.bs-date{padding:.55rem .7rem;border:1px solid var(--line-strong,#d1d5db);border-radius:8px;font:inherit;background:#fff;width:100%;box-sizing:border-box}
+.bs-date{padding:.55rem .7rem;border:1px solid var(--line-strong);border-radius:8px;font:inherit;background:var(--surface);width:100%;box-sizing:border-box}
 .bs-radio{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:.3rem}
 .bs-radio label{font-weight:400;display:flex;gap:.4rem;align-items:center}
 </style>

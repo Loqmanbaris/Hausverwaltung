@@ -8,9 +8,9 @@
 .mc-items td{padding:.55rem .4rem;border-top:1px solid var(--line);vertical-align:middle}
 .mc-items tr:first-child td{border-top:0}
 .mc-items input[type=text]{width:100%;min-width:14rem;font:inherit;padding:.4rem .55rem;border:1px solid var(--line-strong);border-radius:7px}
-.mc-items .warn{color:#b42318;font-size:.85rem}
+.mc-items .warn{color:var(--danger);font-size:.85rem}
 .mc-ph{display:flex;flex-wrap:wrap;gap:.35rem;margin:.35rem 0 0}
-.mc-ph button{font:inherit;font-size:.8rem;border:1px solid var(--line-strong);background:#fff;border-radius:1rem;padding:.12rem .55rem;cursor:pointer}
+.mc-ph button{font:inherit;font-size:.8rem;border:1px solid var(--line-strong);background:var(--surface);border-radius:1rem;padding:.12rem .55rem;cursor:pointer}
 .mc-ph button:hover{border-color:var(--ink)}
 .mc-text{width:100%;font:inherit;padding:.6rem .7rem;border:1px solid var(--line-strong);border-radius:8px}
 .mc-pdf{display:inline-flex;align-items:center;gap:.35rem;font-size:.88rem;white-space:nowrap}

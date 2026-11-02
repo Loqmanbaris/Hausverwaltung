@@ -5,7 +5,7 @@
 @include('partials.sd-flash')
 @php
   use App\Support\Rechnung\Berechnung;
-  $box = 'padding:.55rem;border:1px solid #c5ccd3;border-radius:.5rem;font:inherit;width:100%;box-sizing:border-box';
+  $box = 'padding:.55rem;border:1px solid var(--line-strong);border-radius:.5rem;font:inherit;width:100%;box-sizing:border-box';
   $buyer = (array) ($inv?->buyer ?? []);
   $kind = old('recipient_kind', $inv?->recipient_kind ?? 'tenant');
   $b = fn (string $k) => old('b_'.$k, $buyer[$k] ?? '');
