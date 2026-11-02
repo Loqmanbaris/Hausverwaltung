@@ -1,17 +1,19 @@
-Ergebnis: OK (02.11.2026 12:47)
+Ergebnis: OK (02.11.2026 20:32)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    b77bf93 Miete korrigieren: jede Zeile im Mietverlauf änderbar, auch die Miete zum Vertragsbeginn
+Ziel:    07e6b8a Merge pull request #1 from Loqmanbaris/ccr-ef75b8df-4kmjqe
 
-=================== 02.11.2026 12:47:03 ===================
+=================== 02.11.2026 20:32:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Miete korrigieren: jede Zeile im Mietverlauf änderbar, auch die Miete zum Vertragsbeginn
+  - Merge pull request #1 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - Mieten erst ab Oktober 2026 erfassen: kein Soll und kein Rückstand für frühere Monate
+  - Umsätze: 500-Fehler behoben – Aufteilen-Fenster bindet Money selbst ein
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-1247.bkp (7,4 MB, 89 Tabellen, 2492 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-2032.bkp (7,4 MB, 89 Tabellen, 2498 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -64,4 +66,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand b77bf93 – Miete korrigieren: jede Zeile im Mietverlauf änderbar, auch die Miete zum Vertragsbeginn ist online.
+FERTIG: Neuer Stand 07e6b8a – Merge pull request #1 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
