@@ -1,20 +1,18 @@
-Ergebnis: OK (02.11.2026 20:52)
+Ergebnis: OK (02.11.2026 21:07)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    45699d9 Merge pull request #2 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+Ziel:    2f01130 Merge pull request #3 from Loqmanbaris/ccr-ef75b8df-4kmjqe
 
-=================== 02.11.2026 20:52:02 ===================
+=================== 02.11.2026 21:07:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Merge pull request #2 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - „Kontoauszüge“ heißen jetzt „Umsätze“ (Menü, Seitentitel, Hinweise)
-  - Seitenmenü: Finanzthemen unter „Finanzen“ gesammelt
-  - Seitenmenü am PC/Tablet einklappbar (Knopf ☰ in der Kopfleiste, Zustand bleibt gespeichert)
+  - Merge pull request #3 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - Finanzen ganz oben im Menü, Wiederkehrende Ausgaben als Reiter unter Umsätze, Einlesen robuster
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-2052.bkp (7,4 MB, 89 Tabellen, 1068 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-2107.bkp (7,4 MB, 89 Tabellen, 1075 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -67,4 +65,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 45699d9 – Merge pull request #2 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
+FERTIG: Neuer Stand 2f01130 – Merge pull request #3 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
