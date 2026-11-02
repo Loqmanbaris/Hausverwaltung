@@ -2,6 +2,10 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Kontoauszüge heißen jetzt „Umsätze“
+Menüpunkt, Seitentitel und Hinweise sagen „Umsätze“ (Reiter Eingänge, Ausgaben, Einlesen). Die eingelesene Datei heißt weiter Kontoauszug.
+Keine Migration.
+
 ## Finanzen im Seitenmenü gesammelt
 1. Neue Gruppe „Finanzen“: Mieteingang, Offene Posten, Mahnwesen, Kontoauszüge, Belege, Wiederkehrende Ausgaben, Rechnungen schreiben, E-Rechnung, Finanzierung, Anlage V, Jahresbericht, DATEV-Export.
 2. Übrige Gruppen: „Nebenkosten“ (Nebenkosten, Zähler und CO2) und „Instandhaltung und Dienstleister“ (Schäden und Aufträge, Wartungsplan, Laufende Verträge, Lieferanten). Die Gruppen „Mieteingang und Mahnung“, „Kosten“ und „Abrechnung und Steuer“ entfallen.

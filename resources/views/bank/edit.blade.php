@@ -158,7 +158,7 @@
       @elseif ($tx->status_note) {{ $tx->status_note }}
       @else Noch keinem Beleg zugeordnet.
       @endif
-      Belege und Darlehen ordnest du unter <a href="{{ route('bank.expenses', array_filter(['konto' => $konto ?: null])) }}#abbuchung-{{ $tx->id }}">Kontoauszüge → Ausgaben zuordnen</a> zu.
+      Belege und Darlehen ordnest du unter <a href="{{ route('bank.expenses', array_filter(['konto' => $konto ?: null])) }}#abbuchung-{{ $tx->id }}">Umsätze → Ausgaben zuordnen</a> zu.
     </p>
   </div>
 @endif

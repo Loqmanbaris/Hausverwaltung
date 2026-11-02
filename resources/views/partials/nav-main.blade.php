@@ -28,7 +28,7 @@
           ['Mieteingang', 'rent.month', ['rent.month'], 0, false],
           ['Offene Posten', 'rent.open', ['rent.open'], 0, false],
           ['Mahnwesen', 'dunning.index', ['dunning.*'], 0, false],
-          ['Kontoauszüge', 'bank.transactions', ['bank.index', 'bank.transactions', 'bank.edit', 'bank.expenses*'], $badge['bank'] + $badge['expenses'], false],
+          ['Umsätze', 'bank.transactions', ['bank.index', 'bank.transactions', 'bank.edit', 'bank.expenses*'], $badge['bank'] + $badge['expenses'], false],
           ['Belege', 'receipts.index', ['receipts.*', 'einvoice.*'], 0, false],
           ['Wiederkehrende Ausgaben', 'recurring.index', ['recurring.*'], 0, false],
           ['Rechnungen schreiben', 'invoices.index', ['invoices.*'], 0, true],

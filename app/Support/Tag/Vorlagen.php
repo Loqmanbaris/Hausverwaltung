@@ -41,7 +41,7 @@ class Vorlagen
             'title' => 'Nebenkostenabrechnung 2025',
             'text' => 'Schritte bis zur Frist am 31.12.2026. Die Abrechnung muss bis dahin beim Mieter eingegangen sein.',
             'entries' => [
-                ['kind' => 'todo', 'title' => 'NK 2025: Belege vollständig machen', 'date' => '2026-11-04', 'time' => '11:00', 'remind' => '60', 'notes' => 'Belege mit Objekt und umlagefähiger Kostenart. „Kontoauszüge → Ausgaben zuordnen“ zeigt Abbuchungen ohne Beleg.'],
+                ['kind' => 'todo', 'title' => 'NK 2025: Belege vollständig machen', 'date' => '2026-11-04', 'time' => '11:00', 'remind' => '60', 'notes' => 'Belege mit Objekt und umlagefähiger Kostenart. „Umsätze → Ausgaben zuordnen“ zeigt Abbuchungen ohne Beleg.'],
                 ['kind' => 'todo', 'title' => 'NK 2025: Einstellungen und Zähler je Objekt', 'date' => '2026-11-05', 'time' => '11:00', 'remind' => '60', 'notes' => 'Nebenkosten → Vorbereitung je Objekt: Heizungsart, Brennstoff, Zählerstände Anfang und Ende 2025.'],
                 ['kind' => 'todo', 'title' => 'NK 2025: Abrechnungen erstellen', 'date' => '2026-11-16', 'time' => '10:00', 'end' => '12:00', 'remind' => '1440', 'repeat' => 'yearly:1', 'notes' => 'CO2-Menge und CO2-Kosten von den Versorger-Rechnungen eintragen. Frist 31.12. (jedes Jahr für das Vorjahr).'],
                 ['kind' => 'todo', 'title' => 'NK 2025: prüfen und versenden', 'date' => '2026-11-30', 'time' => '09:00', 'remind' => '1440', 'notes' => 'Spätestens Mitte Dezember versenden, entscheidend ist der Zugang beim Mieter bis 31.12.'],

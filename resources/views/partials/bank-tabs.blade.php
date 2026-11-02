@@ -1,4 +1,4 @@
-{{-- Kontoauszüge: eine Seite mit drei Reitern (Eingänge, Ausgaben, Einlesen) --}}
+{{-- Umsätze (Kontoauszüge): eine Seite mit drei Reitern (Eingänge, Ausgaben, Einlesen) --}}
 @php
   $kzUser = auth()->user();
   $kzCount = function (callable $f) { try { return (int) $f(); } catch (\Throwable) { return 0; } };
@@ -16,10 +16,10 @@
 .kz-tabs .kz-n{background:var(--brand,#f97316);color:#fff;border-radius:1rem;font-size:.72rem;font-weight:700;padding:.05rem .45rem;line-height:1.4}
 </style>
 <div class="sd-head">
-  <h1>Kontoauszüge</h1>
+  <h1>Umsätze</h1>
   @isset($kzActions)<div class="sd-actions">{!! $kzActions !!}</div>@endisset
 </div>
-<nav class="kz-tabs" aria-label="Kontoauszüge">
+<nav class="kz-tabs" aria-label="Umsätze">
   @foreach ($kzTabs as [$kzLabel, $kzRoute, $kzActive, $kzN])
     <a href="{{ route($kzRoute) }}" @class(['on' => request()->routeIs(...$kzActive)])>{{ $kzLabel }}@if ($kzN > 0)<span class="kz-n">{{ $kzN }}</span>@endif</a>
   @endforeach
