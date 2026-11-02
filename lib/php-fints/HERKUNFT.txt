@@ -1,0 +1,1 @@
+nemiah/php-fints 4.1.0 – unverändert übernommen von https://github.com/nemiah/phpFinTS (MIT). Wird ohne composer über App\Providers\AppServiceProvider geladen, weil auf dem Server kein composer verfügbar ist.

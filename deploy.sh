@@ -80,6 +80,10 @@ CHANGED=$(git diff --name-only "$OLD" "$NEW")
 COMPOSER=""
 if echo "$CHANGED" | grep -qx 'composer.lock'; then
   COMPOSER=$(command -v composer || true)
+  # Auf IONOS liegt composer meist nicht im Suchpfad des Cronjobs: auch im Home-Verzeichnis suchen
+  for c in "$HOME/bin/composer" "$HOME/composer.phar" "$HOME/bin/composer.phar" "./composer.phar"; do
+    if [ -z "$COMPOSER" ] && [ -f "$c" ]; then COMPOSER="$c"; fi
+  done
   if [ -z "$COMPOSER" ]; then
     echo "ABBRUCH: Neue Programmbibliotheken nötig, aber composer fehlt. Nichts geändert."; exit 1
   fi
