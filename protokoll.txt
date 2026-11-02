@@ -1,17 +1,17 @@
-Ergebnis: OK (02.11.2026 11:57)
+Ergebnis: OK (02.11.2026 12:22)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    1a8edde Ein Menü: Umschalter „Alltag“/„Verwaltung“ entfernt, Seitenmenü zeigt immer alles
+Ziel:    17373ef Suchfeld rechts neben dem Profilzeichen, „Suche“ aus dem Seitenmenü entfernt
 
-=================== 02.11.2026 11:57:03 ===================
+=================== 02.11.2026 12:22:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Ein Menü: Umschalter „Alltag“/„Verwaltung“ entfernt, Seitenmenü zeigt immer alles
+  - Suchfeld rechts neben dem Profilzeichen, „Suche“ aus dem Seitenmenü entfernt
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-1157.bkp (7,4 MB, 88 Tabellen, 2477 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-1222.bkp (7,4 MB, 88 Tabellen, 2487 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -64,4 +64,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 1a8edde – Ein Menü: Umschalter „Alltag“/„Verwaltung“ entfernt, Seitenmenü zeigt immer alles ist online.
+FERTIG: Neuer Stand 17373ef – Suchfeld rechts neben dem Profilzeichen, „Suche“ aus dem Seitenmenü entfernt ist online.
