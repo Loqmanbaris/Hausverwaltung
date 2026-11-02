@@ -1,18 +1,18 @@
-Ergebnis: OK (02.11.2026 21:32)
+Ergebnis: OK (02.11.2026 21:37)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    5827422 Merge pull request #6 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+Ziel:    56821cf Merge pull request #7 from Loqmanbaris/ccr-ef75b8df-4kmjqe
 
-=================== 02.11.2026 21:32:03 ===================
+=================== 02.11.2026 21:37:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Merge pull request #6 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - Mietverträge, Finanzierung, Anlage V und Jahresbericht als Kacheln unter Einstellungen
+  - Merge pull request #7 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - DATEV-Export als Kachel unter Einstellungen statt im Seitenmenü
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-2132.bkp (7,4 MB, 89 Tabellen, 1077 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-2137.bkp (7,4 MB, 89 Tabellen, 1078 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -65,4 +65,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 5827422 – Merge pull request #6 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
+FERTIG: Neuer Stand 56821cf – Merge pull request #7 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
