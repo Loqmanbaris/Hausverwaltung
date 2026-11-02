@@ -2,6 +2,11 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Finanzen im Seitenmenü gesammelt
+1. Neue Gruppe „Finanzen“: Mieteingang, Offene Posten, Mahnwesen, Kontoauszüge, Belege, Wiederkehrende Ausgaben, Rechnungen schreiben, E-Rechnung, Finanzierung, Anlage V, Jahresbericht, DATEV-Export.
+2. Übrige Gruppen: „Nebenkosten“ (Nebenkosten, Zähler und CO2) und „Instandhaltung und Dienstleister“ (Schäden und Aufträge, Wartungsplan, Laufende Verträge, Lieferanten). Die Gruppen „Mieteingang und Mahnung“, „Kosten“ und „Abrechnung und Steuer“ entfallen.
+Keine Migration. Selbsttest: design:selbsttest
+
 ## Seitenmenü einklappbar
 1. Am PC und Tablet blendet der Knopf „☰“ oben links in der Kopfleiste das Seitenmenü aus und wieder ein; im Menü steht außerdem „« Menü einklappen“. Die Seite nutzt dann die volle Breite. Der Zustand bleibt im Browser gespeichert.
 2. Am Handy bleibt alles wie bisher („☰ Menü“ öffnet das Menü von links).

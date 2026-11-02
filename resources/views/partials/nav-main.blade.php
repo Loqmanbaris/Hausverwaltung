@@ -23,31 +23,30 @@
           ['Mieterhöhungen', 'rent_increase.index', ['rent_increase.*'], 0, false],
           ['Kautionen', 'deposit.index', ['deposit.*'], 0, false],
       ],
-      'Mieteingang und Mahnung' => [
+      // Alles rund ums Geld steht seit 02.11.2026 gesammelt unter „Finanzen“
+      'Finanzen' => [
           ['Mieteingang', 'rent.month', ['rent.month'], 0, false],
           ['Offene Posten', 'rent.open', ['rent.open'], 0, false],
           ['Mahnwesen', 'dunning.index', ['dunning.*'], 0, false],
           ['Kontoauszüge', 'bank.transactions', ['bank.index', 'bank.transactions', 'bank.edit', 'bank.expenses*'], $badge['bank'] + $badge['expenses'], false],
-          ['Rechnungen schreiben', 'invoices.index', ['invoices.*'], 0, true],
-          ['E-Rechnung (Mieten)', 'erechnung.index', ['erechnung.*'], 0, false],
-      ],
-      'Kosten' => [
           ['Belege', 'receipts.index', ['receipts.*', 'einvoice.*'], 0, false],
           ['Wiederkehrende Ausgaben', 'recurring.index', ['recurring.*'], 0, false],
-          ['Laufende Verträge', 'svc.index', ['svc.*'], 0, false],
-          ['Lieferanten', 'vendors.index', ['vendors.*'], 0, false],
-      ],
-      'Abrechnung und Steuer' => [
-          ['Nebenkosten', 'nk.index', ['nk.index', 'nk.show', 'nk.print'], 0, false],
-          ['Zähler und CO2', 'consumption.index', ['consumption.*', 'co2.*'], $badge['heat'] ?? 0, false],
+          ['Rechnungen schreiben', 'invoices.index', ['invoices.*'], 0, true],
+          ['E-Rechnung (Mieten)', 'erechnung.index', ['erechnung.*'], 0, false],
+          ['Finanzierung', 'finance.index', ['finance.*', 'loans.*', 'properties.values'], 0, false],
           ['Anlage V', 'anlage-v.index', ['anlage-v.*'], 0, false],
           ['Jahresbericht', 'report.index', ['report.*'], 0, false],
-          ['Finanzierung', 'finance.index', ['finance.*', 'loans.*', 'properties.values'], 0, false],
           ['DATEV-Export', 'datev.index', ['datev.*'], 0, true],
       ],
-      'Instandhaltung' => [
+      'Nebenkosten' => [
+          ['Nebenkosten', 'nk.index', ['nk.index', 'nk.show', 'nk.print'], 0, false],
+          ['Zähler und CO2', 'consumption.index', ['consumption.*', 'co2.*'], $badge['heat'] ?? 0, false],
+      ],
+      'Instandhaltung und Dienstleister' => [
           ['Schäden und Aufträge', 'workorders.index', ['workorders.*'], $badge['orders'] ?? 0, false],
           ['Wartungsplan', 'maintenance.index', ['maintenance.*'], $badge['maint'] ?? 0, false],
+          ['Laufende Verträge', 'svc.index', ['svc.*'], 0, false],
+          ['Lieferanten', 'vendors.index', ['vendors.*'], 0, false],
       ],
       // Gruppen „Stammdaten“, „Webseite“ und „Verwaltung“ stehen seit 02.11.2026 als Kacheln unter Profilmenü → Einstellungen
   ];
