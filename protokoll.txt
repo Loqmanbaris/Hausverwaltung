@@ -1,69 +1,14 @@
-Ergebnis: OK (02.11.2026 22:42)
+Ergebnis: FEHLER (02.11.2026 22:47)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    102f898 Merge pull request #15 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+Ziel:    a901af7 Merge pull request #16 from Loqmanbaris/ccr-ef75b8df-4kmjqe
 
-=================== 02.11.2026 22:42:03 ===================
+=================== 02.11.2026 22:47:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Merge pull request #15 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - Schreiben an Mieter: Kündigungsbestätigung und Terminankündigung
-
-Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-2242.bkp (7,5 MB, 89 Tabellen, 1092 Zeilen)
-
-Wartungsmodus an ...
-Code übernehmen ...
-Datenbank umstellen ...
-
-   INFO  Nothing to migrate.  
-
-
-Selbsttests ...
-  OK      afa:selbsttest
-  OK      anpassen:selbsttest
-  OK      ausgaben:selbsttest
-  OK      bescheinigung:selbsttest
-  OK      design:selbsttest
-  OK      dokumente:selbsttest
-  OK      einrichtung:selbsttest
-  OK      email:selbsttest
-  OK      erechnung:selbsttest
-  OK      erhoehung:selbsttest
-  OK      farben:selbsttest
-  OK      finanzierung:selbsttest
-  OK      heizung:selbsttest
-  OK      interessenten:selbsttest
-  OK      jahresbericht:selbsttest
-  OK      kalender:selbsttest
-  OK      kaution:selbsttest
-  OK      korrektur:selbsttest
-  OK      laufvertraege:selbsttest
-  OK      loeschfristen:selbsttest
-  OK      mahnwesen:selbsttest
-  OK      mieten:selbsttest
-  OK      nk:selbsttest
-  OK      onedrive:selbsttest
-  OK      plan:selbsttest
-  OK      portal:selbsttest
-  OK      posteingang:selbsttest
-  OK      pwa:selbsttest
-  OK      rechnung:selbsttest
-  OK      scan:selbsttest
-  OK      seite:selbsttest
-  OK      serie:selbsttest
-  OK      steuer:selbsttest
-  OK      tag:selbsttest
-  OK      technik:selbsttest
-  OK      uebergabe:selbsttest
-  OK      uebersicht:selbsttest
-  OK      umlage:selbsttest
-  OK      updates:selbsttest
-  OK      updatesuche:selbsttest
-  OK      vertraege:selbsttest
-  OK      webseite:selbsttest
-  OK      zinsen:selbsttest
-
-FERTIG: Neuer Stand 102f898 – Merge pull request #15 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
+  - Merge pull request #16 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - Automatischer Kontoabruf per FinTS (Sparkasse/pushTAN)
+  - Dunkler Modus: Kacheln der Übersicht und E-Mail-Ordnerspalte lesbar
+ABBRUCH: Neue Programmbibliotheken nötig, aber composer fehlt. Nichts geändert.
