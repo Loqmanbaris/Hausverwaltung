@@ -110,6 +110,7 @@ Route::middleware([SecurityHeaders::class, 'auth', EnsureTwoFactor::class])->gro
         Route::delete('/mietvertraege/{lease}', [LeaseController::class, 'destroy'])->name('leases.destroy');
         Route::delete('/zahlungen/{payment}', [LeaseController::class, 'paymentDestroy'])->name('payments.destroy');
         Route::delete('/kontoauszuege/{import}', [BankController::class, 'destroyImport'])->name('bank.destroy');
+        Route::put('/mieteingang/erfasst-ab', [RentIncomeController::class, 'saveStart'])->name('rent.start');
         Route::put('/mahnwesen/einstellungen', [\App\Http\Controllers\DunningController::class, 'saveSettings'])->name('dunning.settings');
         Route::post('/nebenkosten/{settlement}/oeffnen', [\App\Http\Controllers\NkController::class, 'reopen'])->name('nk.reopen');
 

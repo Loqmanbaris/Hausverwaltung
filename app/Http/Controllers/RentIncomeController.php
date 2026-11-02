@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Concerns\ScopesOwners;
 use App\Models\Lease;
 use App\Models\RentCharge;
+use App\Support\Audit;
 use App\Support\Money;
+use App\Support\Rent\Mieten;
 use App\Support\Rent\RentLedger;
+use App\Support\Settings;
 use DateTimeImmutable;
 use Illuminate\Http\Request;
 
@@ -107,5 +110,19 @@ class RentIncomeController extends Controller
             'ownerId' => $ownerId,
             'today' => $today,
         ]);
+    }
+
+    /** Beginn der Erfassung: Soll-Mieten vor diesem Monat entstehen nicht (alte Rückstände gelten als erledigt). */
+    public function saveStart(Request $request)
+    {
+        $data = $request->validate(['rent_start' => ['required', 'regex:/^20\d{2}-(0[1-9]|1[0-2])$/']],
+            ['rent_start.*' => 'Bitte einen Monat auswählen.']);
+        $old = Mieten::start();
+        Settings::putMany(['rent_start' => $data['rent_start'].'-01']);
+        $new = Mieten::start();
+        $r = RentLedger::syncAll();
+        Audit::log('rent.start', null, 'Mieten erfasst ab '.date('m.Y', strtotime($new)).' (vorher '.date('m.Y', strtotime($old)).'), '.$r['changed'].' Posten geändert');
+
+        return redirect()->route('rent.open')->with('status', 'Mieten werden ab '.date('m.Y', strtotime($new)).' erfasst. Alle Mietkonten wurden neu berechnet.');
     }
 }

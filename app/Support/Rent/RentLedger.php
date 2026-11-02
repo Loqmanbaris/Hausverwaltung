@@ -49,7 +49,11 @@ class RentLedger
             }
 
             $wanted = [];
+            $first = Mieten::start(); // Monate vor dem Beginn der Erfassung bekommen kein Soll
             foreach (RentMath::months($leaseData['start'], $leaseData['end'], $today->format('Y-m-d')) as $month) {
+                if ($month < $first) {
+                    continue;
+                }
                 $c = RentMath::charge($leaseData, $rents, $month);
                 if ($c !== null) {
                     $wanted[$month] = $c;
@@ -176,17 +180,23 @@ class RentLedger
         }
 
         try {
-            \Illuminate\Support\Facades\Cache::put('rent_sync_day', ($today ?? new DateTimeImmutable('today'))->format('Y-m-d'), 86400 * 2);
+            \Illuminate\Support\Facades\Cache::put('rent_sync_day', self::syncKey(($today ?? new DateTimeImmutable('today'))->format('Y-m-d')), 86400 * 2);
         } catch (\Throwable) {
         }
 
         return $sum;
     }
 
+    /** Merker für den täglichen Lauf: Tag und Beginn der Erfassung (ändert sich der Beginn, wird sofort neu gerechnet). */
+    public static function syncKey(string $day): string
+    {
+        return $day.'|'.Mieten::start();
+    }
+
     /** Einmal am Tag alles neu rechnen, falls der tägliche Lauf (Cronjob) noch nicht gelaufen ist. */
     public static function syncAllIfStale(): void
     {
-        $today = date('Y-m-d');
+        $today = self::syncKey(date('Y-m-d'));
         try {
             if (\Illuminate\Support\Facades\Cache::get('rent_sync_day') === $today) {
                 return;

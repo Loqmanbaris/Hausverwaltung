@@ -44,12 +44,22 @@ class MietenSelbsttest extends Command
         }
 
         // 2. Seiten
-        foreach (['leases.index', 'leases.create', 'leases.show', 'leases.rent.create', 'leases.rent.edit', 'leases.rent.update', 'rent.month', 'rent.open', 'rent.quick-pay', 'payments.destroy', 'bank.index', 'bank.store', 'bank.transactions', 'bank.assign', 'bank.split', 'bank.item.remove', 'bank.accept', 'bank.edit', 'bank.update', 'bank.payment.update', 'bank.payment.remove', 'datev.rent', 'datev.rent.export', 'datev.rent.accounts'] as $name) {
+        foreach (['leases.index', 'leases.create', 'leases.show', 'leases.rent.create', 'leases.rent.edit', 'leases.rent.update', 'rent.month', 'rent.open', 'rent.start', 'rent.quick-pay', 'payments.destroy', 'bank.index', 'bank.store', 'bank.transactions', 'bank.assign', 'bank.split', 'bank.item.remove', 'bank.accept', 'bank.edit', 'bank.update', 'bank.payment.update', 'bank.payment.remove', 'datev.rent', 'datev.rent.export', 'datev.rent.accounts'] as $name) {
             $this->check('Seite '.$name, Route::has($name));
         }
         foreach (['leases.index', 'leases.form', 'leases.show', 'leases.rent', 'leases.rent-edit', 'rent.month', 'rent.open', 'partials.rent-dashboard', 'partials.rent-styles', 'partials.bank-tabs', 'partials.bank-filter', 'bank.index', 'bank.transactions', 'bank.expenses', 'bank.split-dialog', 'bank.edit', 'datev.rent', 'datev.rent-accounts'] as $view) {
             $this->check('Vorlage '.$view, view()->exists($view));
         }
+        // Eingebundene Vorlagen erben kein „use“ der Hauptseite: wer Money:: nutzt, muss die Klasse selbst einbinden
+        foreach (glob(resource_path('views/{bank,leases,rent,partials}/*.blade.php'), GLOB_BRACE) ?: [] as $file) {
+            $src = (string) file_get_contents($file);
+            if (preg_match('/(?<![\\\\\w])Money::/', $src) && ! str_contains($src, 'App\Support\Money')) {
+                $this->check('Vorlage '.basename($file).' bindet Money ein', false);
+            }
+        }
+
+        $this->check('Mieten erfasst ab (JJJJ-MM-01)', preg_match('/^\d{4}-\d{2}-01$/', \App\Support\Rent\Mieten::start()) === 1
+            && str_ends_with(\App\Support\Rent\RentLedger::syncKey('2026-11-02'), '|'.\App\Support\Rent\Mieten::start()));
 
         $opts = ['2026-10' => 'Oktober 2026', '2026-09' => 'September 2026', '2026-08' => 'August 2026'];
         $this->check('Monatsauswahl Kontoauszüge (Pfeile)', \App\Support\Bank\Monatsfilter::neighbours($opts, '2026-09') === ['2026-08', '2026-10']
