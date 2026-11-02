@@ -17,6 +17,9 @@ html[data-theme=dark]{
   --hv-dark:#11171d; --hv-dark2:#1a222b;
 }
 html[data-theme=dark] img:not([src$=".svg"]){filter:brightness(.92)}
+/* Farbige Kacheln der Übersicht: zarte Pastelltöne werden dunkel getönt */
+html[data-theme=dark] [style*="--tile-soft"]{--tile-soft:color-mix(in srgb,var(--tile) 18%,var(--surface))!important}
+html[data-theme=dark] .ck-block.has-color .ck-num:not(.warn),html[data-theme=dark] .ck-block.has-color .ck-day:not(.warn) b,html[data-theme=dark] .ck-tile[style] .k{color:color-mix(in srgb,var(--tile) 55%,#fff)!important}
 html[data-theme=dark] .panel,html[data-theme=dark] .sd-card,html[data-theme=dark] .card{box-shadow:none!important}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}

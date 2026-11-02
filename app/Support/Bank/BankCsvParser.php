@@ -128,17 +128,7 @@ class BankCsvParser
             throw new BankImportException('Die Datei enthält Umsätze mehrerer Konten. Bitte je Konto eine eigene Datei exportieren.');
         }
 
-        // Schlüssel gegen doppeltes Einlesen: gleiche Umsätze in einer Datei werden durchnummeriert
-        $seen = [];
-        foreach ($rows as &$r) {
-            $base = hash('sha256', implode('|', [
-                $r['booking_date'], $r['value_date'], $r['amount'], $r['iban'], mb_strtolower((string) $r['name']),
-                mb_strtolower((string) preg_replace('/\s+/u', ' ', (string) $r['purpose'])), $r['end_to_end'], $r['mandate_ref'],
-            ]));
-            $seen[$base] = ($seen[$base] ?? 0) + 1;
-            $r['dedupe_key'] = hash('sha256', $base.'#'.$seen[$base]);
-        }
-        unset($r);
+        $rows = self::withDedupeKeys($rows);
 
         $dates = array_column($rows, 'booking_date');
 
@@ -150,6 +140,28 @@ class BankCsvParser
             'from' => min($dates),
             'to' => max($dates),
         ];
+    }
+
+    /**
+     * Schlüssel gegen doppeltes Einlesen: gleiche Umsätze in einer Lieferung werden durchnummeriert.
+     *
+     * @param  array<int, array>  $rows
+     * @return array<int, array>
+     */
+    public static function withDedupeKeys(array $rows): array
+    {
+        $seen = [];
+        foreach ($rows as &$r) {
+            $base = hash('sha256', implode('|', [
+                $r['booking_date'], $r['value_date'], $r['amount'], $r['iban'], mb_strtolower((string) $r['name']),
+                mb_strtolower((string) preg_replace('/\s+/u', ' ', (string) $r['purpose'])), $r['end_to_end'], $r['mandate_ref'],
+            ]));
+            $seen[$base] = ($seen[$base] ?? 0) + 1;
+            $r['dedupe_key'] = hash('sha256', $base.'#'.$seen[$base]);
+        }
+        unset($r);
+
+        return $rows;
     }
 
     /** UTF-8 bleibt, alles andere wird als Windows-1252 (ANSI) gelesen. */

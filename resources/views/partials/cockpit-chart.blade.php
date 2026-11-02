@@ -18,7 +18,7 @@
     @php($last = $i === count($chart) - 1)
     <g>
       <title>{{ $m['label'] }} {{ $m['year'] }}: Soll {{ \App\Support\Money::format($m['soll']) }}, bezahlt {{ \App\Support\Money::format($m['ist']) }}</title>
-      <rect x="{{ $cx - $bw / 2 }}" y="{{ $y($m['soll']) }}" width="{{ $bw }}" height="{{ max(0, $T + $plotH - $y($m['soll'])) }}" rx="3" fill="#e5e7eb" />
+      <rect x="{{ $cx - $bw / 2 }}" y="{{ $y($m['soll']) }}" width="{{ $bw }}" height="{{ max(0, $T + $plotH - $y($m['soll'])) }}" rx="3" style="fill:var(--line)" />
       <rect x="{{ $cx - $bw / 2 }}" y="{{ $y($m['ist']) }}" width="{{ $bw }}" height="{{ max(0, $T + $plotH - $y($m['ist'])) }}" rx="3" fill="var(--brand)" @if ($m['soll'] > 0 && $m['ist'] + 0.01 < $m['soll'] && ! $last) opacity=".75" @endif />
       @if ($m['soll'] > 0 && $m['ist'] + 0.01 < $m['soll'] && ! $last)
         <circle cx="{{ $cx }}" cy="{{ $y($m['soll']) - 7 }}" r="3" fill="#b42318" />

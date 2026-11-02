@@ -7,6 +7,7 @@
       ['Ausgaben zuordnen', 'bank.expenses', ['bank.expenses*'], $kzCount(fn () => \App\Support\Bank\ExpenseMatcher::openCountFor($kzUser))],
       ['Wiederkehrende Ausgaben', 'recurring.index', ['recurring.*'], 0],
       ['Kontoauszug einlesen', 'bank.index', ['bank.index'], 0],
+      ...(\Illuminate\Support\Facades\Route::has('bank.abruf') && $kzUser?->isAdmin() ? [['Kontoabruf', 'bank.abruf', ['bank.abruf'], $kzCount(fn () => \App\Models\BankConnection::query()->whereIn('status', ['tan', 'fehler'])->where('active', true)->count())]] : []),
   ];
 @endphp
 <style>
