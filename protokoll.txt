@@ -1,18 +1,20 @@
-Ergebnis: OK (02.11.2026 21:07)
+Ergebnis: OK (02.11.2026 21:27)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    2f01130 Merge pull request #3 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+Ziel:    bd5d2b2 Merge pull request #5 from Loqmanbaris/ccr-ef75b8df-4kmjqe
 
-=================== 02.11.2026 21:07:02 ===================
+=================== 02.11.2026 21:27:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Merge pull request #3 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - Finanzen ganz oben im Menü, Wiederkehrende Ausgaben als Reiter unter Umsätze, Einlesen robuster
+  - Merge pull request #5 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - E-Mails löschen, Menü: Mein Tag und E-Mails über Finanzen
+  - Merge pull request #4 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - Kontoauszug einlesen: 500-Fehler behoben, Offene Posten aus dem Menü
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-2107.bkp (7,4 MB, 89 Tabellen, 1075 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-2127.bkp (7,4 MB, 89 Tabellen, 1076 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -65,4 +67,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 2f01130 – Merge pull request #3 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
+FERTIG: Neuer Stand bd5d2b2 – Merge pull request #5 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
