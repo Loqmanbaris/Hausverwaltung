@@ -17,8 +17,7 @@
       'Finanzen' => [
           ['Rechnungen schreiben', 'invoices.index', ['invoices.*'], 0, true],
           ['Umsätze', 'bank.transactions', ['bank.index', 'bank.transactions', 'bank.edit', 'bank.expenses*', 'recurring.*'], $badge['bank'] + $badge['expenses'], false],
-          ['Mieteingang', 'rent.month', ['rent.month'], 0, false],
-          ['Offene Posten', 'rent.open', ['rent.open'], 0, false],
+          ['Mieteingang', 'rent.month', ['rent.month', 'rent.open'], 0, false],   // „Offene Posten“ erreichst du über den Mieteingang
           ['Mahnwesen', 'dunning.index', ['dunning.*'], 0, false],
           ['Belege', 'receipts.index', ['receipts.*', 'einvoice.*'], 0, false],
           ['E-Rechnung (Mieten)', 'erechnung.index', ['erechnung.*'], 0, false],

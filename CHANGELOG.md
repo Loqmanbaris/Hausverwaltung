@@ -2,6 +2,12 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Kontoauszug einlesen: 500-Fehler behoben, „Offene Posten“ aus dem Menü
+1. Behoben: Die Seite Umsätze → Kontoauszug einlesen brach mit „500 Server Error“ ab, sobald schon Dateien eingelesen waren. Ursache war eine Blade-Schreibweise („@php(…)“ vor einem „@php … @endphp“-Block), die Blade falsch übersetzt.
+2. design:selbsttest übersetzt jetzt alle Vorlagen und schlägt bei diesem Fehler an.
+3. „Offene Posten“ ist kein eigener Menüpunkt mehr; die Seite erreichst du über Mieteingang (Knopf „Offene Posten“).
+Keine Migration. Selbsttest: design:selbsttest
+
 ## Finanzen ganz oben, Wiederkehrende Ausgaben unter Umsätze
 1. Die Gruppe „Finanzen“ steht ganz oben im Seitenmenü. Reihenfolge: Rechnungen schreiben, Umsätze, Mieteingang, Offene Posten, Mahnwesen, Belege, E-Rechnung, Finanzierung, Anlage V, Jahresbericht, DATEV-Export.
 2. „Wiederkehrende Ausgaben“ ist jetzt ein Reiter auf der Seite Umsätze (Eingänge, Ausgaben, Wiederkehrende Ausgaben, Kontoauszug einlesen) und kein eigener Menüpunkt mehr.

@@ -29,7 +29,23 @@ class DesignSelbsttest extends Command
         preg_match_all("/\\['[^']+', '([a-z.-]+)', \\[/", $nav, $m);
         $missing = array_filter($m[1], fn ($r) => ! Route::has($r));
 
+        // „@php(…)“ vor einem „@php … @endphp“-Block wird von Blade zu einem kaputten Block verschmolzen (Seite bricht mit 500 ab)
+        $broken = [];
+        foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(resource_path('views'), \FilesystemIterator::SKIP_DOTS)) as $f) {
+            if (str_ends_with((string) $f, '.blade.php')) {
+                try {
+                    $php = Blade::compileString((string) file_get_contents((string) $f));
+                } catch (\Throwable) {
+                    $php = '@php';
+                }
+                if (preg_match('/<\?php\(|@php\b|@endphp/', $php) === 1) {
+                    $broken[] = str_replace(resource_path('views').DIRECTORY_SEPARATOR, '', (string) $f);
+                }
+            }
+        }
+
         $checks = [
+            'Vorlagen sauber übersetzt'.($broken !== [] ? ' (fehlerhaft: '.implode(', ', $broken).')' : '') => $broken === [],
             'Ansichten vorhanden' => view()->exists('layouts.app') && view()->exists('layouts.guest') && view()->exists('partials.nav-main'),
             'Ansichten lesbar' => $compiles('layouts.app') && $compiles('layouts.guest') && $compiles('partials.nav-main'),
             'Kontoauszüge mit Reitern' => $compiles('partials.bank-tabs') && $compiles('bank.index') && $compiles('bank.transactions') && $compiles('bank.expenses'),
