@@ -11,7 +11,7 @@
 @section('content')
 @include('partials.sd-flash')
 <style>
-.pf{--pf-acc:var(--brand);--pf-s2:#f6f7f9;display:grid;grid-template-columns:minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 1px 2px rgba(17,24,39,.04);overflow:hidden;min-height:calc(100dvh - 140px)}
+.pf{--pf-acc:var(--brand);--pf-s2:var(--surface-2);display:grid;grid-template-columns:minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 1px 2px rgba(17,24,39,.04);overflow:hidden;min-height:calc(100dvh - 140px)}
 .pf .ic{margin:0;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .pf a{text-decoration:none}
 .pf-ordnerspalte{display:none;flex-direction:column;gap:6px;padding:14px 10px;background:var(--pf-s2);border-right:1px solid var(--line);min-height:0}

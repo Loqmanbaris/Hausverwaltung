@@ -2,6 +2,10 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Dunkler Modus: Übersicht und E-Mail lesbar
+Die farbigen Kacheln der Übersicht liefen in festes Weiß aus, die Ordnerspalte der E-Mails war fest hell – im dunklen Modus stand dort helle Schrift auf hellem Grund. Jetzt dunkel getönt; Zahlen in Kachelfarbe werden im Dunkeln aufgehellt. Balken im Mieteingangs-Diagramm passen sich an.
+Keine Migration.
+
 ## Kündigungsbestätigung und Terminankündigung
 1. Schreiben an Mieter → „Kündigung des Mieters bestätigen“: Eingangsdatum, auf Wunsch das vom Mieter gewünschte Ende, Übergabetermin. Das Ende wird berechnet (Wohnraum 3 Monate, Gewerbe zum Quartal, Zugang bis 3. Werktag); ein zu früher Wunschtermin wird höflich korrigiert, ein späterer übernommen. Hinweise zu Rückgabe, Schlüsseln, Ummeldung und neuer Anschrift. Auf Wunsch wird das Vertragsende gleich im Mietvertrag eingetragen (Soll-Mieten enden dann).
 2. „Termin ankündigen“: Reparatur, Wartung, Zählerablesung, Besichtigung oder Sonstiges mit Tag, Uhrzeit, wer kommt, Rückfragen und „melden bis“. Auf Wunsch je ein Brief an alle Mietparteien im Haus.
