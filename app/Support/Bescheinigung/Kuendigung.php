@@ -143,6 +143,38 @@ class Kuendigung
     }
 
     /**
+     * Ende bei Kündigung durch den Mieter: Wohnraum immer 3 Monate (§ 573c Abs. 1 Satz 1 BGB), Gewerbe zum Quartal (§ 580a Abs. 2 BGB).
+     *
+     * @return array{ende: string, monate: int, spaetestens: string, regel: string}
+     */
+    public static function mieterEnde(string $leaseType, string $zugang): array
+    {
+        if ($leaseType === 'gewerbe') {
+            return self::ordentlichesEnde('gewerbe', $zugang, $zugang);
+        }
+        $z = new DateTimeImmutable($zugang);
+        $first = $z->modify('first day of this month');
+        $third = self::dritterWerktag($zugang);
+        $base = $zugang <= $third ? $first : $first->modify('+1 month');
+
+        return [
+            'ende' => $base->modify('+3 months')->modify('-1 day')->format('Y-m-d'),
+            'monate' => 3,
+            'spaetestens' => $zugang <= $third ? $third : self::dritterWerktag($first->modify('+1 month')->format('Y-m-d')),
+            'regel' => '§ 573c Abs. 1 Satz 1 BGB: Kündigungsfrist des Mieters 3 Monate, Zugang spätestens am dritten Werktag eines Monats',
+        ];
+    }
+
+    /** Anlässe für die Ankündigung eines Termins in der Wohnung */
+    public const TERMIN_ARTEN = [
+        'reparatur' => 'Reparatur / Handwerkerarbeiten',
+        'wartung' => 'Wartung (z. B. Heizung, Rauchwarnmelder)',
+        'ablesung' => 'Ablesung der Zähler und Heizkostenverteiler',
+        'besichtigung' => 'Besichtigung (z. B. Nachmieter, Kaufinteressenten, Gutachter)',
+        'sonstiges' => 'Sonstiger Termin',
+    ];
+
+    /**
      * Prüft grob, ob der Rückstand eine fristlose Kündigung nach § 543 Abs. 2 Nr. 3 BGB trägt
      * (Wohnraum: mehr als eine Monatsmiete aus zwei aufeinanderfolgenden Terminen, oder insgesamt zwei Monatsmieten).
      *

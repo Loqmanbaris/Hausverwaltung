@@ -36,11 +36,13 @@ class BescheinigungSelbsttest extends Command
                 && Kuendigung::ordentlichesEnde('wohnen', '2018-03-01', '2026-11-02')['ende'] === '2027-07-31',
             'Kündigungsfrist Gewerbe' => Kuendigung::ordentlichesEnde('gewerbe', '2020-01-01', '2026-10-05')['ende'] === '2027-03-31'
                 && Kuendigung::ordentlichesEnde('gewerbe', '2020-01-01', '2026-10-06')['ende'] === '2027-06-30',
+            'Kündigungsfrist Mieter' => Kuendigung::mieterEnde('wohnen', '2026-11-04')['ende'] === '2027-01-31' && Kuendigung::mieterEnde('wohnen', '2026-11-05')['ende'] === '2027-02-28'
+                && Kuendigung::mieterEnde('wohnen', '2018-11-02')['ende'] === '2019-01-31' && Kuendigung::mieterEnde('gewerbe', '2026-10-06')['ende'] === '2027-06-30',
             'Zahlungsverzug' => Kuendigung::zahlungsverzug([500, 500], 800)['ok'] && ! Kuendigung::zahlungsverzug([300, 0, 300], 800)['ok'] && Kuendigung::zahlungsverzug([800, 800], 800)['ok'],
-            'Seiten' => Route::has('bescheinigung.choose') && Route::has('bescheinigung.index') && Route::has('bescheinigung.wohnungsgeber') && Route::has('bescheinigung.mietschuldenfrei') && Route::has('bescheinigung.abmahnung') && Route::has('bescheinigung.kuendigung'),
-            'Ansichten' => $compiles('bescheinigung.choose') && $compiles('bescheinigung.index') && $compiles('bescheinigung.wohnungsgeber') && $compiles('bescheinigung.mietschuldenfrei') && $compiles('bescheinigung._druck') && $compiles('bescheinigung._brief') && $compiles('bescheinigung.abmahnung') && $compiles('bescheinigung.kuendigung'),
+            'Seiten' => Route::has('bescheinigung.choose') && Route::has('bescheinigung.index') && Route::has('bescheinigung.wohnungsgeber') && Route::has('bescheinigung.mietschuldenfrei') && Route::has('bescheinigung.abmahnung') && Route::has('bescheinigung.kuendigung') && Route::has('bescheinigung.kuendigungsbestaetigung') && Route::has('bescheinigung.termin'),
+            'Ansichten' => $compiles('bescheinigung.choose') && $compiles('bescheinigung.index') && $compiles('bescheinigung.wohnungsgeber') && $compiles('bescheinigung.mietschuldenfrei') && $compiles('bescheinigung._druck') && $compiles('bescheinigung._brief') && $compiles('bescheinigung.abmahnung') && $compiles('bescheinigung.kuendigung') && $compiles('bescheinigung.kuendigungsbestaetigung') && $compiles('bescheinigung.termin'),
         ];
-        $this->line('Selbsttest Paket 44/45 (Bescheinigungen, Abmahnung, Kündigung)');
+        $this->line('Selbsttest Paket 44–46 (Schreiben an Mieter)');
         $failed = 0;
         foreach ($checks as $label => $ok) {
             $failed += $ok ? 0 : 1;

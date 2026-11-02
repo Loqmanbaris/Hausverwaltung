@@ -2,6 +2,12 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Kündigungsbestätigung und Terminankündigung
+1. Schreiben an Mieter → „Kündigung des Mieters bestätigen“: Eingangsdatum, auf Wunsch das vom Mieter gewünschte Ende, Übergabetermin. Das Ende wird berechnet (Wohnraum 3 Monate, Gewerbe zum Quartal, Zugang bis 3. Werktag); ein zu früher Wunschtermin wird höflich korrigiert, ein späterer übernommen. Hinweise zu Rückgabe, Schlüsseln, Ummeldung und neuer Anschrift. Auf Wunsch wird das Vertragsende gleich im Mietvertrag eingetragen (Soll-Mieten enden dann).
+2. „Termin ankündigen“: Reparatur, Wartung, Zählerablesung, Besichtigung oder Sonstiges mit Tag, Uhrzeit, wer kommt, Rückfragen und „melden bis“. Auf Wunsch je ein Brief an alle Mietparteien im Haus.
+3. Beide mit Briefkopf und Fußzeile; jedes Schreiben steht im Protokoll.
+Keine Migration. Selbsttest: bescheinigung:selbsttest
+
 ## Heller und dunkler Modus
 1. Im Profilmenü (rundes Zeichen oben rechts) unter „Darstellung“: Hell, Dunkel oder Auto (folgt der Einstellung von Handy/iPad/PC). Die Wahl gilt je Gerät; ohne Wahl gilt Auto.
 2. Alle Verwaltungsseiten nutzen dafür Farbvariablen statt fester Farben. Druckseiten und Briefe, Webseite und Mieterportal bleiben immer hell.
