@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<link rel="icon" type="image/png" href="/app-icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#202c34">
@@ -131,7 +132,7 @@ body.sb-min .sb{display:none}
 <div class="shell">
   <aside class="sb" id="sb" aria-label="Navigation">
     <button class="menu-btn sb-close" type="button" onclick="document.body.classList.remove('nav-open')">Schließen ✕</button>
-    <a class="sb-brand" href="{{ route('dashboard') }}">@if ($logo)<img src="{{ $logo->url() }}" alt="{{ config('app.name') }}">@else<span class="dot"></span>{{ config('app.name') }}@endif</a>
+    <a class="sb-brand" href="{{ route('dashboard') }}">@if ($logo)<img src="{{ $logo->url() }}" alt="{{ config('app.name') }}">@else @include('partials.logo-mark', ['lmHouse' => '#fff', 'lmAccent' => 'var(--brand)', 'lmSize' => 32])<span>{{ config('app.name') }}</span>@endif</a>
     <button class="sb-hide" type="button" data-sb-toggle title="Menü einklappen">« Menü einklappen</button>
     <nav>@include('partials.nav-main')</nav>
     <div class="sb-foot"><a href="{{ route('profile.settings') }}">Einstellungen</a><br><a href="{{ route('home') }}" target="_blank" rel="noopener">Webseite ansehen ↗</a></div>

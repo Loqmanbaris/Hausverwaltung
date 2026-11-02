@@ -2,6 +2,11 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Neues Logo „Haus mit B“
+1. Seitenleiste im CRM, Anmeldeseite und Webseite zeigen das Logo (Dach in der Akzentfarbe, Haus mit „B“), solange unter Webseite gestalten kein eigenes Logo hochgeladen ist. Ein hochgeladenes Logo hat weiterhin Vorrang.
+2. App-Symbol (Startbildschirm) und Browser-Symbol zeigen jetzt das Logo auf orangem Grund.
+Keine Migration. Selbsttest: design:selbsttest, pwa:selbsttest
+
 ## Bescheinigungen: Wohnungsgeberbestätigung und Mietschuldenfreiheit
 1. Im Mietvertrag gibt es den Knopf „Bescheinigungen“. Dort lassen sich zwei Schreiben zum Drucken oder als PDF erstellen.
 2. Wohnungsgeberbestätigung nach § 19 Bundesmeldegesetz: Einzug oder Auszug mit Datum, Anschrift und Lage der Wohnung, alle ein- bzw. ausziehenden Personen (eine je Zeile, Vorschlag: der Mieter), Hinweis zur Meldepflicht und zum Bußgeld.

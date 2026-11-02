@@ -51,6 +51,7 @@ class DesignSelbsttest extends Command
             'Kontoauszüge mit Reitern' => $compiles('partials.bank-tabs') && $compiles('bank.index') && $compiles('bank.transactions') && $compiles('bank.expenses'),
             'Einstellungen als Kacheln' => \Illuminate\Support\Facades\Route::has('profile.settings') && view()->exists('profile.settings') && $compiles('profile.settings'),
             'Neues Seitenmenü' => str_contains((string) @file_get_contents(resource_path('views/layouts/app.blade.php')), 'partials.nav-main'),
+            'Logo „Haus mit B“' => view()->exists('partials.logo-mark') && $compiles('partials.logo-mark'),
             'Seitenmenü einklappbar' => str_contains((string) @file_get_contents(resource_path('views/layouts/app.blade.php')), 'data-sb-toggle'),
             'Menüpunkte ('.count($m[1]).')' => count($m[1]) >= 12 && $missing === [],   // seit 02.11.2026 schlanker, vieles unter Einstellungen
         ];

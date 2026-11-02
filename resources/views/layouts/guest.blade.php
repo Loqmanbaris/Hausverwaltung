@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<link rel="icon" type="image/png" href="/app-icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>@yield('title', 'Anmelden') – {{ config('app.name') }}</title>
@@ -29,7 +30,7 @@
 <div class="test-banner">Testumgebung – bitte nur Beispieldaten verwenden</div>
 @endif
 <main class="container narrow">
-  <a class="gbrand" href="{{ route('home') }}">@if ($logo)<img src="{{ $logo->url() }}" alt="{{ config('app.name') }}">@else<span class="dot"></span>{{ config('app.name') }}@endif</a>
+  <a class="gbrand" href="{{ route('home') }}">@if ($logo)<img src="{{ $logo->url() }}" alt="{{ config('app.name') }}">@else @include('partials.logo-mark', ['lmHouse' => '#202c34', 'lmAccent' => 'var(--brand)', 'lmSize' => 40])<span>{{ config('app.name') }}</span>@endif</a>
   <div class="panel">
     @yield('content')
   </div>
