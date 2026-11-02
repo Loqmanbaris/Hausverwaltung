@@ -1,18 +1,18 @@
-Ergebnis: OK (02.11.2026 21:37)
+Ergebnis: OK (02.11.2026 21:42)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    56821cf Merge pull request #7 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+Ziel:    728e6c4 Merge pull request #8 from Loqmanbaris/ccr-ef75b8df-4kmjqe
 
-=================== 02.11.2026 21:37:03 ===================
+=================== 02.11.2026 21:42:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Merge pull request #7 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - DATEV-Export als Kachel unter Einstellungen statt im Seitenmenü
+  - Merge pull request #8 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - Menü: Gruppen-Überschriften deutlich erkennbar, Lieferanten unter Einstellungen → Stammdaten
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-2137.bkp (7,4 MB, 89 Tabellen, 1078 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-2142.bkp (7,4 MB, 89 Tabellen, 1079 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -65,4 +65,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 56821cf – Merge pull request #7 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
+FERTIG: Neuer Stand 728e6c4 – Merge pull request #8 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
