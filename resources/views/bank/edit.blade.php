@@ -76,6 +76,7 @@
     @else
       @forelse ($tx->payments as $p)
         <div class="be-pay">
+          <span class="be-st">{{ $p->incomeLabel() }}</span>
           <form method="POST" action="{{ route('bank.payment.update', [$tx, $p]) }}">
             @csrf @method('PUT')
             @foreach (['stand' => $stand, 'konto' => $konto] as $k => $v)<input type="hidden" name="{{ $k }}" value="{{ $v }}">@endforeach
@@ -93,8 +94,22 @@
           @if (isset($exported[$p->id]))<div class="be-warn">Diese Zahlung wurde schon an DATEV übergeben. Eine Änderung bitte dem Steuerberater mitteilen.</div>@endif
         </div>
       @empty
-        <p class="sd-muted" style="margin:0 0 .4rem">Noch keinem Mietvertrag zugeordnet.</p>
+        @if ($tx->relationLoaded('items') && $tx->items->isNotEmpty())@else<p class="sd-muted" style="margin:0 0 .4rem">Noch keinem Mietvertrag zugeordnet.</p>@endif
       @endforelse
+      @if ($tx->relationLoaded('items'))
+        @foreach ($tx->items as $it)
+          <div class="be-pay">
+            <span class="be-st">{{ $it->kindLabel() }}</span>
+            <span style="flex:1 1 18rem">{{ Money::format($it->amount) }}@if ($it->lease) · {{ $leaseLabel($it->lease) }}@endif @if ($it->note)<span class="sd-muted"> · {{ $it->note }}</span>@endif
+              @if ($it->kind === 'kaution')<br><span class="sd-muted">bei der Kaution als Einzahlung gebucht</span>@endif</span>
+            <form method="POST" action="{{ route('bank.item.remove', [$tx, $it]) }}" style="flex:0 0 auto" onsubmit="return confirm('Diesen Teil entfernen? Der Betrag ist danach wieder offen.')">
+              @csrf @method('DELETE')
+              @foreach ($keep as $k => $v)<input type="hidden" name="{{ $k }}" value="{{ $v }}">@endforeach
+              <button class="sd-btn danger small" type="submit">Entfernen</button>
+            </form>
+          </div>
+        @endforeach
+      @endif
 
       @if ($remaining > 0.004)
         <h3 style="font-size:1rem;margin:1rem 0 .2rem">{{ $tx->payments->isEmpty() ? 'Zuordnen' : 'Rest zuordnen ('.Money::format($remaining).')' }}</h3>

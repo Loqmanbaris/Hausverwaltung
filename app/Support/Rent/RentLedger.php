@@ -100,6 +100,24 @@ class RentLedger
         });
     }
 
+    /**
+     * Posten, auf die eine Zahlung zuerst geht: Miete eines gewählten Monats, Nebenkosten-Nachzahlungen oder Mahngebühren/Zinsen.
+     *
+     * @return array<int>
+     */
+    public static function targets(RentPayment $p, \Illuminate\Support\Collection $charges): array
+    {
+        $kind = (string) ($p->income_kind ?? 'miete');
+        $match = match (true) {
+            $kind === 'miete' && $p->for_period !== null => fn ($c) => ($c->kind ?? 'miete') === 'miete' && $c->period?->format('Y-m') === $p->for_period->format('Y-m'),
+            $kind === 'nk' => fn ($c) => $c->kind === 'nk',
+            $kind === 'gebuehr' => fn ($c) => in_array($c->kind, ['mahngebuehr', 'zinsen'], true),
+            default => null,
+        };
+
+        return $match === null ? [] : $charges->filter($match)->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
+    }
+
     /** Zahlungen den Soll-Posten neu zuordnen. Gibt das Guthaben zurück. Muss innerhalb einer Transaktion laufen. */
     public static function allocate(Lease $lease): string
     {
@@ -108,7 +126,7 @@ class RentLedger
 
         $result = RentMath::allocate(
             $charges->map(fn ($c) => ['id' => (int) $c->id, 'total' => (string) $c->total])->all(),
-            $payments->map(fn ($p) => ['id' => (int) $p->id, 'amount' => (string) $p->amount])->all()
+            $payments->map(fn ($p) => ['id' => (int) $p->id, 'amount' => (string) $p->amount, 'target' => self::targets($p, $charges)])->all()
         );
 
         DB::table('rent_allocations')->whereIn('rent_charge_id', $charges->pluck('id'))->delete();
@@ -220,7 +238,7 @@ class RentLedger
             $lines[] = ['date' => $isRent ? $c->period_from->format('Y-m-d') : $c->created_at->format('Y-m-d'), 'sort' => 0, 'kind' => 'soll', 'text' => ($isRent ? 'Miete ' : '').$c->periodLabel(), 'debit' => (float) $c->total, 'credit' => null, 'model' => $c];
         }
         foreach (RentPayment::query()->where('lease_id', $lease->id)->get() as $p) {
-            $lines[] = ['date' => $p->paid_on->format('Y-m-d'), 'sort' => 1, 'kind' => 'zahlung', 'text' => in_array($p->source, ['nk', 'co2'], true) ? $p->methodLabel() : ((float) $p->amount < 0 ? 'Rückbuchung / Erstattung' : 'Zahlung').' ('.$p->methodLabel().')', 'debit' => null, 'credit' => (float) $p->amount, 'model' => $p];
+            $lines[] = ['date' => $p->paid_on->format('Y-m-d'), 'sort' => 1, 'kind' => 'zahlung', 'text' => in_array($p->source, ['nk', 'co2'], true) ? $p->methodLabel() : ((float) $p->amount < 0 ? 'Rückbuchung / Erstattung' : 'Zahlung').(($p->income_kind ?? 'miete') !== 'miete' || $p->for_period ? ' '.$p->incomeLabel() : '').' ('.$p->methodLabel().')', 'debit' => null, 'credit' => (float) $p->amount, 'model' => $p];
         }
         usort($lines, fn ($a, $b) => [$a['date'], $a['sort'], $a['model']->id] <=> [$b['date'], $b['sort'], $b['model']->id]);
 

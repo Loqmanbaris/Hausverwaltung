@@ -46,6 +46,8 @@ Route::middleware([SecurityHeaders::class, 'auth', EnsureTwoFactor::class])->gro
     Route::get('/kontoauszuege/umsaetze', [BankController::class, 'transactions'])->name('bank.transactions');
     Route::post('/kontoauszuege/vorschlaege', [BankController::class, 'acceptSure'])->name('bank.accept');
     Route::post('/kontoauszuege/umsaetze/{tx}/zuordnen', [BankController::class, 'assign'])->name('bank.assign');
+    Route::post('/kontoauszuege/umsaetze/{tx}/aufteilen', [BankController::class, 'split'])->name('bank.split');
+    Route::delete('/kontoauszuege/umsaetze/{tx}/teile/{item}', [BankController::class, 'itemRemove'])->name('bank.item.remove');
     Route::post('/kontoauszuege/umsaetze/{tx}/keine-miete', [BankController::class, 'ignore'])->name('bank.ignore');
     Route::post('/kontoauszuege/umsaetze/{tx}/zuruecksetzen', [BankController::class, 'reset'])->name('bank.reset');
     // Umsatz bearbeiten: Angaben korrigieren, Zuordnungen einzeln ändern oder entfernen

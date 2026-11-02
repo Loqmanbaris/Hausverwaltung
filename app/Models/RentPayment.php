@@ -14,8 +14,20 @@ class RentPayment extends Model
 {
     use SoftDeletes;
 
+    /** Einnahmearten beim Aufteilen einer Gutschrift. Miete, Nebenkosten und Gebühren sind Mietzahlungen; Kaution und Sonstiges nicht. */
+    public const INCOME_KINDS = [
+        'miete' => 'Miete',
+        'nk' => 'Nebenkosten-Nachzahlung',
+        'gebuehr' => 'Mahngebühr / Zinsen',
+        'kaution' => 'Kaution',
+        'sonstiges' => 'Sonstiges (keine Miete)',
+    ];
+
+    /** Einnahmearten, die als Mietzahlung auf das Mieterkonto gehen. */
+    public const RENT_KINDS = ['miete', 'nk', 'gebuehr'];
+
     protected $fillable = [
-        'lease_id', 'owner_id', 'paid_on', 'amount', 'method', 'source', 'bank_transaction_id', 'nk_settlement_id', 'reference', 'note',
+        'lease_id', 'owner_id', 'paid_on', 'amount', 'method', 'source', 'income_kind', 'for_period', 'bank_transaction_id', 'nk_settlement_id', 'reference', 'note',
         'allocated_amount', 'created_by',
     ];
 
@@ -23,6 +35,7 @@ class RentPayment extends Model
     {
         return [
             'paid_on' => 'date',
+            'for_period' => 'date',
             'amount' => 'decimal:2',
             'allocated_amount' => 'decimal:2',
         ];
@@ -50,6 +63,19 @@ class RentPayment extends Model
         }
 
         return $query->whereIn('rent_payments.owner_id', Owner::visibleTo($user)->select('owners.id'));
+    }
+
+    /** z. B. „Miete Oktober 2026“, „Miete“ oder „Nebenkosten-Nachzahlung“. */
+    public function incomeLabel(): string
+    {
+        $kind = (string) ($this->income_kind ?? 'miete');
+        $label = self::INCOME_KINDS[$kind] ?? 'Miete';
+        if ($kind === 'miete' && $this->for_period) {
+            $months = ['', 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+            $label .= ' '.$months[(int) $this->for_period->format('n')].' '.$this->for_period->format('Y');
+        }
+
+        return $label;
     }
 
     public function methodLabel(): string

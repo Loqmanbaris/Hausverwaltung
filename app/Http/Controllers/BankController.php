@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Concerns\ScopesOwners;
 use App\Models\BankImport;
 use App\Models\BankTransaction;
+use App\Models\BankTransactionItem;
 use App\Models\Lease;
 use App\Models\LeasePayerAccount;
 use App\Models\OwnerBankAccount;
@@ -87,6 +88,9 @@ class BankController extends Controller
         $query = Monatsfilter::apply(BankTransaction::query()->whereIn('owner_id', $ownerIds), $month)
             ->when($accountId > 0, fn ($q) => $q->where('owner_bank_account_id', $accountId))
             ->with(['payments.lease.unit', 'payments.lease.tenant', 'account', 'owner']);
+        if (\Illuminate\Support\Facades\Schema::hasTable('bank_transaction_items')) {
+            $query->with(['items.lease.unit', 'items.lease.tenant']);
+        }
 
         match ($state) {
             'zugeordnet' => $query->whereIn('status', ['zugeordnet', 'teilweise']),
@@ -198,10 +202,45 @@ class BankController extends Controller
         return $this->back($request, $tx)->with('status', 'Umsatz vom '.$tx->booking_date->format('d.m.Y').' über '.Money::format($tx->amount).' als „keine Miete“ markiert.');
     }
 
+    /** Gutschrift aufteilen (Fenster „Aufteilen“): mehrere Zeilen mit Einnahmeart, Vertrag, Monat, Betrag, Notiz. */
+    public function split(Request $request, BankTransaction $tx)
+    {
+        $this->assertOwnerAccess((int) $tx->owner_id);
+        try {
+            $r = BankService::split($tx, array_values((array) $request->input('rows', [])), $request->boolean('merken'), $this->me());
+        } catch (BankImportException $e) {
+            return $this->back($request, $tx)->withErrors(['tx' => $e->getMessage()])->withInput();
+        }
+        $tx->refresh();
+        $msg = Money::format($r['sum']).' vom '.$tx->booking_date->format('d.m.Y').' in '.$r['count'].' Posten aufgeteilt.';
+        if ($tx->status === 'teilweise') {
+            $msg .= ' Rest '.Money::format($tx->remaining()).' noch zuordnen.';
+        }
+
+        return $this->back($request, $tx)->with('status', $msg);
+    }
+
+    /** Einen Teil ohne Mietzahlung (Kaution, Sonstiges) entfernen. */
+    public function itemRemove(Request $request, BankTransaction $tx, BankTransactionItem $item)
+    {
+        $this->assertOwnerAccess((int) $tx->owner_id);
+        try {
+            BankService::removeItem($tx, $item, $this->me());
+        } catch (BankImportException $e) {
+            return $this->back($request, $tx)->withErrors(['tx' => $e->getMessage()]);
+        }
+
+        return $this->back($request, $tx)->with('status', $item->kindLabel().' über '.Money::format($item->amount).' entfernt.');
+    }
+
     public function reset(Request $request, BankTransaction $tx)
     {
         $this->assertOwnerAccess((int) $tx->owner_id);
-        BankService::reset($tx);
+        try {
+            BankService::reset($tx);
+        } catch (BankImportException $e) {
+            return $this->back($request, $tx)->withErrors(['tx' => $e->getMessage()]);
+        }
 
         return $this->back($request, $tx)->with('status', 'Umsatz vom '.$tx->booking_date->format('d.m.Y').' ist wieder offen. Zugeordnete Zahlungen wurden storniert.');
     }
@@ -211,6 +250,9 @@ class BankController extends Controller
     {
         $this->assertOwnerAccess((int) $tx->owner_id);
         $tx->load(['payments.lease.unit.property', 'payments.lease.tenant', 'account', 'owner', 'import']);
+        if (\Illuminate\Support\Facades\Schema::hasTable('bank_transaction_items')) {
+            $tx->load(['items.lease.unit.property', 'items.lease.tenant']);
+        }
 
         $leases = Lease::query()->where('owner_id', $tx->owner_id)->with(['unit.property', 'tenant'])->get()
             ->sortBy(fn ($l) => [$l->unit?->property?->name, $l->unit?->label, $l->start_date->format('Y-m-d')])->values();

@@ -82,8 +82,13 @@
     @if ($tx->purpose)<div class="bk-purpose">{{ $tx->purpose }}</div>@endif
 
     @foreach ($tx->payments as $p)
-      <div class="sd-muted">zugeordnet: {{ Money::format($p->amount) }} an <a href="{{ route('leases.show', $p->lease_id) }}">{{ $p->lease?->unit?->label }} – {{ $p->lease?->tenant?->display_name }}</a></div>
+      <div class="sd-muted">{{ $p->incomeLabel() }}: {{ Money::format($p->amount) }} an <a href="{{ route('leases.show', $p->lease_id) }}">{{ $p->lease?->unit?->label }} – {{ $p->lease?->tenant?->display_name }}</a></div>
     @endforeach
+    @if ($tx->relationLoaded('items'))
+      @foreach ($tx->items as $it)
+        <div class="sd-muted">{{ $it->kindLabel() }}: {{ Money::format($it->amount) }}@if ($it->lease) an <a href="{{ route('leases.show', $it->lease_id) }}">{{ $it->lease->unit?->label }} – {{ $it->lease->tenant?->display_name }}</a>@endif{{ $it->note ? ' · '.$it->note : '' }}</div>
+      @endforeach
+    @endif
     @if ($tx->status === 'ignoriert')<div class="sd-muted">keine Miete{{ $tx->status_note ? ': '.$tx->status_note : '' }}</div>@endif
 
     @if (in_array($tx->status, ['offen', 'teilweise'], true))
@@ -116,10 +121,12 @@
         <input type="text" name="amount" inputmode="decimal" value="{{ Money::input($remaining) }}" required aria-label="Betrag">
         <label class="sd-check" style="margin:0;font-weight:400"><input type="checkbox" name="merken" value="1" checked> Konto merken</label>
         <button class="sd-btn small" type="submit">Zuordnen</button>
+        <button class="sd-btn sec small" type="button" data-sp-open="aufteilen-{{ $tx->id }}">Aufteilen …</button>
       </form>
+      @include('bank.split-dialog')
       @if ($tx->status === 'offen')
         <details style="margin-top:.4rem">
-          <summary class="sd-muted" style="cursor:pointer">Keine Miete (z. B. Kaution, Strom, Privates)</summary>
+          <summary class="sd-muted" style="cursor:pointer">Keine Miete (z. B. Strom, Privates) – Kaution und Teilbeträge über „Aufteilen …“</summary>
           <form class="bk-form" method="POST" action="{{ route('bank.ignore', $tx) }}">
             @csrf
             <input type="hidden" name="stand" value="{{ $state }}"><input type="hidden" name="konto" value="{{ $accountId ?: '' }}">
@@ -139,7 +146,64 @@
     @endif
   </div>
 @endforeach
+<style>
+.sp-dlg{border:0;border-radius:14px;padding:0;width:min(760px,calc(100vw - 24px));max-height:calc(100vh - 24px);box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.sp-dlg::backdrop{background:rgba(17,24,39,.5)}
+.sp-form{padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:.7rem}
+.sp-head{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+.sp-x{border:0;background:none;font-size:1.1rem;cursor:pointer;color:var(--muted)}
+.sp-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) auto;gap:.5rem .6rem;align-items:end;border:1px solid var(--line,#e3e6ea);border-radius:10px;padding:.7rem;margin-bottom:.5rem;background:#fafbfc}
+.sp-f{grid-column:span 2;display:flex;flex-direction:column;gap:.2rem;min-width:0}
+.sp-f.sp-wide{grid-column:span 4}
+.sp-f label{font-size:.82rem;color:var(--muted);margin:0}
+.sp-f select,.sp-f input{width:100%;min-width:0;padding:.45rem .55rem;border:1px solid var(--line-strong,#c5ccd3);border-radius:8px;font:inherit;background:#fff}
+.sp-amt input{text-align:right}
+.sp-del{border:0;background:none;cursor:pointer;font-size:1rem;padding:.4rem;grid-row:1;grid-column:7}
+.sp-sum{text-align:right;font-size:1.05rem}
+.sp-sum .bad{color:#b42318}
+.sp-foot{display:flex;justify-content:flex-end;gap:.5rem}
+@media (max-width:640px){.sp-row{grid-template-columns:1fr 1fr auto}.sp-f,.sp-f.sp-wide{grid-column:span 2}.sp-del{grid-column:3}}
+</style>
 <script>
+(function () {
+  function cents(v) { v = String(v || '').trim().replace(/\s/g, ''); if (v.indexOf(',') >= 0) v = v.replace(/\./g, '').replace(',', '.'); var n = parseFloat(v); return isNaN(n) ? 0 : Math.round(n * 100); }
+  function eur(c) { return (c / 100).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; }
+  function renumber(dlg) {
+    dlg.querySelectorAll('.sp-row').forEach(function (row, i) {
+      row.querySelectorAll('[name^="rows["]').forEach(function (el) { el.name = el.name.replace(/^rows\[\d+\]/, 'rows[' + i + ']'); });
+      var kind = row.querySelector('[data-sp-kind]').value;
+      row.querySelector('[data-sp-month]').style.display = kind === 'miete' ? '' : 'none';
+      row.querySelector('[data-sp-req]').style.display = kind === 'sonstiges' ? 'none' : '';
+    });
+    var total = 0; dlg.querySelectorAll('[data-sp-amount]').forEach(function (el) { total += cents(el.value); });
+    var max = Math.round(parseFloat(dlg.dataset.max) * 100), hint = dlg.querySelector('[data-sp-hint]'), t = dlg.querySelector('[data-sp-total]');
+    t.textContent = eur(total); t.classList.toggle('bad', total > max);
+    hint.textContent = total > max ? '(höher als offen: ' + eur(max) + ')' : (total < max && total > 0 ? '(Rest ' + eur(max - total) + ' bleibt offen)' : '');
+    dlg.querySelector('[data-sp-save]').disabled = total <= 0 || total > max;
+    dlg.querySelectorAll('[data-sp-del]').forEach(function (b) { b.style.visibility = dlg.querySelectorAll('.sp-row').length > 1 ? '' : 'hidden'; });
+  }
+  document.addEventListener('click', function (e) {
+    var o = e.target.closest('[data-sp-open]');
+    if (o) { var d = document.getElementById(o.dataset.spOpen); if (d) { renumber(d); d.showModal(); } return; }
+    var dlg = e.target.closest('.sp-dlg'); if (!dlg) return;
+    if (e.target.closest('[data-sp-close]')) { dlg.close(); return; }
+    if (e.target.closest('[data-sp-add]')) {
+      var rows = dlg.querySelector('.sp-rows'), first = rows.querySelector('.sp-row'), copy = first.cloneNode(true);
+      copy.querySelectorAll('input').forEach(function (el) { el.value = ''; });
+      copy.querySelector('[data-sp-kind]').value = 'miete';
+      copy.querySelectorAll('select:not([data-sp-kind])').forEach(function (el) { el.selectedIndex = 0; });
+      copy.querySelector('[name$="[lease_id]"]').value = first.querySelector('[name$="[lease_id]"]').value;
+      var used = 0; dlg.querySelectorAll('[data-sp-amount]').forEach(function (el) { used += cents(el.value); });
+      var rest = Math.round(parseFloat(dlg.dataset.max) * 100) - used;
+      if (rest > 0) copy.querySelector('[data-sp-amount]').value = (rest / 100).toFixed(2).replace('.', ',');
+      rows.appendChild(copy); renumber(dlg); return;
+    }
+    var del = e.target.closest('[data-sp-del]');
+    if (del && dlg.querySelectorAll('.sp-row').length > 1) { del.closest('.sp-row').remove(); renumber(dlg); }
+  });
+  document.addEventListener('input', function (e) { var d = e.target.closest('.sp-dlg'); if (d) renumber(d); });
+  document.addEventListener('change', function (e) { var d = e.target.closest('.sp-dlg'); if (d) renumber(d); });
+})();
 (function () { var h = location.hash; if (h && h.indexOf('#umsatz-') === 0) { var r = document.querySelector(h); if (r) r.classList.add('bk-target'); } })();
 </script>
 @endsection

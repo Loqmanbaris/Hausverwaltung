@@ -120,9 +120,10 @@ class RentMath
      * Ordnet Zahlungen den Soll-Posten zu: Erst werden Rückbuchungen (negative Beträge) mit den davor liegenden
      * Zahlungen verrechnet (die jüngste zuerst), dann wird jede Zahlung dem ältesten offenen Posten zugeordnet.
      * Was übrig bleibt, ist Guthaben und wird automatisch mit späteren Posten verrechnet.
+     * Hat eine Zahlung ein Ziel („target“: Posten-IDs, z. B. Miete Oktober), geht sie zuerst auf diese Posten, der Rest wie oben.
      *
      * @param  array<int, array{id: int, total: string}>  $charges  sortiert nach Fälligkeit
-     * @param  array<int, array{id: int, amount: string}>  $payments  sortiert nach Zahldatum
+     * @param  array<int, array{id: int, amount: string, target?: array<int>}>  $payments  sortiert nach Zahldatum
      * @return array{allocations: array<int, array{payment: int, charge: int, amount: string}>, paid: array<int, string>, used: array<int, string>, credit: string}
      */
     public static function allocate(array $charges, array $payments): array
@@ -146,14 +147,38 @@ class RentMath
             }
         }
 
-        // 2. Älteste offene Posten zuerst
         $allocations = [];
         $paid = [];
         $used = array_fill_keys(array_column($payments, 'id'), 0);
+        $left = [];
+        foreach ($charges as $ch) {
+            $left[$ch['id']] = self::cents($ch['total']);
+            $paid[$ch['id']] = 0;
+        }
+
+        // 2. Zahlungen mit Ziel (gewählter Monat oder Einnahmeart) zuerst auf ihre Posten
+        foreach ($payments as $p) {
+            $pid = $p['id'];
+            if (empty($p['target']) || ($avail[$pid] ?? 0) <= 0) {
+                continue;
+            }
+            foreach ($p['target'] as $cid) {
+                if (! isset($left[$cid]) || $left[$cid] <= 0 || $avail[$pid] <= 0) {
+                    continue;
+                }
+                $take = min($left[$cid], $avail[$pid]);
+                $avail[$pid] -= $take;
+                $left[$cid] -= $take;
+                $paid[$cid] += $take;
+                $used[$pid] += $take;
+                $allocations[] = ['payment' => $pid, 'charge' => $cid, 'amount' => self::money($take)];
+            }
+        }
+
+        // 3. Älteste offene Posten zuerst
         $pi = 0;
         foreach ($charges as $ch) {
-            $open = self::cents($ch['total']);
-            $paid[$ch['id']] = 0;
+            $open = $left[$ch['id']];
             while ($open > 0 && $pi < count($order)) {
                 $pid = $order[$pi];
                 if ($avail[$pid] <= 0) {

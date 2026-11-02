@@ -28,7 +28,8 @@ class MietenSelbsttest extends Command
             'leases' => ['owner_id', 'unit_id', 'tenant_id', 'start_date', 'vat_rate', 'adjustment_type'],
             'lease_rents' => ['lease_id', 'valid_from', 'rent_cold', 'prepay_operating', 'prepay_heating', 'parking', 'garage', 'furniture'],
             'rent_charges' => ['lease_id', 'period', 'due_date', 'total', 'paid_amount', 'vat_amount'],
-            'rent_payments' => ['lease_id', 'paid_on', 'amount', 'allocated_amount', 'bank_transaction_id'],
+            'rent_payments' => ['lease_id', 'paid_on', 'amount', 'allocated_amount', 'bank_transaction_id', 'income_kind', 'for_period'],
+            'bank_transaction_items' => ['bank_transaction_id', 'lease_id', 'kind', 'amount', 'deposit_entry_id'],
             'rent_allocations' => ['rent_payment_id', 'rent_charge_id', 'amount'],
             'bank_imports' => ['owner_bank_account_id', 'filename', 'rows_new'],
             'bank_transactions' => ['owner_bank_account_id', 'dedupe_key', 'booking_date', 'amount', 'counterparty_iban_hash', 'status'],
@@ -43,10 +44,10 @@ class MietenSelbsttest extends Command
         }
 
         // 2. Seiten
-        foreach (['leases.index', 'leases.create', 'leases.show', 'leases.rent.create', 'rent.month', 'rent.open', 'rent.quick-pay', 'payments.destroy', 'bank.index', 'bank.store', 'bank.transactions', 'bank.assign', 'bank.accept', 'bank.edit', 'bank.update', 'bank.payment.update', 'bank.payment.remove', 'datev.rent', 'datev.rent.export', 'datev.rent.accounts'] as $name) {
+        foreach (['leases.index', 'leases.create', 'leases.show', 'leases.rent.create', 'rent.month', 'rent.open', 'rent.quick-pay', 'payments.destroy', 'bank.index', 'bank.store', 'bank.transactions', 'bank.assign', 'bank.split', 'bank.item.remove', 'bank.accept', 'bank.edit', 'bank.update', 'bank.payment.update', 'bank.payment.remove', 'datev.rent', 'datev.rent.export', 'datev.rent.accounts'] as $name) {
             $this->check('Seite '.$name, Route::has($name));
         }
-        foreach (['leases.index', 'leases.form', 'leases.show', 'leases.rent', 'rent.month', 'rent.open', 'partials.rent-dashboard', 'partials.rent-styles', 'partials.bank-tabs', 'partials.bank-filter', 'bank.index', 'bank.transactions', 'bank.expenses', 'bank.edit', 'datev.rent', 'datev.rent-accounts'] as $view) {
+        foreach (['leases.index', 'leases.form', 'leases.show', 'leases.rent', 'rent.month', 'rent.open', 'partials.rent-dashboard', 'partials.rent-styles', 'partials.bank-tabs', 'partials.bank-filter', 'bank.index', 'bank.transactions', 'bank.expenses', 'bank.split-dialog', 'bank.edit', 'datev.rent', 'datev.rent-accounts'] as $view) {
             $this->check('Vorlage '.$view, view()->exists($view));
         }
 
@@ -75,6 +76,12 @@ class MietenSelbsttest extends Command
             [['id' => 10, 'amount' => '750'], ['id' => 11, 'amount' => '800'], ['id' => 12, 'amount' => '-800'], ['id' => 13, 'amount' => '900']]
         );
         $this->check('Zuordnung älteste zuerst, Rückbuchung verrechnet', $a['paid'] === [1 => '500.00', 2 => '750.00', 3 => '400.00'] && $a['credit'] === '0.00');
+
+        $t = RentMath::allocate(
+            [['id' => 1, 'total' => '900'], ['id' => 2, 'total' => '900'], ['id' => 3, 'total' => '50']],
+            [['id' => 10, 'amount' => '900', 'target' => [2]], ['id' => 11, 'amount' => '50', 'target' => [3]], ['id' => 12, 'amount' => '100']]
+        );
+        $this->check('Aufteilung: Miete auf gewählten Monat, Gebühr auf Gebühr, Rest älteste zuerst', $t['paid'] === [1 => '100.00', 2 => '900.00', 3 => '50.00'] && $t['credit'] === '0.00');
 
         $i = RentMath::indexProposal('650.00', '117.40', '121.90', '2025-03-01', new DateTimeImmutable('2026-10-08'));
         $this->check('Indexanpassung (650,00 auf 674,91, ab 01.12.2026)', $i['new_cold'] === '674.91' && $i['earliest'] === '2026-12-01');

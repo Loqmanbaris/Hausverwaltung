@@ -54,6 +54,26 @@ class BankTransaction extends Model
         return $this->hasMany(RentPayment::class, 'bank_transaction_id');
     }
 
+    /** Teile ohne Mietzahlung (Kaution, Sonstiges). */
+    public function items(): HasMany
+    {
+        return $this->hasMany(BankTransactionItem::class, 'bank_transaction_id');
+    }
+
+    /** Zugeordnete Summe: Mietzahlungen und übrige Teile. */
+    public function assignedTotal(): float
+    {
+        $payments = $this->relationLoaded('payments') ? (float) $this->payments->sum('amount') : (float) $this->payments()->sum('amount');
+        $items = 0.0;
+        try {
+            $items = $this->relationLoaded('items') ? (float) $this->items->sum('amount') : (float) $this->items()->sum('amount');
+        } catch (\Throwable) {
+            // Tabelle fehlt noch (vor der Migration)
+        }
+
+        return round($payments + $items, 2);
+    }
+
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
         if ($user->isAdmin()) {
@@ -71,11 +91,7 @@ class BankTransaction extends Model
     /** Noch nicht zugeordneter Rest (nur Gutschriften). */
     public function remaining(): float
     {
-        $assigned = $this->relationLoaded('payments')
-            ? (float) $this->payments->sum('amount')
-            : (float) $this->payments()->sum('amount');
-
-        return round((float) $this->amount - $assigned, 2);
+        return round((float) $this->amount - $this->assignedTotal(), 2);
     }
 
     public function maskedIban(): string

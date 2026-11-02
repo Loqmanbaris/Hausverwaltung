@@ -2,6 +2,13 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Gutschrift aufteilen wie bei Objego
+1. Unter Kontoauszüge → Eingänge zuordnen hat jede offene Gutschrift den Knopf „Aufteilen …“. Es öffnet sich ein Fenster mit beliebig vielen Zeilen: Einnahmeart, Mietvertrag, Monat, Betrag, Notiz. Darunter steht die Gesamtsumme; sie darf den offenen Betrag nicht übersteigen (ein Rest bleibt offen).
+2. Einnahmearten: Miete (auf den gewählten Monat oder automatisch auf den ältesten offenen), Nebenkosten-Nachzahlung (geht auf offene Nachzahlungen), Mahngebühr / Zinsen (geht auf diese Posten), Kaution (wird bei der Kaution als Einzahlung gebucht), Sonstiges (keine Miete, mit Notiz).
+3. Zuordnungen zeigen die Einnahmeart, z. B. „Miete Oktober 2026: 900,00 €“, auch im Mieterkonto. Unter „Bearbeiten“ lassen sich Kaution- und Sonstiges-Teile einzeln entfernen; „Zurücksetzen“ nimmt auch diese zurück (die Kautionsbuchung wird mit gelöscht, solange die Kaution nicht abgerechnet ist).
+4. Der schnelle Knopf „Zuordnen“ bleibt wie bisher.
+Migration: rent_payments.income_kind und for_period, neue Tabelle bank_transaction_items. Selbsttest: mieten:selbsttest
+
 ## Kontoauszüge: eine Seite mit Reitern und Monatsauswahl
 1. Im Seitenmenü gibt es nur noch „Kontoauszüge“ (Zahl = offene Eingänge + Ausgaben). „Ausgaben abgleichen“ ist dort als eigener Punkt entfallen.
 2. Die Seite hat oben drei Reiter: „Eingänge zuordnen“ (bisher Kontoumsätze/Umsätze zuordnen), „Ausgaben zuordnen“ (bisher Ausgaben abgleichen) und „Kontoauszug einlesen“.

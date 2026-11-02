@@ -4,6 +4,8 @@ namespace App\Support\Bank;
 
 use App\Models\BankImport;
 use App\Models\BankTransaction;
+use App\Models\BankTransactionItem;
+use App\Models\DepositEntry;
 use App\Models\Lease;
 use App\Models\LeasePayerAccount;
 use App\Models\Owner;
@@ -12,6 +14,7 @@ use App\Models\RentPayment;
 use App\Models\User;
 use App\Support\Audit;
 use App\Support\Documents\DocumentStore;
+use App\Support\Kaution\Kaution;
 use App\Support\Money;
 use App\Support\Rent\RentLedger;
 use App\Support\Stammdaten;
@@ -209,9 +212,164 @@ class BankService
         return $payment;
     }
 
+    /**
+     * Gutschrift aufteilen (wie bei Objego): jede Zeile mit Einnahmeart, Mietvertrag, Monat, Betrag und Notiz.
+     * Miete, Nebenkosten und Gebühren werden Mietzahlungen (Miete auf den gewählten Monat), Kaution geht zur Kaution,
+     * Sonstiges wird nur vermerkt. Die Summe darf den offenen Rest nicht überschreiten.
+     *
+     * @param  array<int, array{kind?: string, lease_id?: mixed, month?: ?string, amount?: ?string, note?: ?string}>  $rows
+     * @return array{count: int, sum: float}
+     *
+     * @throws BankImportException
+     */
+    public static function split(BankTransaction $tx, array $rows, bool $remember, User $user): array
+    {
+        if (! in_array($tx->status, ['offen', 'teilweise'], true)) {
+            throw new BankImportException('Dieser Umsatz ist schon erledigt.');
+        }
+        $clean = [];
+        foreach ($rows as $n => $row) {
+            $amount = Money::parse((string) ($row['amount'] ?? ''));
+            $kind = (string) ($row['kind'] ?? 'miete');
+            $leaseId = (int) ($row['lease_id'] ?? 0);
+            $note = trim((string) ($row['note'] ?? ''));
+            if ($amount === null && $leaseId === 0 && $note === '') {
+                continue;   // leere Zeile
+            }
+            $line = 'Zeile '.($n + 1).': ';
+            if (! array_key_exists($kind, RentPayment::INCOME_KINDS)) {
+                throw new BankImportException($line.'Bitte eine Einnahmeart wählen.');
+            }
+            if ($amount === null || (float) $amount <= 0) {
+                throw new BankImportException($line.'Bitte einen Betrag größer als 0 eintragen.');
+            }
+            $lease = $leaseId > 0 ? Lease::query()->find($leaseId) : null;
+            if ($kind !== 'sonstiges' && ! $lease) {
+                throw new BankImportException($line.'Bitte den Mietvertrag wählen.');
+            }
+            if ($lease && (int) $lease->owner_id !== (int) $tx->owner_id) {
+                throw new BankImportException($line.'Der Mietvertrag gehört zu einem anderen Eigentümer als das Konto.');
+            }
+            if ($kind === 'sonstiges' && $note === '') {
+                throw new BankImportException($line.'Bitte bei „Sonstiges“ kurz notieren, wofür das Geld ist (z. B. Strom, Privates).');
+            }
+            $month = trim((string) ($row['month'] ?? ''));
+            if ($kind !== 'miete' || preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $month) !== 1) {
+                $month = '';
+            }
+            $clean[] = ['kind' => $kind, 'lease' => $lease, 'month' => $month, 'amount' => $amount, 'note' => mb_substr($note, 0, 190)];
+        }
+        if ($clean === []) {
+            throw new BankImportException('Bitte mindestens eine Zeile mit Betrag ausfüllen.');
+        }
+        $sum = round(array_sum(array_map(fn ($r) => (float) $r['amount'], $clean)), 2);
+        $remaining = $tx->remaining();
+        if ($sum - $remaining > 0.004) {
+            throw new BankImportException('Die Summe ('.Money::format($sum).') ist höher als der offene Betrag ('.Money::format($remaining).').');
+        }
+
+        $leases = [];
+        DB::transaction(function () use ($tx, $clean, $remember, $user, &$leases) {
+            $method = $tx->mandate_ref ? 'lastschrift' : 'ueberweisung';
+            $from = $tx->counterparty_name ? 'Kontoauszug: '.$tx->counterparty_name : 'Kontoauszug';
+            $remembered = false;
+            foreach ($clean as $r) {
+                $lease = $r['lease'];
+                $lease?->loadMissing(['unit.property', 'tenant']);
+                $text = RentPayment::INCOME_KINDS[$r['kind']].($r['month'] !== '' ? ' '.substr($r['month'], 5, 2).'/'.substr($r['month'], 0, 4) : '');
+
+                if (in_array($r['kind'], RentPayment::RENT_KINDS, true)) {
+                    $payment = RentPayment::create([
+                        'lease_id' => $lease->id,
+                        'owner_id' => $lease->owner_id,
+                        'paid_on' => $tx->booking_date->format('Y-m-d'),
+                        'amount' => $r['amount'],
+                        'method' => $method,
+                        'source' => 'bank',
+                        'income_kind' => $r['kind'],
+                        'for_period' => $r['month'] !== '' ? $r['month'].'-01' : null,
+                        'bank_transaction_id' => $tx->id,
+                        'reference' => $tx->purpose ? mb_substr($tx->purpose, 0, 190) : null,
+                        'note' => mb_substr($r['note'] !== '' ? $r['note'].' ('.$from.')' : $from, 0, 2000),
+                        'created_by' => $user->id,
+                    ]);
+                    $leases[$lease->id] = $lease;
+                    Audit::log('bank.assigned', $payment, 'Kontoumsatz aufgeteilt: '.Money::format($r['amount']).' '.$text.' vom '.$tx->booking_date->format('d.m.Y').' an '.$lease->title());
+                } else {
+                    $entryId = null;
+                    if ($r['kind'] === 'kaution') {
+                        try {
+                            $entry = Kaution::addEntry(Kaution::forLease($lease), $tx->booking_date->format('Y-m-d'), 'einzahlung',
+                                (int) round((float) $r['amount'] * 100), $r['note'] !== '' ? $r['note'] : $from, $user);
+                        } catch (\RuntimeException $e) {
+                            throw new BankImportException('Kaution: '.$e->getMessage());
+                        }
+                        $entryId = $entry->id;
+                    }
+                    $item = BankTransactionItem::create([
+                        'bank_transaction_id' => $tx->id,
+                        'owner_id' => $tx->owner_id,
+                        'lease_id' => $lease?->id,
+                        'kind' => $r['kind'],
+                        'amount' => $r['amount'],
+                        'note' => $r['note'] !== '' ? $r['note'] : null,
+                        'deposit_entry_id' => $entryId,
+                        'created_by' => $user->id,
+                    ]);
+                    Audit::log('bank.item_added', $item, 'Kontoumsatz aufgeteilt: '.Money::format($r['amount']).' '.$text.' vom '.$tx->booking_date->format('d.m.Y').($lease ? ' an '.$lease->title() : '').($r['note'] !== '' ? ' ('.$r['note'].')' : ''));
+                }
+
+                if ($remember && ! $remembered && $lease && $tx->counterparty_iban_hash) {
+                    LeasePayerAccount::query()->firstOrCreate(
+                        ['lease_id' => $lease->id, 'iban_hash' => $tx->counterparty_iban_hash],
+                        ['iban' => $tx->counterparty_iban, 'name' => $tx->counterparty_name, 'created_by' => $user->id]
+                    );
+                    $remembered = true;
+                }
+            }
+            self::refreshStatus($tx->refresh());
+        });
+
+        foreach ($leases as $lease) {
+            RentLedger::sync($lease);
+        }
+
+        return ['count' => count($clean), 'sum' => $sum];
+    }
+
+    /** Einen Teil ohne Mietzahlung (Kaution, Sonstiges) zurücknehmen; eine Kautionsbuchung wird mit entfernt. */
+    public static function removeItem(BankTransaction $tx, BankTransactionItem $item, User $user): void
+    {
+        if ((int) $item->bank_transaction_id !== (int) $tx->id) {
+            throw new BankImportException('Dieser Teil gehört nicht zu diesem Umsatz.');
+        }
+        DB::transaction(function () use ($tx, $item, $user) {
+            self::dropDepositEntry($item);
+            Audit::log('bank.item_removed', $item, 'Aufteilung entfernt: '.Money::format($item->amount).' '.$item->kindLabel().' vom '.$tx->booking_date->format('d.m.Y'), null, null, null, $user);
+            $item->delete();
+            self::refreshStatus($tx->refresh());
+        });
+    }
+
+    /** @throws BankImportException */
+    private static function dropDepositEntry(BankTransactionItem $item): void
+    {
+        if (! $item->deposit_entry_id) {
+            return;
+        }
+        $entry = DepositEntry::query()->with('deposit')->find($item->deposit_entry_id);
+        if (! $entry) {
+            return;
+        }
+        if ($entry->deposit?->status === 'abgerechnet') {
+            throw new BankImportException('Die Kaution ist schon abgerechnet. Bitte zuerst die Kautionsabrechnung zurücknehmen.');
+        }
+        $entry->delete();
+    }
+
     public static function ignore(BankTransaction $tx, string $note): void
     {
-        if ($tx->payments()->exists()) {
+        if ($tx->payments()->exists() || self::hasItems($tx)) {
             throw new BankImportException('Zu diesem Umsatz sind schon Zahlungen zugeordnet. Bitte zuerst „Zurücksetzen“.');
         }
         $tx->update(['status' => 'ignoriert', 'status_note' => mb_substr($note !== '' ? $note : 'keine Miete', 0, 190)]);
@@ -224,6 +382,12 @@ class BankService
         $leases = [];
         DB::transaction(function () use ($tx, &$leases) {
             DB::table('bank_transaction_receipts')->where('bank_transaction_id', $tx->id)->delete();
+            if (self::hasItems($tx)) {
+                foreach ($tx->items()->get() as $item) {
+                    self::dropDepositEntry($item);
+                    $item->delete();
+                }
+            }
             foreach ($tx->payments()->get() as $p) {
                 $leases[$p->lease_id] = true;
                 $p->delete();
@@ -257,7 +421,7 @@ class BankService
         if (abs($amount) < 0.005) {
             throw new BankImportException('Der Betrag darf nicht 0 sein.');
         }
-        $assigned = (float) $tx->payments()->sum('amount');
+        $assigned = (float) $tx->payments()->sum('amount') + (self::hasItems($tx) ? (float) $tx->items()->sum('amount') : 0.0);
         $linked = (float) DB::table('bank_transaction_receipts')->where('bank_transaction_id', $tx->id)->sum('amount');
         $loan = \Illuminate\Support\Facades\Schema::hasTable('loan_events') && DB::table('loan_events')->where('bank_transaction_id', $tx->id)->exists();
         $amountChanged = number_format($amount, 2, '.', '') !== number_format((float) $tx->amount, 2, '.', '');
@@ -288,7 +452,7 @@ class BankService
                 'booking_text' => $data['booking_text'] !== null && trim($data['booking_text']) !== '' ? mb_substr(trim($data['booking_text']), 0, 190) : null,
             ];
             // Vorzeichen gewechselt und noch nichts zugeordnet: Gutschrift ↔ Abbuchung
-            if ($amount < 0 && in_array($tx->status, ['offen', 'teilweise', 'zugeordnet'], true) && ! $tx->payments()->exists()) {
+            if ($amount < 0 && in_array($tx->status, ['offen', 'teilweise', 'zugeordnet'], true) && ! $tx->payments()->exists() && ! self::hasItems($tx)) {
                 $values['status'] = 'ausgabe';
                 $values['status_note'] = null;
             } elseif ($amount > 0 && $tx->status === 'ausgabe') {
@@ -331,7 +495,7 @@ class BankService
             throw new BankImportException('Der Mietvertrag gehört zu einem anderen Eigentümer als das Konto.');
         }
         $value = (float) $amount;
-        $max = round((float) $tx->amount - (float) $tx->payments()->where('id', '!=', $payment->id)->sum('amount'), 2);
+        $max = round((float) $tx->amount - (float) $tx->payments()->where('id', '!=', $payment->id)->sum('amount') - (self::hasItems($tx) ? (float) $tx->items()->sum('amount') : 0.0), 2);
         if ($value <= 0 || $value - $max > 0.004) {
             throw new BankImportException('Der Betrag muss größer als 0 und höchstens '.Money::format($max).' sein.');
         }
@@ -375,10 +539,20 @@ class BankService
         if ((float) $tx->amount < 0 || $tx->status === 'ignoriert') {
             return;
         }
-        $assigned = (float) $tx->payments()->sum('amount');
+        $assigned = $tx->assignedTotal();
         $status = $assigned <= 0.004 ? 'offen' : ((float) $tx->amount - $assigned > 0.004 ? 'teilweise' : 'zugeordnet');
         if ($status !== $tx->status) {
             $tx->update(['status' => $status]);
+        }
+    }
+
+    /** Gibt es aufgeteilte Teile ohne Mietzahlung? (Tabelle fehlt vor der Migration.) */
+    public static function hasItems(BankTransaction $tx): bool
+    {
+        try {
+            return $tx->items()->exists();
+        } catch (Throwable) {
+            return false;
         }
     }
 
