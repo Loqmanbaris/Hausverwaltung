@@ -51,8 +51,14 @@ class ProfileSettingsController extends Controller
                 ['Eigentümer', 'Stammdaten, Bankverbindungen, Freigaben', '👤', $link('owners.index')],
                 ['Objekte und Einheiten', 'Häuser, Wohnungen, Gewerbe, Zähler', '🏢', $link('properties.index')],
                 ['Mieter', 'Privatpersonen und Firmen mit Ansprechpartnern', '🧑‍🤝‍🧑', $link('tenants.index')],
+                ['Mietverträge', 'Verträge, Mietverlauf, Übergaben, Mieterkonto', '📝', $link('leases.index')],
                 ['Dokumente', 'Ablage mit Fristen', '🗂️', $link('documents.index'),
                     $count(fn () => \App\Models\Document::visibleTo($user)->where('archived', false)->whereNotNull('expires_on')->where('expires_on', '<', date('Y-m-d'))->count())],
+            ]],
+            ['Finanzen und Steuer', [
+                ['Finanzierung', 'Darlehen, Tilgungspläne, Werte und Rendite', '🏦', $link('finance.index')],
+                ['Anlage V', 'Einnahmen und Werbungskosten je Objekt für die Steuer', '🧮', $link('anlage-v.index')],
+                ['Jahresbericht', 'Jahresübersicht je Eigentümer zum Ausdrucken', '📊', $link('report.index')],
             ]],
             ['Webseite', [
                 ['Inserate', 'Freie Wohnungen und Gewerbe online stellen', '🏷️', $link('listings.index')],

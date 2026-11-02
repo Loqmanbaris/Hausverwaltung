@@ -25,13 +25,9 @@
           ['Mahnwesen', 'dunning.index', ['dunning.*'], 0, false],
           ['Belege', 'receipts.index', ['receipts.*', 'einvoice.*'], 0, false],
           ['E-Rechnung (Mieten)', 'erechnung.index', ['erechnung.*'], 0, false],
-          ['Finanzierung', 'finance.index', ['finance.*', 'loans.*', 'properties.values'], 0, false],
-          ['Anlage V', 'anlage-v.index', ['anlage-v.*'], 0, false],
-          ['Jahresbericht', 'report.index', ['report.*'], 0, false],
           ['DATEV-Export', 'datev.index', ['datev.*'], 0, true],
       ],
       'Vermietung' => [
-          ['Mietverträge', 'leases.index', ['leases.*', 'contracts.*', 'handover.*', 'interest.*', 'installments.*'], 0, false],
           ['Interessenten', 'applicants.index', ['applicants.*'], 0, false],
           ['Mieterhöhungen', 'rent_increase.index', ['rent_increase.*'], 0, false],
           ['Kautionen', 'deposit.index', ['deposit.*'], 0, false],
@@ -46,6 +42,7 @@
           ['Laufende Verträge', 'svc.index', ['svc.*'], 0, false],
           ['Lieferanten', 'vendors.index', ['vendors.*'], 0, false],
       ],
+      // Mietverträge, Finanzierung, Anlage V und Jahresbericht stehen seit 02.11.2026 als Kacheln unter Einstellungen
       // Gruppen „Stammdaten“, „Webseite“ und „Verwaltung“ stehen seit 02.11.2026 als Kacheln unter Profilmenü → Einstellungen
   ];
   // Ein Menü für alle: Die frühere Trennung „Alltag“/„Verwaltung“ gibt es seit 02.11.2026 nicht mehr, es steht immer alles da.
