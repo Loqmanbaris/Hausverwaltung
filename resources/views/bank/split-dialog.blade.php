@@ -1,4 +1,5 @@
 {{-- Fenster „Gutschrift aufteilen“ (wie bei Objego). Erwartet $tx, $r (Vorschläge), $leaseOptions, $remaining, $state, $accountId --}}
+@use(App\Support\Money)
 @php
   $spMonths = ['' => 'automatisch (ältester offener Monat)'];
   $spNames = [1 => 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];

@@ -50,6 +50,13 @@ class MietenSelbsttest extends Command
         foreach (['leases.index', 'leases.form', 'leases.show', 'leases.rent', 'leases.rent-edit', 'rent.month', 'rent.open', 'partials.rent-dashboard', 'partials.rent-styles', 'partials.bank-tabs', 'partials.bank-filter', 'bank.index', 'bank.transactions', 'bank.expenses', 'bank.split-dialog', 'bank.edit', 'datev.rent', 'datev.rent-accounts'] as $view) {
             $this->check('Vorlage '.$view, view()->exists($view));
         }
+        // Eingebundene Vorlagen erben kein „use“ der Hauptseite: wer Money:: nutzt, muss die Klasse selbst einbinden
+        foreach (glob(resource_path('views/{bank,leases,rent,partials}/*.blade.php'), GLOB_BRACE) ?: [] as $file) {
+            $src = (string) file_get_contents($file);
+            if (preg_match('/(?<![\\\\\w])Money::/', $src) && ! str_contains($src, 'App\Support\Money')) {
+                $this->check('Vorlage '.basename($file).' bindet Money ein', false);
+            }
+        }
 
         $opts = ['2026-10' => 'Oktober 2026', '2026-09' => 'September 2026', '2026-08' => 'August 2026'];
         $this->check('Monatsauswahl Kontoauszüge (Pfeile)', \App\Support\Bank\Monatsfilter::neighbours($opts, '2026-09') === ['2026-08', '2026-10']
