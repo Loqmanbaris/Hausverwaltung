@@ -18,6 +18,9 @@
 .bk-tx{border:1px solid #e3e6ea;border-radius:.6rem;padding:.8rem 1rem;margin:0 0 .8rem;background:#fff}
 .bk-tx.bk-target{border-color:#e0b100;background:#fffdf3}
 .bk-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem}
+.bk-right{display:flex;flex-direction:column;align-items:flex-end;gap:.2rem}
+.bk-edit{font-size:.85rem;color:var(--muted);text-decoration:none;border:1px solid var(--line-strong);border-radius:1rem;padding:.1rem .6rem;white-space:nowrap;background:#fff}
+.bk-edit:hover{color:var(--ink);border-color:var(--ink)}
 .bk-amt{font-size:1.15rem;font-weight:700;white-space:nowrap;color:#b42318}
 .bk-sug{background:#f4f8fc;border-radius:.45rem;padding:.5rem .7rem;margin:.4rem 0}
 .bk-form{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-top:.4rem}
@@ -75,7 +78,8 @@
     <div class="bk-top">
       <div><strong>{{ $tx->counterparty_name ?: '–' }}</strong> <span class="sd-muted">· {{ $tx->booking_date->format('d.m.Y') }} · {{ $tx->booking_text }}</span>
         @if ($accounts->count() > 1 && ! $accountId)<br><span class="sd-muted">{{ $tx->owner?->name }}</span>@endif</div>
-      <div class="bk-amt">{{ Money::format($tx->amount) }}</div>
+      <div class="bk-right"><div class="bk-amt">{{ Money::format($tx->amount) }}</div>
+        <a class="bk-edit" href="{{ route('bank.edit', array_filter(['tx' => $tx->id, 'konto' => $accountId ?: null])) }}">✎ Bearbeiten</a></div>
     </div>
     @if ($tx->purpose)<div style="margin:.25rem 0;word-break:break-word">{{ $tx->purpose }}</div>@endif
 

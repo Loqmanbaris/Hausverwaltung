@@ -30,6 +30,9 @@
 .bk-form select{flex:1 1 16rem;min-width:0;width:auto;padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;background:#fff}
 .bk-form input[name=amount]{width:7rem;padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit;text-align:right}
 .bk-form input[name=note]{flex:1 1 10rem;width:auto;padding:.4rem;border:1px solid #c5ccd3;border-radius:.4rem;font:inherit}
+.bk-right{display:flex;flex-direction:column;align-items:flex-end;gap:.2rem}
+.bk-edit{font-size:.85rem;color:var(--muted);text-decoration:none;border:1px solid var(--line-strong);border-radius:1rem;padding:.1rem .6rem;white-space:nowrap;background:#fff}
+.bk-edit:hover{color:var(--ink);border-color:var(--ink)}
 .bk-sure{display:inline-block;background:#ecfdf3;color:#067647;border-radius:1rem;padding:.05rem .5rem;font-size:.85rem;font-weight:600}
 </style>
 
@@ -85,7 +88,8 @@
         <span class="sd-muted"> · {{ $tx->booking_date->format('d.m.Y') }} · {{ $tx->booking_text }}</span>
         @if ($accounts->count() > 1 && ! $accountId)<br><span class="sd-muted">{{ $tx->owner?->name }}</span>@endif
       </div>
-      <div class="bk-amt {{ (float) $tx->amount >= 0 ? 'in' : 'out' }}">{{ Money::format($tx->amount) }}</div>
+      <div class="bk-right"><div class="bk-amt {{ (float) $tx->amount >= 0 ? 'in' : 'out' }}">{{ Money::format($tx->amount) }}</div>
+        <a class="bk-edit" href="{{ route('bank.edit', array_filter(['tx' => $tx->id, 'stand' => $state, 'konto' => $accountId ?: null])) }}">✎ Bearbeiten</a></div>
     </div>
     @if ($tx->purpose)<div class="bk-purpose">{{ $tx->purpose }}</div>@endif
 

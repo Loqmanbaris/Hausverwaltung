@@ -48,6 +48,11 @@ Route::middleware([SecurityHeaders::class, 'auth', EnsureTwoFactor::class])->gro
     Route::post('/kontoauszuege/umsaetze/{tx}/zuordnen', [BankController::class, 'assign'])->name('bank.assign');
     Route::post('/kontoauszuege/umsaetze/{tx}/keine-miete', [BankController::class, 'ignore'])->name('bank.ignore');
     Route::post('/kontoauszuege/umsaetze/{tx}/zuruecksetzen', [BankController::class, 'reset'])->name('bank.reset');
+    // Umsatz bearbeiten: Angaben korrigieren, Zuordnungen einzeln ändern oder entfernen
+    Route::get('/kontoauszuege/umsaetze/{tx}/bearbeiten', [BankController::class, 'edit'])->name('bank.edit');
+    Route::put('/kontoauszuege/umsaetze/{tx}', [BankController::class, 'update'])->name('bank.update');
+    Route::put('/kontoauszuege/umsaetze/{tx}/zahlungen/{payment}', [BankController::class, 'paymentUpdate'])->name('bank.payment.update');
+    Route::delete('/kontoauszuege/umsaetze/{tx}/zahlungen/{payment}', [BankController::class, 'paymentRemove'])->name('bank.payment.remove');
     // Ausgaben mit Belegen abgleichen (Paket 9)
     Route::get('/kontoauszuege/ausgaben', [\App\Http\Controllers\BankExpenseController::class, 'index'])->name('bank.expenses');
     Route::post('/kontoauszuege/ausgaben/vorschlaege', [\App\Http\Controllers\BankExpenseController::class, 'acceptSure'])->name('bank.expenses.accept');

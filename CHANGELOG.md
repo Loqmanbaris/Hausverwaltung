@@ -2,6 +2,13 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Kontoumsätze bearbeiten
+1. Jeder Umsatz unter Kontoauszüge → Umsätze (und unter Ausgaben abgleichen) hat jetzt „Bearbeiten“.
+2. Angaben korrigieren: Buchungstag, Wertstellung, Betrag, Auftraggeber/Empfänger, Buchungstext, Verwendungszweck. Zugeordnete Zahlungen übernehmen einen neuen Buchungstag; ein Betrag unter dem schon Zugeordneten wird abgelehnt. Wechselt das Vorzeichen, wird aus der Gutschrift eine Abbuchung (und umgekehrt).
+3. Zuordnungen einzeln ändern (anderer Mietvertrag, anderer Betrag) oder einzeln entfernen, ohne alles zurückzusetzen. Rest direkt dort zuordnen, „keine Miete“ mit Grund ändern oder wieder zur Miete machen.
+4. Hinweis, wenn eine Zahlung schon an DATEV übergeben wurde. Jede Änderung steht im Protokoll (mit alten und neuen Werten).
+Keine Migration. Selbsttest: mieten:selbsttest
+
 ## Aussehen wie im Telemaster-Portal
 1. Kopfleiste und Seitenmenü in Anthrazit wie im Portal, Schrift Roboto (liegt auf dem eigenen Server, keine Verbindung zu Google).
 2. Jeder Menüpunkt hat ein Symbol. Der aktive Punkt ist in der Farbe der Hausverwaltung hervorgehoben (Akzentfarbe aus „Webseite gestalten“, sonst Orange), nicht im Gold des Portals.

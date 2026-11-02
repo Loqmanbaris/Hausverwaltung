@@ -243,6 +243,132 @@ class BankService
         }
     }
 
+    /**
+     * Angaben eines Umsatzes korrigieren (z. B. falsch eingelesen). Zuordnungen bleiben bestehen,
+     * die Zahlungen übernehmen den neuen Buchungstag. Der Schlüssel gegen doppeltes Einlesen bleibt gleich.
+     *
+     * @param  array{booking_date: string, value_date: ?string, amount: string, counterparty_name: ?string, purpose: ?string, booking_text: ?string}  $data
+     *
+     * @throws BankImportException
+     */
+    public static function updateDetails(BankTransaction $tx, array $data, User $user): void
+    {
+        $amount = (float) $data['amount'];
+        if (abs($amount) < 0.005) {
+            throw new BankImportException('Der Betrag darf nicht 0 sein.');
+        }
+        $assigned = (float) $tx->payments()->sum('amount');
+        $linked = (float) DB::table('bank_transaction_receipts')->where('bank_transaction_id', $tx->id)->sum('amount');
+        $loan = \Illuminate\Support\Facades\Schema::hasTable('loan_events') && DB::table('loan_events')->where('bank_transaction_id', $tx->id)->exists();
+        $amountChanged = number_format($amount, 2, '.', '') !== number_format((float) $tx->amount, 2, '.', '');
+        $dateChanged = $data['booking_date'] !== $tx->booking_date->format('Y-m-d');
+
+        if ($assigned > 0.004 && ($amount < 0 || $amount - $assigned < -0.004)) {
+            throw new BankImportException('Davon sind schon '.Money::format($assigned).' Mietverträgen zugeordnet. Der Betrag muss mindestens so hoch sein, oder du nimmst zuerst Zuordnungen zurück.');
+        }
+        if ($linked > 0.004 && ($amount > 0 || abs($amount) - $linked < -0.004)) {
+            throw new BankImportException('Davon sind schon '.Money::format($linked).' mit Belegen verknüpft. Der Betrag muss mindestens so hoch sein, oder du nimmst zuerst die Belegzuordnung zurück.');
+        }
+        if ($loan && ($amountChanged || $dateChanged)) {
+            throw new BankImportException('Dieser Umsatz ist als Darlehensrate gebucht. Betrag und Datum bitte erst nach „Zurücksetzen“ bei den Ausgaben ändern.');
+        }
+
+        $old = $tx->only(['booking_date', 'value_date', 'amount', 'counterparty_name', 'purpose', 'booking_text']);
+        $old['booking_date'] = $tx->booking_date->format('Y-m-d');
+        $old['value_date'] = $tx->value_date?->format('Y-m-d');
+
+        $leases = [];
+        DB::transaction(function () use ($tx, $data, $amount, $dateChanged, $user, $old, &$leases) {
+            $values = [
+                'booking_date' => $data['booking_date'],
+                'value_date' => $data['value_date'] ?: null,
+                'amount' => number_format($amount, 2, '.', ''),
+                'counterparty_name' => $data['counterparty_name'] !== null && trim($data['counterparty_name']) !== '' ? mb_substr(trim($data['counterparty_name']), 0, 190) : null,
+                'purpose' => $data['purpose'] !== null && trim($data['purpose']) !== '' ? mb_substr(trim($data['purpose']), 0, 2000) : null,
+                'booking_text' => $data['booking_text'] !== null && trim($data['booking_text']) !== '' ? mb_substr(trim($data['booking_text']), 0, 190) : null,
+            ];
+            // Vorzeichen gewechselt und noch nichts zugeordnet: Gutschrift ↔ Abbuchung
+            if ($amount < 0 && in_array($tx->status, ['offen', 'teilweise', 'zugeordnet'], true) && ! $tx->payments()->exists()) {
+                $values['status'] = 'ausgabe';
+                $values['status_note'] = null;
+            } elseif ($amount > 0 && $tx->status === 'ausgabe') {
+                $values['status'] = 'offen';
+                $values['status_note'] = null;
+            }
+            $tx->update($values);
+
+            if ($dateChanged) {
+                foreach ($tx->payments()->get() as $p) {
+                    $p->update(['paid_on' => $data['booking_date']]);
+                    $leases[$p->lease_id] = true;
+                }
+            }
+            self::refreshStatus($tx->refresh());
+
+            $new = $values;
+            unset($new['status'], $new['status_note']);
+            Audit::log('bank.edited', $tx, 'Kontoumsatz bearbeitet: '.Money::format($tx->amount).' vom '.$tx->booking_date->format('d.m.Y'), $old, $new, null, $user);
+        });
+
+        foreach (array_keys($leases) as $id) {
+            if ($lease = Lease::query()->find($id)) {
+                RentLedger::sync($lease);
+            }
+        }
+    }
+
+    /**
+     * Eine einzelne Zuordnung ändern: anderer Mietvertrag und/oder anderer Betrag.
+     *
+     * @throws BankImportException
+     */
+    public static function changePayment(BankTransaction $tx, RentPayment $payment, Lease $lease, string $amount, User $user): void
+    {
+        if ((int) $payment->bank_transaction_id !== (int) $tx->id) {
+            throw new BankImportException('Diese Zahlung gehört nicht zu diesem Umsatz.');
+        }
+        if ((int) $lease->owner_id !== (int) $tx->owner_id) {
+            throw new BankImportException('Der Mietvertrag gehört zu einem anderen Eigentümer als das Konto.');
+        }
+        $value = (float) $amount;
+        $max = round((float) $tx->amount - (float) $tx->payments()->where('id', '!=', $payment->id)->sum('amount'), 2);
+        if ($value <= 0 || $value - $max > 0.004) {
+            throw new BankImportException('Der Betrag muss größer als 0 und höchstens '.Money::format($max).' sein.');
+        }
+        $oldLease = $payment->lease_id;
+        $lease->loadMissing(['unit.property', 'tenant']);
+
+        DB::transaction(function () use ($tx, $payment, $lease, $amount, $user) {
+            $before = Money::format($payment->amount).' an '.($payment->lease?->title() ?? 'Vertrag '.$payment->lease_id);
+            $payment->update(['lease_id' => $lease->id, 'owner_id' => $lease->owner_id, 'amount' => $amount]);
+            self::refreshStatus($tx);
+            Audit::log('bank.payment_changed', $payment, 'Zuordnung geändert: vorher '.$before.', jetzt '.Money::format($amount).' an '.$lease->title(), null, null, null, $user);
+        });
+
+        foreach (array_unique([(int) $oldLease, (int) $lease->id]) as $id) {
+            if ($l = Lease::query()->find($id)) {
+                RentLedger::sync($l);
+            }
+        }
+    }
+
+    /** Eine einzelne Zuordnung zurücknehmen (die Zahlung wird storniert, der Rest bleibt). */
+    public static function removePayment(BankTransaction $tx, RentPayment $payment, User $user): void
+    {
+        if ((int) $payment->bank_transaction_id !== (int) $tx->id) {
+            throw new BankImportException('Diese Zahlung gehört nicht zu diesem Umsatz.');
+        }
+        $lease = Lease::query()->find($payment->lease_id);
+        DB::transaction(function () use ($tx, $payment, $user, $lease) {
+            Audit::log('bank.payment_removed', $payment, 'Zuordnung entfernt: '.Money::format($payment->amount).' vom '.$tx->booking_date->format('d.m.Y').($lease ? ' an '.$lease->title() : ''), null, null, null, $user);
+            $payment->delete();
+            self::refreshStatus($tx);
+        });
+        if ($lease) {
+            RentLedger::sync($lease);
+        }
+    }
+
     /** Status nach den zugeordneten Zahlungen setzen (nach Zuordnung oder Storno einer Zahlung). */
     public static function refreshStatus(BankTransaction $tx): void
     {
