@@ -1,23 +1,25 @@
-Ergebnis: OK (02.11.2026 12:27)
+Ergebnis: OK (02.11.2026 12:37)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    d0d0115 Kontoauszüge: eine Seite mit Reitern Eingänge/Ausgaben/Einlesen, Monatsauswahl
+Ziel:    ed78ca6 Gutschrift aufteilen wie bei Objego: Einnahmeart, Vertrag, Monat, Betrag, Notiz je Zeile
 
-=================== 02.11.2026 12:27:02 ===================
+=================== 02.11.2026 12:37:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Kontoauszüge: eine Seite mit Reitern Eingänge/Ausgaben/Einlesen, Monatsauswahl
+  - Gutschrift aufteilen wie bei Objego: Einnahmeart, Vertrag, Monat, Betrag, Notiz je Zeile
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-1227.bkp (7,4 MB, 88 Tabellen, 2488 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-1237.bkp (7,4 MB, 88 Tabellen, 2489 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
 Datenbank umstellen ...
 
-   INFO  Nothing to migrate.  
+   INFO  Running migrations.  
+
+  2026_11_19_000001_add_income_kinds_to_bank_assignments ........ 40.23ms DONE
 
 
 Selbsttests ...
@@ -64,4 +66,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand d0d0115 – Kontoauszüge: eine Seite mit Reitern Eingänge/Ausgaben/Einlesen, Monatsauswahl ist online.
+FERTIG: Neuer Stand ed78ca6 – Gutschrift aufteilen wie bei Objego: Einnahmeart, Vertrag, Monat, Betrag, Notiz je Zeile ist online.
