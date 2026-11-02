@@ -2,6 +2,13 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Bescheinigungen: Wohnungsgeberbestätigung und Mietschuldenfreiheit
+1. Im Mietvertrag gibt es den Knopf „Bescheinigungen“. Dort lassen sich zwei Schreiben zum Drucken oder als PDF erstellen.
+2. Wohnungsgeberbestätigung nach § 19 Bundesmeldegesetz: Einzug oder Auszug mit Datum, Anschrift und Lage der Wohnung, alle ein- bzw. ausziehenden Personen (eine je Zeile, Vorschlag: der Mieter), Hinweis zur Meldepflicht und zum Bußgeld.
+3. Mietschuldenfreiheitsbescheinigung zu einem Stichtag: Vermieter, Mieter, Mietobjekt, Mietbeginn, monatliche Miete; auf Wunsch „stets pünktlich gezahlt“ und ein Zweck. Das Mieterkonto wird geprüft: Ist bis zum Stichtag etwas offen, wird keine Bescheinigung erstellt.
+4. Jede erstellte Bescheinigung steht im Protokoll.
+Keine Migration. Selbsttest: bescheinigung:selbsttest
+
 ## Menü-Überschriften deutlicher, Lieferanten unter Stammdaten
 1. Gruppen-Überschriften im Seitenmenü (Finanzen, Vermietung, Nebenkosten, Instandhaltung und Dienstleister) sind jetzt hell und fett, mit Trennlinie darüber und Farbstrich links; die Punkte darunter sind eingerückt.
 2. „Lieferanten“ steht nicht mehr im Seitenmenü, sondern als Kachel unter Einstellungen → Stammdaten.

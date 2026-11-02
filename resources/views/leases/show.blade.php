@@ -17,6 +17,7 @@
   <div class="sd-actions">
     <a class="sd-btn sec" href="{{ route('leases.edit', $lease) }}">Bearbeiten</a>
     <a class="sd-btn sec" href="{{ route('leases.rent.create', $lease) }}">Mietänderung erfassen</a>
+    @if (\Illuminate\Support\Facades\Route::has('bescheinigung.index'))<a class="sd-btn sec" href="{{ route('bescheinigung.index', $lease) }}">Bescheinigungen</a>@endif
     <a class="sd-btn sec" href="{{ route('leases.index') }}">Alle Verträge</a>
   </div>
 </div>
