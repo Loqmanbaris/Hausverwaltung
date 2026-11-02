@@ -2,6 +2,11 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Mietverträge, Finanzierung, Anlage V, Jahresbericht unter Einstellungen
+1. Diese vier Punkte stehen nicht mehr im Seitenmenü, sondern als Kacheln unter Profilmenü → Einstellungen: Mietverträge bei „Stammdaten“, Finanzierung, Anlage V und Jahresbericht in der neuen Gruppe „Finanzen und Steuer“.
+2. Seitenmenü jetzt: Mein Tag, E-Mails, Finanzen (Rechnungen schreiben, Umsätze, Mieteingang, Mahnwesen, Belege, E-Rechnung, DATEV-Export), Vermietung (Interessenten, Mieterhöhungen, Kautionen), Nebenkosten, Instandhaltung und Dienstleister.
+Keine Migration. Selbsttest: design:selbsttest
+
 ## E-Mails löschen, Menü-Reihenfolge
 1. E-Mails lassen sich löschen: Knopf „Löschen“ neben „Archivieren“ (mit Rückfrage). Die E-Mail und ihre Anhänge verschwinden aus dem CRM, der Vorgang steht im Protokoll. Im Postfach bei IONOS bleibt sie liegen und wird nicht noch einmal abgerufen.
 2. Seitenmenü: ganz oben Mein Tag, darunter E-Mails, dann Finanzen.

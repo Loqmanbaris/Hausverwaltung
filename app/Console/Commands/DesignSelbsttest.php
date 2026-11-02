@@ -52,7 +52,7 @@ class DesignSelbsttest extends Command
             'Einstellungen als Kacheln' => \Illuminate\Support\Facades\Route::has('profile.settings') && view()->exists('profile.settings') && $compiles('profile.settings'),
             'Neues Seitenmenü' => str_contains((string) @file_get_contents(resource_path('views/layouts/app.blade.php')), 'partials.nav-main'),
             'Seitenmenü einklappbar' => str_contains((string) @file_get_contents(resource_path('views/layouts/app.blade.php')), 'data-sb-toggle'),
-            'Menüpunkte ('.count($m[1]).')' => count($m[1]) > 20 && $missing === [],
+            'Menüpunkte ('.count($m[1]).')' => count($m[1]) >= 12 && $missing === [],   // seit 02.11.2026 schlanker, vieles unter Einstellungen
         ];
         $this->line('Selbsttest Paket 17 (CRM neu gestaltet)');
         $failed = 0;
