@@ -53,14 +53,10 @@
       ],
       // Gruppen „Stammdaten“, „Webseite“ und „Verwaltung“ stehen seit 02.11.2026 als Kacheln unter Profilmenü → Einstellungen
   ];
-  // Ansicht: „Alltag“ zeigt nur, was täglich gebraucht wird; „Verwaltung“ zeigt alles. Die Wahl wird pro Gerät gemerkt.
-  $mode = request()->cookie('nav_mode') === 'verwaltung' ? 'verwaltung' : 'alltag';
-  $daily = ['tag.index', 'search', 'inbox.index', 'mail.index', 'leases.index', 'applicants.index', 'rent.month', 'rent.open', 'dunning.index',
-      'bank.transactions', 'invoices.index', 'receipts.index', 'bank.expenses', 'workorders.index', 'inquiries.index', 'documents.index'];
+  // Ein Menü für alle: Die frühere Trennung „Alltag“/„Verwaltung“ gibt es seit 02.11.2026 nicht mehr, es steht immer alles da.
   $menu = [];
   foreach ($groups as $title => $items) {
-      $visible = array_values(array_filter($items, fn ($i) => (! $i[4] || $admin) && \Illuminate\Support\Facades\Route::has($i[1])
-          && ($mode === 'verwaltung' || in_array($i[1], $daily, true) || request()->routeIs(...$i[2]))));
+      $visible = array_values(array_filter($items, fn ($i) => (! $i[4] || $admin) && \Illuminate\Support\Facades\Route::has($i[1])));
       if ($visible === []) {
           continue;
       }
@@ -110,17 +106,6 @@
   ];
   $ico = fn (string $route) => '<span class="sb-ic" aria-hidden="true"><svg viewBox="0 0 24 24">'.($icPaths[$route] ?? '<circle cx="12" cy="12" r="3"/>').'</svg></span>';
 @endphp
-<style>
-  .sb-mode{display:flex;gap:.25rem;margin:.1rem 0 .8rem;padding:.22rem;background:rgba(255,255,255,.07);border-radius:.6rem}
-  .sb-mode button{flex:1;border:0;background:transparent;color:rgba(255,255,255,.7);font:inherit;font-size:.85rem;padding:.38rem .4rem;border-radius:.45rem;cursor:pointer}
-  .sb-mode button:hover{color:#fff}
-  .sb-mode button.on{background:#fff;color:#111827;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.25)}
-</style>
-<form method="POST" action="{{ route('nav.mode') }}" class="sb-mode">
-  @csrf
-  <button type="submit" name="mode" value="alltag" @class(['on' => $mode === 'alltag'])>Alltag</button>
-  <button type="submit" name="mode" value="verwaltung" @class(['on' => $mode === 'verwaltung'])>Verwaltung</button>
-</form>
 @foreach ($menu as $g)
   @if ($g['title'] === '')
     <div class="sb-group sb-top">

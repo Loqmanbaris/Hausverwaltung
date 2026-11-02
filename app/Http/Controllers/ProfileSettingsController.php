@@ -35,7 +35,6 @@ class ProfileSettingsController extends Controller
             }
         };
         $dayMail = (bool) ($user->day_mail ?? false);
-        $mode = $request->cookie('nav_mode') === 'verwaltung' ? 'verwaltung' : 'alltag';
 
         $groups = [
             ['Mein Konto', [
@@ -47,8 +46,6 @@ class ProfileSettingsController extends Controller
             ]],
             ['Dieses Gerät', [
                 ['Als App installieren', 'Verwaltung wie eine App auf den Startbildschirm', '📱', ['install' => true]],
-                ['Menü-Ansicht', $mode === 'verwaltung' ? 'Zurzeit „Verwaltung“ (alles) – tippen für „Alltag“' : 'Zurzeit „Alltag“ (nur Tägliches) – tippen für „Verwaltung“', '🧭',
-                    Route::has('nav.mode') ? ['post' => 'nav.mode', 'fields' => ['mode' => $mode === 'verwaltung' ? 'alltag' : 'verwaltung']] : null],
             ]],
             ['Stammdaten', [
                 ['Eigentümer', 'Stammdaten, Bankverbindungen, Freigaben', '👤', $link('owners.index')],

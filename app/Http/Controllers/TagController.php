@@ -145,14 +145,6 @@ class TagController extends Controller
         return redirect()->back()->with('status', $on ? 'Du bekommst „Mein Tag“ ab morgen früh per E-Mail (wenn etwas ansteht).' : '„Mein Tag“ per E-Mail ist aus.');
     }
 
-    /** Menü-Ansicht: Alltag oder Verwaltung (pro Gerät gemerkt). */
-    public function mode(Request $request)
-    {
-        $mode = $request->input('mode') === 'verwaltung' ? 'verwaltung' : 'alltag';
-
-        return redirect()->back()->withCookie(cookie('nav_mode', $mode, 60 * 24 * 365));
-    }
-
     private function own(Request $request, int $id): PersonalItem
     {
         return PersonalItem::query()->where('user_id', $request->user()->id)->findOrFail($id);

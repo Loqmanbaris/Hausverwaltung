@@ -2,6 +2,11 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Ein Menü statt „Alltag“ und „Verwaltung“
+1. Der Umschalter „Alltag | Verwaltung“ oben im Seitenmenü ist weg. Das Menü zeigt immer alle Punkte (wie bisher „Verwaltung“).
+2. Die Kachel „Menü-Ansicht“ unter Profilmenü → Einstellungen und die Seite /menue-ansicht sind entfernt. Ein altes Cookie `nav_mode` wird nicht mehr beachtet.
+Keine Migration. Selbsttest: tag:selbsttest
+
 ## Stammdaten und Webseite unter Einstellungen, Excel-Import entfernt
 1. Die Gruppen „Stammdaten“ (Eigentümer, Objekte und Einheiten, Mieter, Dokumente) und „Webseite“ (Inserate, Anfragen, Webseite gestalten, Webseite ansehen) stehen nicht mehr im Seitenmenü, sondern als Kacheln unter Profilmenü → Einstellungen. Zahlen für neue Anfragen und abgelaufene Dokumente stehen an den Kacheln und als Punkt am Profilzeichen.
 2. „Import aus Excel“ (Paket 15) ist gelöscht: Seite, Vorlage, Selbsttest und Knopf auf der Übersicht. Schon übernommene Daten bleiben unverändert.

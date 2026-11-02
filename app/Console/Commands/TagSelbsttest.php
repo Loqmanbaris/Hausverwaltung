@@ -35,7 +35,7 @@ class TagSelbsttest extends Command
             'Erinnerung ohne Uhrzeit: am Morgen' => MeinTag::remindAt($allDay)?->format('H:i') === '08:00' && MeinTag::remindAt($none) === null,
             'Alarm im Kalender-Abo' => MeinTag::icsTrigger($timed) === '-PT60M' && MeinTag::icsTrigger($allDay) === 'PT8H' && MeinTag::icsTrigger($morning) === '-PT180M',
             'ICS mit Alarm und Ende' => str_contains($ics, 'TRIGGER:-PT60M') && str_contains($ics, 'DTEND:') && ! str_contains($ics, 'TRIGGER:-P1D'),
-            'Seiten' => Route::has('tag.index') && Route::has('tag.store') && Route::has('tag.done') && Route::has('nav.mode') && Route::has('tag.mail'),
+            'Seiten' => Route::has('tag.index') && Route::has('tag.store') && Route::has('tag.done') && Route::has('tag.mail'),
             'Ansicht' => view()->exists('tag.index'),
         ];
         $this->line('Selbsttest Paket 42 (Mein Tag)');

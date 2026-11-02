@@ -18,5 +18,4 @@ Route::middleware([SecurityHeaders::class, 'auth', EnsureTwoFactor::class])->gro
     Route::delete('/mein-tag/eintraege/{item}', [TagController::class, 'destroy'])->name('tag.destroy');
     Route::post('/mein-tag/vorlagen/{key}', [TagController::class, 'template'])->where('key', '[a-z]+')->name('tag.template');
     Route::post('/mein-tag/mail', [TagController::class, 'mail'])->name('tag.mail');
-    Route::post('/menue-ansicht', [TagController::class, 'mode'])->name('nav.mode');
 });
