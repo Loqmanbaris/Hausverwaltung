@@ -1,17 +1,17 @@
-Ergebnis: OK (02.11.2026 12:22)
+Ergebnis: OK (02.11.2026 12:27)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    17373ef Suchfeld rechts neben dem Profilzeichen, „Suche“ aus dem Seitenmenü entfernt
+Ziel:    d0d0115 Kontoauszüge: eine Seite mit Reitern Eingänge/Ausgaben/Einlesen, Monatsauswahl
 
-=================== 02.11.2026 12:22:03 ===================
+=================== 02.11.2026 12:27:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Suchfeld rechts neben dem Profilzeichen, „Suche“ aus dem Seitenmenü entfernt
+  - Kontoauszüge: eine Seite mit Reitern Eingänge/Ausgaben/Einlesen, Monatsauswahl
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-1222.bkp (7,4 MB, 88 Tabellen, 2487 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-1227.bkp (7,4 MB, 88 Tabellen, 2488 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -64,4 +64,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 17373ef – Suchfeld rechts neben dem Profilzeichen, „Suche“ aus dem Seitenmenü entfernt ist online.
+FERTIG: Neuer Stand d0d0115 – Kontoauszüge: eine Seite mit Reitern Eingänge/Ausgaben/Einlesen, Monatsauswahl ist online.
