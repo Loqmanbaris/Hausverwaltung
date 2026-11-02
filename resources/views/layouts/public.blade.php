@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<link rel="icon" type="image/png" href="/app-icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 @if (str_contains((string) config('app.url'), '://test.'))
 <meta name="robots" content="noindex, nofollow">
@@ -90,7 +91,7 @@ h1,h2,h3{letter-spacing:-.02em;color:var(--ink)}
 @endif
 <header class="pub-head">
   <div class="pub-head-inner">
-    <a class="pub-brand" href="{{ route('home') }}">@if ($logo)<img src="{{ $logo->url() }}" alt="{{ $siteName }}">@else<span class="dot"></span>{{ $siteName }}@endif</a>
+    <a class="pub-brand" href="{{ route('home') }}">@if ($logo)<img src="{{ $logo->url() }}" alt="{{ $siteName }}">@else @include('partials.logo-mark', ['lmHouse' => 'var(--ink)', 'lmAccent' => 'var(--accent)', 'lmSize' => 38])<span>{{ $siteName }}</span>@endif</a>
     <nav class="pub-nav" aria-label="Hauptmenü">
       @foreach ($nav as [$href, $label, $on])<a href="{{ $href }}" @class(['on' => $on])>{{ $label }}</a>@endforeach
       @auth<a class="login" href="{{ route('dashboard') }}">Zum System</a>@else<a class="login" href="{{ route('login') }}">Anmelden</a>@endauth
