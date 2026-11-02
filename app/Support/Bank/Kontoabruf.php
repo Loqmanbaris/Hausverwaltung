@@ -19,7 +19,7 @@ use Fhp\Options\FinTsOptions;
 use Throwable;
 
 /**
- * Automatischer Kontoabruf per FinTS (Paket 47), z. B. für die Sparkasse mit S-pushTAN.
+ * Automatischer Kontoabruf per FinTS (Paket 48), z. B. für die Sparkasse mit S-pushTAN.
  *
  * Ablauf: anmelden → Konten → Umsätze ab dem letzten Abruf (beim ersten Mal 90 Tage) → wie beim CSV-Import anlegen.
  * Verlangt die Bank eine Freigabe (TAN / pushTAN), wird der Stand gespeichert und der Abruf wartet,

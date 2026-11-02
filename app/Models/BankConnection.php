@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** Automatischer Kontoabruf (FinTS) für ein Bankkonto eines Eigentümers (Paket 47). */
+/** Automatischer Kontoabruf (FinTS) für ein Bankkonto eines Eigentümers (Paket 48). */
 class BankConnection extends Model
 {
     public const STATUS = ['neu' => 'eingerichtet, noch nicht abgerufen', 'bereit' => 'bereit', 'tan' => 'Freigabe nötig', 'fehler' => 'Fehler'];

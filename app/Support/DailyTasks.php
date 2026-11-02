@@ -45,7 +45,7 @@ class DailyTasks
             }
         }
 
-        // Automatischer Kontoabruf per FinTS (Paket 47) – vor dem Mietabgleich, damit neue Zahlungen gleich zählen
+        // Automatischer Kontoabruf per FinTS (Paket 48) – vor dem Mietabgleich, damit neue Zahlungen gleich zählen
         if (\Illuminate\Support\Facades\Schema::hasTable('bank_connections') && \App\Support\Bank\Kontoabruf::productId() !== '') {
             foreach (\App\Models\BankConnection::query()->with('account')->where('active', true)->whereNotNull('tan_mode')->whereIn('status', ['neu', 'bereit', 'fehler'])->get() as $conn) {
                 $r = \App\Support\Bank\Kontoabruf::start($conn, null);

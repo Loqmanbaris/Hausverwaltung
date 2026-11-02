@@ -110,7 +110,7 @@ Route::middleware([SecurityHeaders::class, 'auth', EnsureTwoFactor::class])->gro
         Route::delete('/mietvertraege/{lease}', [LeaseController::class, 'destroy'])->name('leases.destroy');
         Route::delete('/zahlungen/{payment}', [LeaseController::class, 'paymentDestroy'])->name('payments.destroy');
         Route::delete('/kontoauszuege/{import}', [BankController::class, 'destroyImport'])->name('bank.destroy');
-        // Automatischer Kontoabruf per FinTS (Paket 47)
+        // Automatischer Kontoabruf per FinTS (Paket 48)
         Route::get('/kontoauszuege/abruf', [\App\Http\Controllers\KontoabrufController::class, 'index'])->name('bank.abruf');
         Route::put('/kontoauszuege/abruf/registrierung', [\App\Http\Controllers\KontoabrufController::class, 'saveProduct'])->name('bank.abruf.product');
         Route::post('/kontoauszuege/abruf/konto/{account}', [\App\Http\Controllers\KontoabrufController::class, 'save'])->whereNumber('account')->name('bank.abruf.save');

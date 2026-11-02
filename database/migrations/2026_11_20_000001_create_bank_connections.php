@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Paket 47: Automatischer Kontoabruf per FinTS (PIN/TAN). Je Bankkonto eine Verbindung.
+ * Paket 48: Automatischer Kontoabruf per FinTS (PIN/TAN). Je Bankkonto eine Verbindung.
  * Anmeldename, PIN und der gespeicherte Sitzungsstand liegen verschlüsselt (APP_KEY).
  */
 return new class extends Migration
