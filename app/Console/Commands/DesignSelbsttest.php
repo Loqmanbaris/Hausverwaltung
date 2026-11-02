@@ -35,6 +35,7 @@ class DesignSelbsttest extends Command
             'Kontoauszüge mit Reitern' => $compiles('partials.bank-tabs') && $compiles('bank.index') && $compiles('bank.transactions') && $compiles('bank.expenses'),
             'Einstellungen als Kacheln' => \Illuminate\Support\Facades\Route::has('profile.settings') && view()->exists('profile.settings') && $compiles('profile.settings'),
             'Neues Seitenmenü' => str_contains((string) @file_get_contents(resource_path('views/layouts/app.blade.php')), 'partials.nav-main'),
+            'Seitenmenü einklappbar' => str_contains((string) @file_get_contents(resource_path('views/layouts/app.blade.php')), 'data-sb-toggle'),
             'Menüpunkte ('.count($m[1]).')' => count($m[1]) > 20 && $missing === [],
         ];
         $this->line('Selbsttest Paket 17 (CRM neu gestaltet)');

@@ -2,6 +2,11 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Seitenmenü einklappbar
+1. Am PC und Tablet blendet der Knopf „☰“ oben links in der Kopfleiste das Seitenmenü aus und wieder ein; im Menü steht außerdem „« Menü einklappen“. Die Seite nutzt dann die volle Breite. Der Zustand bleibt im Browser gespeichert.
+2. Am Handy bleibt alles wie bisher („☰ Menü“ öffnet das Menü von links).
+Keine Migration. Selbsttest: design:selbsttest
+
 ## Mieten erfasst ab 10.2026
 1. Soll-Mieten entstehen erst ab dem Monat „Mieten erfasst ab“ (Standard Oktober 2026). Ältere Monate gelten als erledigt: kein Rückstand, keine Mahnung, kein Kündigungshinweis. Vorhandene ältere Soll-Posten werden bei der nächsten Berechnung entfernt.
 2. Der Monat lässt sich unter Mieteingang → Offene Posten (unten, nur Administrator) ändern; danach werden alle Mietkonten sofort neu berechnet.

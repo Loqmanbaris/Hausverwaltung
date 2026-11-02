@@ -90,6 +90,13 @@ body{min-height:100vh;font-family:"Roboto",system-ui,-apple-system,"Segoe UI","H
 .menu-btn{display:none;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff;border-radius:8px;padding:.42rem .7rem;font:inherit;font-weight:500;cursor:pointer}
 .sb-close{display:none}
 .sb-shade{display:none}
+/* Seitenmenü am PC/Tablet einklappbar (Knopf „☰“ oben links, Zustand bleibt gespeichert) */
+.sb-toggle{display:inline-flex;align-items:center;justify-content:center;width:2.4rem;height:2.4rem;flex:none;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff;border-radius:8px;font-size:1.15rem;line-height:1;cursor:pointer}
+.sb-toggle:hover{background:rgba(255,255,255,.14)}
+.sb-hide{display:flex;align-items:center;gap:.4rem;margin:0 0 .4rem auto;border:0;background:none;color:rgba(255,255,255,.55);font:inherit;font-size:.82rem;cursor:pointer;padding:.3rem .5rem;border-radius:6px}
+.sb-hide:hover{color:#fff;background:rgba(255,255,255,.07)}
+body.sb-min .shell{grid-template-columns:minmax(0,1fr)}
+body.sb-min .sb{display:none}
 /* Karten wie im Portal: weiß, runde Ecken, feiner Rahmen */
 .panel,.sd-card,.card{border-radius:12px!important;box-shadow:0 1px 2px rgba(15,23,42,.05),0 0 0 1px rgba(15,23,42,.04)}
 @@media (max-width:960px){
@@ -99,6 +106,8 @@ body{min-height:100vh;font-family:"Roboto",system-ui,-apple-system,"Segoe UI","H
   body.nav-open .sb-shade{display:block}
   .sb-shade{display:none;position:fixed;inset:0;background:rgba(17,24,39,.45);z-index:35}
   .menu-btn{display:inline-block}
+  .sb-toggle,.sb-hide{display:none}
+  body.sb-min .sb{display:flex}
   .usermenu .who span.n,.usermenu .pm-caret{display:none}
   .sb-close{display:block;margin:.8rem 0 .2rem auto}
   .sb-brand{margin-top:0}
@@ -107,6 +116,7 @@ body{min-height:100vh;font-family:"Roboto",system-ui,-apple-system,"Segoe UI","H
 </style>
 </head>
 <body>
+<script>try{if(localStorage.getItem('sbMin')==='1'){document.body.classList.add('sb-min');}}catch(e){}</script>
 @if (str_contains((string) config('app.url'), '://test.'))
 <div class="test-banner">Testumgebung – bitte nur Beispieldaten verwenden</div>
 @endif
@@ -114,6 +124,7 @@ body{min-height:100vh;font-family:"Roboto",system-ui,-apple-system,"Segoe UI","H
   <aside class="sb" id="sb" aria-label="Navigation">
     <button class="menu-btn sb-close" type="button" onclick="document.body.classList.remove('nav-open')">Schließen ✕</button>
     <a class="sb-brand" href="{{ route('dashboard') }}">@if ($logo)<img src="{{ $logo->url() }}" alt="{{ config('app.name') }}">@else<span class="dot"></span>{{ config('app.name') }}@endif</a>
+    <button class="sb-hide" type="button" data-sb-toggle title="Menü einklappen">« Menü einklappen</button>
     <nav>@include('partials.nav-main')</nav>
     <div class="sb-foot"><a href="{{ route('profile.settings') }}">Einstellungen</a><br><a href="{{ route('home') }}" target="_blank" rel="noopener">Webseite ansehen ↗</a></div>
   </aside>
@@ -121,6 +132,7 @@ body{min-height:100vh;font-family:"Roboto",system-ui,-apple-system,"Segoe UI","H
   <div class="mainwrap">
     <header class="topbar">
       <div class="topbar-inner">
+        <button class="sb-toggle" type="button" data-sb-toggle aria-controls="sb" title="Menü ein-/ausklappen" aria-label="Menü ein- oder ausklappen">☰</button>
         <button class="menu-btn" type="button" onclick="document.body.classList.add('nav-open')" aria-controls="sb">☰ Menü</button>
         <form class="topsearch" method="GET" action="{{ route('search') }}" role="search">
           <input type="text" name="q" value="{{ request()->routeIs('search') ? request('q') : '' }}" maxlength="100" placeholder="Suchen: Mieter, Objekt, Beleg …" aria-label="Suche">
@@ -154,6 +166,10 @@ body{min-height:100vh;font-family:"Roboto",system-ui,-apple-system,"Segoe UI","H
 <script>
 document.addEventListener('click',function(e){var m=document.getElementById('pm');if(m&&m.open&&!m.contains(e.target)){m.open=false;}});
 document.addEventListener('keydown',function(e){var m=document.getElementById('pm');if(e.key==='Escape'&&m){m.open=false;}});
+document.querySelectorAll('[data-sb-toggle]').forEach(function(b){b.addEventListener('click',function(){
+  var min=document.body.classList.toggle('sb-min');
+  try{localStorage.setItem('sbMin',min?'1':'0');}catch(e){}
+});});
 </script>
 <script>
 (function(){
