@@ -2,6 +2,12 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Kontoauszüge: eine Seite mit Reitern und Monatsauswahl
+1. Im Seitenmenü gibt es nur noch „Kontoauszüge“ (Zahl = offene Eingänge + Ausgaben). „Ausgaben abgleichen“ ist dort als eigener Punkt entfallen.
+2. Die Seite hat oben drei Reiter: „Eingänge zuordnen“ (bisher Kontoumsätze/Umsätze zuordnen), „Ausgaben zuordnen“ (bisher Ausgaben abgleichen) und „Kontoauszug einlesen“.
+3. Neu: Monat wählen (Auswahlliste mit Pfeilen ‹ ›), auch zusammen mit dem Konto. Der Monat bleibt beim Zuordnen und beim Wechsel zwischen Eingängen und Ausgaben erhalten. „Alle Monate“ zeigt wieder alles.
+Keine Migration. Selbsttest: mieten:selbsttest, design:selbsttest
+
 ## Suche neben dem Profil
 1. Das Suchfeld in der Kopfleiste steht jetzt rechts direkt neben dem Profilzeichen.
 2. Der doppelte Punkt „Suche“ im Seitenmenü ist entfernt.

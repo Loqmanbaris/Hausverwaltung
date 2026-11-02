@@ -13,6 +13,7 @@ use App\Support\Audit;
 use App\Support\Bank\BankImportException;
 use App\Support\Bank\BankMatcher;
 use App\Support\Bank\BankService;
+use App\Support\Bank\Monatsfilter;
 use App\Support\Documents\DocumentStore;
 use App\Support\Money;
 use Illuminate\Http\Request;
@@ -81,8 +82,9 @@ class BankController extends Controller
         $ownerIds = $this->visibleOwnerIds();
         $state = (string) $request->query('stand', 'offen');
         $accountId = (int) $request->query('konto');
+        $month = Monatsfilter::current($request);
 
-        $query = BankTransaction::query()->whereIn('owner_id', $ownerIds)
+        $query = Monatsfilter::apply(BankTransaction::query()->whereIn('owner_id', $ownerIds), $month)
             ->when($accountId > 0, fn ($q) => $q->where('owner_bank_account_id', $accountId))
             ->with(['payments.lease.unit', 'payments.lease.tenant', 'account', 'owner']);
 
@@ -120,11 +122,12 @@ class BankController extends Controller
         $sureCount = count(array_filter($rows, fn ($r) => $r['sure'] && $r['tx']->status === 'offen'));
 
         $accounts = OwnerBankAccount::query()->whereIn('owner_id', $ownerIds)->with('owner')->get();
-        $counts = BankTransaction::query()->whereIn('owner_id', $ownerIds)
+        $counts = Monatsfilter::apply(BankTransaction::query()->whereIn('owner_id', $ownerIds), $month)
             ->when($accountId > 0, fn ($q) => $q->where('owner_bank_account_id', $accountId))
             ->selectRaw('status, count(*) as c')->groupBy('status')->pluck('c', 'status');
+        $months = Monatsfilter::options($ownerIds, $month);
 
-        return view('bank.transactions', compact('rows', 'leaseOptions', 'state', 'accountId', 'accounts', 'counts', 'sureCount'));
+        return view('bank.transactions', compact('rows', 'leaseOptions', 'state', 'accountId', 'accounts', 'counts', 'sureCount', 'month', 'months'));
     }
 
     public function assign(Request $request, BankTransaction $tx)

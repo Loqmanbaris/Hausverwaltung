@@ -105,7 +105,7 @@
 <div class="sd-card">
   <h2>Bezahlt laut Kontoauszug</h2>
   @if ($paidBy->isEmpty())
-    <p class="sd-muted" style="margin:0">Noch keiner Abbuchung zugeordnet. Das geht unter <a href="{{ route('bank.expenses') }}">Kontoauszüge → Ausgaben abgleichen</a>.</p>
+    <p class="sd-muted" style="margin:0">Noch keiner Abbuchung zugeordnet. Das geht unter <a href="{{ route('bank.expenses') }}">Kontoauszüge → Ausgaben zuordnen</a>.</p>
   @else
     <ul style="margin:0;padding-left:1.2rem">
       @foreach ($paidBy as $pb)

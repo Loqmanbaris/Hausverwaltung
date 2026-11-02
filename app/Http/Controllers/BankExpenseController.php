@@ -7,6 +7,7 @@ use App\Models\BankTransaction;
 use App\Models\OwnerBankAccount;
 use App\Models\Receipt;
 use App\Support\Bank\ExpenseMatcher;
+use App\Support\Bank\Monatsfilter;
 use App\Support\Money;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,8 +24,9 @@ class BankExpenseController extends Controller
         $ownerIds = $this->visibleOwnerIds();
         $state = (string) $request->query('stand', 'offen');
         $accountId = (int) $request->query('konto');
+        $month = Monatsfilter::current($request);
 
-        $query = BankTransaction::query()->whereIn('owner_id', $ownerIds)->where('amount', '<', 0)
+        $query = Monatsfilter::apply(BankTransaction::query()->whereIn('owner_id', $ownerIds), $month)->where('amount', '<', 0)
             ->when($accountId > 0, fn ($q) => $q->where('owner_bank_account_id', $accountId));
         match ($state) {
             'zugeordnet' => $query->where('status', 'beleg'),
@@ -57,12 +59,14 @@ class BankExpenseController extends Controller
             ];
         }
 
-        $counts = BankTransaction::query()->whereIn('owner_id', $ownerIds)->where('amount', '<', 0)
+        $counts = Monatsfilter::apply(BankTransaction::query()->whereIn('owner_id', $ownerIds), $month)->where('amount', '<', 0)
             ->when($accountId > 0, fn ($q) => $q->where('owner_bank_account_id', $accountId))
             ->selectRaw('status, count(*) as c')->groupBy('status')->pluck('c', 'status');
         $accounts = OwnerBankAccount::query()->whereIn('owner_id', $ownerIds)->with('owner')->get();
 
-        return view('bank.expenses', compact('rows', 'state', 'accountId', 'counts', 'accounts'));
+        $months = Monatsfilter::options($ownerIds, $month);
+
+        return view('bank.expenses', compact('rows', 'state', 'accountId', 'counts', 'accounts', 'month', 'months'));
     }
 
     public function link(Request $request, BankTransaction $tx)

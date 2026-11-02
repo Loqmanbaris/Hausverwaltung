@@ -46,9 +46,13 @@ class MietenSelbsttest extends Command
         foreach (['leases.index', 'leases.create', 'leases.show', 'leases.rent.create', 'rent.month', 'rent.open', 'rent.quick-pay', 'payments.destroy', 'bank.index', 'bank.store', 'bank.transactions', 'bank.assign', 'bank.accept', 'bank.edit', 'bank.update', 'bank.payment.update', 'bank.payment.remove', 'datev.rent', 'datev.rent.export', 'datev.rent.accounts'] as $name) {
             $this->check('Seite '.$name, Route::has($name));
         }
-        foreach (['leases.index', 'leases.form', 'leases.show', 'leases.rent', 'rent.month', 'rent.open', 'partials.rent-dashboard', 'partials.rent-styles', 'bank.index', 'bank.transactions', 'bank.edit', 'datev.rent', 'datev.rent-accounts'] as $view) {
+        foreach (['leases.index', 'leases.form', 'leases.show', 'leases.rent', 'rent.month', 'rent.open', 'partials.rent-dashboard', 'partials.rent-styles', 'partials.bank-tabs', 'partials.bank-filter', 'bank.index', 'bank.transactions', 'bank.expenses', 'bank.edit', 'datev.rent', 'datev.rent-accounts'] as $view) {
             $this->check('Vorlage '.$view, view()->exists($view));
         }
+
+        $opts = ['2026-10' => 'Oktober 2026', '2026-09' => 'September 2026', '2026-08' => 'August 2026'];
+        $this->check('Monatsauswahl Kontoauszüge (Pfeile)', \App\Support\Bank\Monatsfilter::neighbours($opts, '2026-09') === ['2026-08', '2026-10']
+            && \App\Support\Bank\Monatsfilter::neighbours($opts, null) === [null, null]);
 
         // 3. Rechenlogik
         $rents = [['valid_from' => '2026-09-15', 'rent_cold' => '600', 'prepay_operating' => '150']];

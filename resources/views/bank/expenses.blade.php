@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Ausgaben abgleichen')
+@section('title', 'Kontoauszüge – Ausgaben')
 @section('content')
 @include('partials.sd-styles')
 @include('partials.rent-styles')
@@ -29,27 +29,14 @@
 .bk-sure{display:inline-block;background:#ecfdf3;color:#067647;border-radius:1rem;padding:.05rem .5rem;font-size:.85rem;font-weight:600}
 </style>
 
-<div class="sd-head">
-  <h1>Ausgaben abgleichen</h1>
-  <div class="sd-actions">
-    <a class="sd-btn sec" href="{{ route('bank.index') }}">Kontoauszug einlesen</a>
-    <a class="sd-btn sec" href="{{ route('bank.transactions') }}">Gutschriften (Mieten)</a>
-    <a class="sd-btn sec" href="{{ route('receipts.index') }}">Belege</a>
-  </div>
-</div>
+@php
+  $kzActions = '<a class="sd-btn sec" href="'.e(route('receipts.index')).'">Belege</a>';
+@endphp
+@include('partials.bank-tabs')
 <p class="sd-muted">Hier stehen die Abbuchungen aus den eingelesenen Kontoauszügen. Zu jeder gehört ein Beleg (Rechnung, Bescheid, Vertrag). Passt ein vorhandener Beleg, wird er vorgeschlagen. Fehlt er, kannst du ihn direkt aus der Abbuchung heraus erfassen; Datum, Betrag und Lieferant sind dann schon ausgefüllt.</p>
 
-@if ($accounts->count() > 1)
-  <form class="rt-filter" method="GET" action="{{ route('bank.expenses') }}">
-    <input type="hidden" name="stand" value="{{ $state }}">
-    <select name="konto" aria-label="Konto" onchange="this.form.submit()">
-      <option value="">Alle Konten</option>
-      @foreach ($accounts as $a)
-        <option value="{{ $a->id }}" @selected($accountId === (int) $a->id)>{{ $a->owner?->name }} – {{ substr($a->formattedIban(), -9) }}</option>
-      @endforeach
-    </select>
-  </form>
-@endif
+@php($filterRoute = 'bank.expenses')
+@include('partials.bank-filter')
 
 <nav class="bk-tabs">
   @foreach ($tabs as $k => $label)

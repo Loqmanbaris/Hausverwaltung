@@ -5,14 +5,10 @@
 @include('partials.rent-styles')
 @include('partials.sd-flash')
 @php($isAdmin = auth()->user()->isAdmin())
-<div class="sd-head">
-  <h1>Kontoauszüge</h1>
-  <div class="sd-actions">
-    <a class="sd-btn" href="{{ route('bank.transactions') }}">Umsätze zuordnen</a>
-    <a class="sd-btn" href="{{ route('bank.expenses') }}">Ausgaben abgleichen</a>
-    <a class="sd-btn sec" href="{{ route('rent.month') }}">Mieteingang</a>
-  </div>
-</div>
+@php
+  $kzActions = '<a class="sd-btn sec" href="'.e(route('rent.month')).'">Mieteingang</a>';
+@endphp
+@include('partials.bank-tabs')
 
 <div class="sd-card">
   <h2>Kontoauszug einlesen</h2>

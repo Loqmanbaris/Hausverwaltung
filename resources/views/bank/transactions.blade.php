@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Umsätze zuordnen')
+@section('title', 'Kontoauszüge – Eingänge')
 @section('content')
 @include('partials.sd-styles')
 @include('partials.rent-styles')
 @include('partials.sd-flash')
 @php
   use App\Support\Money;
-  $tabs = ['offen' => 'Zuzuordnen', 'zugeordnet' => 'Zugeordnet', 'ignoriert' => 'Keine Miete', 'ausgaben' => 'Ausgaben', 'alle' => 'Alle'];
+  $tabs = ['offen' => 'Zuzuordnen', 'zugeordnet' => 'Zugeordnet', 'ignoriert' => 'Keine Miete', 'alle' => 'Alle'];
   $tabCount = [
     'offen' => ($counts['offen'] ?? 0) + ($counts['teilweise'] ?? 0),
     'zugeordnet' => ($counts['zugeordnet'] ?? 0) + ($counts['teilweise'] ?? 0),
@@ -36,29 +36,17 @@
 .bk-sure{display:inline-block;background:#ecfdf3;color:#067647;border-radius:1rem;padding:.05rem .5rem;font-size:.85rem;font-weight:600}
 </style>
 
-<div class="sd-head">
-  <h1>Umsätze zuordnen</h1>
-  <div class="sd-actions">
-    <a class="sd-btn sec" href="{{ route('bank.index') }}">Kontoauszug einlesen</a>
-    <a class="sd-btn sec" href="{{ route('rent.month') }}">Mieteingang</a>
-  </div>
-</div>
+@php
+  $kzActions = '<a class="sd-btn sec" href="'.e(route('rent.month')).'">Mieteingang</a>';
+@endphp
+@include('partials.bank-tabs')
 
-@if ($accounts->count() > 1)
-  <form class="rt-filter" method="GET" action="{{ route('bank.transactions') }}">
-    <input type="hidden" name="stand" value="{{ $state }}">
-    <select name="konto" aria-label="Konto" onchange="this.form.submit()">
-      <option value="">Alle Konten</option>
-      @foreach ($accounts as $a)
-        <option value="{{ $a->id }}" @selected($accountId === (int) $a->id)>{{ $a->owner?->name }} – {{ substr($a->formattedIban(), -9) }}</option>
-      @endforeach
-    </select>
-  </form>
-@endif
+@php($filterRoute = 'bank.transactions')
+@include('partials.bank-filter')
 
 <nav class="bk-tabs">
   @foreach ($tabs as $k => $label)
-    <a href="{{ $k === 'ausgaben' ? route('bank.expenses', array_filter(['konto' => $accountId ?: null])) : route('bank.transactions', array_filter(['stand' => $k, 'konto' => $accountId ?: null])) }}" @class(['on' => $state === $k])>{{ $k === 'ausgaben' ? 'Ausgaben abgleichen' : $label }} ({{ $tabCount[$k] }})</a>
+    <a href="{{ $k === 'ausgaben' ? route('bank.expenses', array_filter(['konto' => $accountId ?: null])) : route('bank.transactions', array_filter(['stand' => $k, 'konto' => $accountId ?: null])) }}" @class(['on' => $state === $k])>{{ $label }} ({{ $tabCount[$k] }})</a>
   @endforeach
 </nav>
 

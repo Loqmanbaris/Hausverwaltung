@@ -287,7 +287,7 @@ class LoanController extends Controller
         return redirect()->to(route('loans.show', $loan).'#ereignisse')->with('status', 'Eintrag gelöscht.');
     }
 
-    /** Abbuchung von Hand einem Darlehen zuordnen (Seite „Ausgaben abgleichen“). */
+    /** Abbuchung von Hand einem Darlehen zuordnen (Kontoauszüge → Ausgaben zuordnen). */
     public function assignTx(Request $request, BankTransaction $tx)
     {
         $this->assertOwnerAccess((int) $tx->owner_id);
@@ -318,7 +318,7 @@ class LoanController extends Controller
             $n += LoanMatcher::autoAssign($id);
         }
 
-        return back()->with('status', $n === 0 ? 'Keine weiteren Abbuchungen sicher erkannt. Unter „Ausgaben abgleichen“ kannst du Raten von Hand zuordnen.' : $n.' Abbuchung(en) den Darlehen zugeordnet.');
+        return back()->with('status', $n === 0 ? 'Keine weiteren Abbuchungen sicher erkannt. Unter „Kontoauszüge → Ausgaben zuordnen“ kannst du Raten von Hand zuordnen.' : $n.' Abbuchung(en) den Darlehen zugeordnet.');
     }
 
     // ------------------------------------------------------------ Werte je Objekt
