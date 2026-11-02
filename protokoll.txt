@@ -1,20 +1,20 @@
-Ergebnis: OK (02.11.2026 22:07)
+Ergebnis: OK (02.11.2026 22:17)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    1eb250d Merge pull request #11 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+Ziel:    ff1f6c3 Merge pull request #13 from Loqmanbaris/ccr-ef75b8df-4kmjqe
 
-=================== 02.11.2026 22:07:02 ===================
+=================== 02.11.2026 22:17:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Merge pull request #11 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - Bescheinigungen im Menü (Vermietung): Mietvertrag auswählen, dann Bescheinigung erstellen
-  - Merge pull request #10 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - Neues Logo „Haus mit B“: Seitenleiste, Anmeldung, Webseite, App- und Browser-Symbol
+  - Merge pull request #13 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - Briefkopf mit Logo für alle Schreiben: Logo fest, Angaben vom Eigentümer, Fußzeile mit Bank und Steuer
+  - Merge pull request #12 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - Abmahnung und Kündigung als Schreiben an Mieter
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-2207.bkp (7,4 MB, 89 Tabellen, 1084 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-2217.bkp (7,4 MB, 89 Tabellen, 1087 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -68,4 +68,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 1eb250d – Merge pull request #11 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
+FERTIG: Neuer Stand ff1f6c3 – Merge pull request #13 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
