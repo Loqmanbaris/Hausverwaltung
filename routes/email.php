@@ -23,6 +23,7 @@ Route::middleware([SecurityHeaders::class, 'auth', EnsureTwoFactor::class])->gro
     Route::get('/posteingang/{id}/inhalt', [InboxController::class, 'html'])->whereNumber('id')->name('inbox.html');
     Route::get('/posteingang/{id}/anhang/{n}', [InboxController::class, 'attachment'])->whereNumber(['id', 'n'])->name('inbox.attachment');
     Route::post('/posteingang/{id}/archiv', [InboxController::class, 'archive'])->whereNumber('id')->name('inbox.archive');
+    Route::delete('/posteingang/{id}', [InboxController::class, 'destroy'])->whereNumber('id')->name('inbox.destroy');
     Route::post('/posteingang/{id}/ungelesen', [InboxController::class, 'unread'])->whereNumber('id')->name('inbox.unread');
     Route::post('/posteingang/{id}/antworten', [InboxController::class, 'reply'])->whereNumber('id')->middleware('throttle:30,1')->name('inbox.reply');
     Route::get('/email/schreiben', [InboxController::class, 'write'])->name('mail.write');

@@ -265,6 +265,7 @@
       <span class="pf-platz"></span>
       <form method="POST" action="{{ route('inbox.unread', $open->id) }}">@csrf<button class="pf-knopf pf-kurz" type="submit" title="Als ungelesen markieren">{!! MV::icon('mail') !!}<span>Ungelesen</span></button></form>
       <form method="POST" action="{{ route('inbox.archive', $open->id) }}">@csrf<button class="pf-knopf pf-kurz" type="submit" title="{{ $open->archived ? 'Zurück in den Posteingang' : 'Archivieren' }}">{!! MV::icon($open->archived ? 'inbox' : 'archive') !!}<span>{{ $open->archived ? 'Posteingang' : 'Archivieren' }}</span></button></form>
+      <form method="POST" action="{{ route('inbox.destroy', $open->id) }}" onsubmit="return confirm('Diese E-Mail löschen? Das lässt sich nicht rückgängig machen.')">@csrf @method('DELETE')<button class="pf-knopf pf-kurz" type="submit" title="Löschen">{!! MV::icon('trash') !!}<span>Löschen</span></button></form>
     </div>
     <article class="pf-inhalt">
       <h2 class="pf-betreff">{{ $open->subject }}</h2>
