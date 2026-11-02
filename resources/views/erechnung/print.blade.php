@@ -36,6 +36,7 @@ th{font-size:8.5pt;color:#444;border-bottom:.8pt solid #333}
 @endphp
 <div class="toolbar"><button type="button" onclick="window.print()">Drucken / als PDF speichern</button><span>{{ $inv->kindLabel() }} {{ $inv->number }}</span></div>
 <div class="page">
+  @include('partials.briefkopf', ['bk' => \App\Support\Briefkopf::daten($s)])
   <div class="sender">{{ $s['name'] }} · {{ $s['street'] }} · {{ $s['zip'] }} {{ $s['city'] }}</div>
   <div class="addr">{{ $b['name'] }}<br>{{ $b['street'] }}<br>{{ $b['zip'] }} {{ $b['city'] }}</div>
   <div class="meta">{{ $s['city'] }}, {{ $de($inv->issued_on) }}</div>
@@ -56,6 +57,7 @@ th{font-size:8.5pt;color:#444;border-bottom:.8pt solid #333}
   @endunless
   <p class="small">Steuerliche Angaben des Rechnungstellers: @if ($s['vat'])USt-IdNr. {{ $s['vat'] }}@endif @if ($s['tax'])Steuernummer {{ $s['tax'] }}@endif @if ($b['vat']) · USt-IdNr. des Mieters {{ $b['vat'] }}@endif</p>
   <p class="small">Dies ist die Ansicht Ihrer elektronischen Rechnung. Die maßgebliche Rechnung ist die mitgesandte XML-Datei (XRechnung).</p>
+  @include('partials.brieffuss', ['bk' => \App\Support\Briefkopf::daten($s)])
 </div>
 </body>
 </html>

@@ -52,6 +52,7 @@ tr{page-break-inside:avoid}
   @endphp
   <div class="page">
     @if ($n->isCancelled())<div class="storno">STORNIERT – nicht versenden</div>@endif
+    @include('partials.briefkopf', ['bk' => \App\Support\Briefkopf::daten($owner)])
     <div class="sender">{{ $owner?->name }} · {{ $owner?->street }} · {{ trim(($owner?->zip ?? '').' '.($owner?->city ?? '')) }}</div>
     <div class="addr">
       {{ $tenant?->type === 'firma' ? $tenant->company_name : trim(($tenant?->first_name ?? '').' '.($tenant?->last_name ?? '')) }}<br>
@@ -111,6 +112,7 @@ tr{page-break-inside:avoid}
     <p>Sollten Sie die Zahlung inzwischen geleistet haben, betrachten Sie dieses Schreiben bitte als gegenstandslos. Bei Fragen oder wenn Sie eine Ratenzahlung vereinbaren möchten, melden Sie sich gerne bei uns.</p>
 
     <p>Mit freundlichen Grüßen<br><br>{{ $owner?->name }}</p>
+    @include('partials.brieffuss', ['bk' => \App\Support\Briefkopf::daten($owner)])
   </div>
 @endforeach
 </body>

@@ -33,6 +33,7 @@ td{padding:1.2mm 1.3mm;border-bottom:.3pt solid #bbb;vertical-align:top}
 @endphp
 <div class="toolbar"><button type="button" onclick="window.print()">Drucken / als PDF speichern</button></div>
 <div class="page">
+  @include('partials.briefkopf', ['bk' => \App\Support\Briefkopf::daten($owner)])
   <div class="sender">{{ $owner?->name }} · {{ $owner?->street }} · {{ trim(($owner?->zip ?? '').' '.($owner?->city ?? '')) }}</div>
   <div class="addr">
     {{ $tenant?->type === 'firma' ? $tenant->company_name : trim(($tenant?->first_name ?? '').' '.($tenant?->last_name ?? '')) }}<br>
@@ -64,6 +65,7 @@ td{padding:1.2mm 1.3mm;border-bottom:.3pt solid #bbb;vertical-align:top}
     <p>Den Betrag erstatten wir Ihnen bzw. verrechnen ihn mit der nächsten Abrechnung.</p>
   @endif
   <p>Mit freundlichen Grüßen<br><br>{{ $owner?->name }}</p>
+  @include('partials.brieffuss', ['bk' => \App\Support\Briefkopf::daten($owner)])
 </div>
 </body>
 </html>

@@ -49,6 +49,7 @@ tr{page-break-inside:avoid}
 @if ($inc->isDraft())<div class="draft">Entwurf: Das Schreiben ist noch nicht als versendet vermerkt. Bitte nach dem Versand den Zugang im Verfahren eintragen.</div>@endif
 
 <div class="page">
+  @include('partials.briefkopf', ['bk' => \App\Support\Briefkopf::daten($owner)])
   <div class="sender">{{ $owner?->name }} · {{ $owner?->street }} · {{ trim(($owner?->zip ?? '').' '.($owner?->city ?? '')) }}</div>
   <div class="addr">
     {{ $name }}<br>
@@ -172,6 +173,7 @@ tr{page-break-inside:avoid}
 
   <p style="margin-top:8mm">Mit freundlichen Grüßen<br>{{ $owner?->name }}</p>
   @if ($kind !== 'vereinbarung')<p class="small">Dieses Schreiben wurde maschinell erstellt und gilt ohne Unterschrift (Textform, § 126b BGB).</p>@endif
+  @include('partials.brieffuss', ['bk' => \App\Support\Briefkopf::daten($owner)])
 </div>
 </body>
 </html>

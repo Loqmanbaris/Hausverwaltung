@@ -35,6 +35,7 @@ th,td{padding:1.2mm 1.3mm;border-bottom:.3pt solid #bbb;text-align:left;vertical
   <span>{{ \App\Support\Interessenten\Letters::title($kind) }}</span>
 </div>
 <div class="page">
+  @include('partials.briefkopf', ['bk' => \App\Support\Briefkopf::daten($owner)])
   <div class="sender">{{ $owner?->name }} · {{ $owner?->street }} · {{ trim(($owner?->zip ?? '').' '.($owner?->city ?? '')) }}</div>
   <div class="addr">{{ $a->name() }}<br>@if ($a->email){{ $a->email }}@endif</div>
   <div class="meta">{{ $owner?->city ? $owner->city.', ' : '' }}{{ $de($date) }}</div>
@@ -63,6 +64,7 @@ th,td{padding:1.2mm 1.3mm;border-bottom:.3pt solid #bbb;text-align:left;vertical
   @endif
 
   <p style="margin-top:8mm">Mit freundlichen Grüßen<br>{{ $owner?->name }}</p>
+  @include('partials.brieffuss', ['bk' => \App\Support\Briefkopf::daten($owner)])
 </div>
 </body>
 </html>

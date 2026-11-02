@@ -37,6 +37,7 @@ th{font-size:8.5pt;color:#444;border-bottom:.8pt solid #333}
   @php($lease = $r['lease'])
   @php($tenant = $lease?->tenant)
   <div class="page">
+    @include('partials.briefkopf', ['bk' => \App\Support\Briefkopf::daten($owner)])
     <div class="sender">{{ $owner?->name }} · {{ $owner?->street }} · {{ trim(($owner?->zip ?? '').' '.($owner?->city ?? '')) }}</div>
     <div class="addr">
       {{ $tenant?->type === 'firma' ? $tenant->company_name : trim(($tenant?->first_name ?? '').' '.($tenant?->last_name ?? '')) }}<br>
@@ -77,6 +78,7 @@ th{font-size:8.5pt;color:#444;border-bottom:.8pt solid #333}
       @if ($r['heat_unit'] === 'Einheiten')Heizkostenverteiler zeigen Verbrauchseinheiten, keine kWh; sie eignen sich zum Vergleich mit Ihren eigenen Vormonaten und mit anderen Wohnungen im Haus.<br>@endif
       Tipps zum Energiesparen und eine unabhängige Energieberatung bietet die Verbraucherzentrale (verbraucherzentrale-energieberatung.de). Die Kosten werden wie bisher einmal im Jahr mit der Heizkostenabrechnung abgerechnet.
     </div>
+    @include('partials.brieffuss', ['bk' => \App\Support\Briefkopf::daten($owner)])
   </div>
 @endforeach
 </body>

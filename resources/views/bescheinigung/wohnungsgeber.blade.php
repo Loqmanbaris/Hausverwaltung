@@ -5,6 +5,7 @@
 @endphp
 @include('bescheinigung._druck')
 <div class="page">
+  @include('partials.briefkopf', ['bk' => \App\Support\Briefkopf::daten($owner)])
   <h1>Wohnungsgeberbestätigung</h1>
   <p class="sub">nach § 19 Bundesmeldegesetz (BMG)</p>
 
@@ -33,6 +34,7 @@
     <strong>Hinweis:</strong> @if ($vorgang === 'einzug')Die meldepflichtige Person muss sich innerhalb von zwei Wochen nach dem Einzug bei der Meldebehörde anmelden (§ 17 Abs. 1 BMG) und legt dafür diese Bestätigung vor.@else Eine Abmeldung ist nur nötig, wenn keine neue Wohnung im Inland bezogen wird (§ 17 Abs. 2 BMG); sonst genügt die Anmeldung am neuen Wohnort.@endif
     Es ist verboten, eine Wohnanschrift für eine Anmeldung einem Dritten anzubieten oder zur Verfügung zu stellen, obwohl ein tatsächlicher Bezug der Wohnung durch diesen weder stattfindet noch beabsichtigt ist (§ 19 Abs. 6 BMG). Ein Verstoß ist eine Ordnungswidrigkeit und kann mit einer Geldbuße bis zu 50.000 Euro geahndet werden (§ 54 BMG).
   </div>
+  @include('partials.brieffuss', ['bk' => \App\Support\Briefkopf::daten($owner)])
 </div>
 </body>
 </html>

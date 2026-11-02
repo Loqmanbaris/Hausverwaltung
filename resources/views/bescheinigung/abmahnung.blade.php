@@ -21,6 +21,7 @@
     <div>{{ $owner?->name }} (Vermieter)</div>
     <div style="border-top:0"></div>
   </div>
+  @include('partials.brieffuss', ['bk' => \App\Support\Briefkopf::daten($owner)])
 </div>
 </body>
 </html>
