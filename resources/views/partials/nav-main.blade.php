@@ -15,7 +15,6 @@
   $groups = [
       '' => [
           ['Mein Tag', 'tag.index', ['tag.*'], $badge['day'] ?? 0, false],
-          ['Suche', 'search', ['search'], 0, false],
           ['E-Mails', 'inbox.index', ['inbox.*', 'mail.index', 'mail.compose', 'mail.write'], $badge['mail'] ?? 0, false],
       ],
       'Vermietung' => [

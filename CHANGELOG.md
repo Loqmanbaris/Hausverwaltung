@@ -2,6 +2,11 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Suche neben dem Profil
+1. Das Suchfeld in der Kopfleiste steht jetzt rechts direkt neben dem Profilzeichen.
+2. Der doppelte Punkt „Suche“ im Seitenmenü ist entfernt.
+Keine Migration.
+
 ## Ein Menü statt „Alltag“ und „Verwaltung“
 1. Der Umschalter „Alltag | Verwaltung“ oben im Seitenmenü ist weg. Das Menü zeigt immer alle Punkte (wie bisher „Verwaltung“).
 2. Die Kachel „Menü-Ansicht“ unter Profilmenü → Einstellungen und die Seite /menue-ansicht sind entfernt. Ein altes Cookie `nav_mode` wird nicht mehr beachtet.

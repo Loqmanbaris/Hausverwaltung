@@ -64,11 +64,11 @@ body{min-height:100vh;font-family:"Roboto",system-ui,-apple-system,"Segoe UI","H
 .mainwrap > main > table{display:block;overflow-x:auto}
 .topbar{background:var(--hv-dark);border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:15;color:#fff}
 .topbar-inner{padding:0 1.25rem;height:60px;display:flex;align-items:center;gap:.8rem}
-.topsearch{flex:1;max-width:460px;margin:0}
+.topsearch{flex:1;max-width:460px;margin:0 0 0 auto}
 .topsearch input{padding:.5rem .8rem;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#fff}
 .topsearch input::placeholder{color:rgba(255,255,255,.55)}
 .topsearch input:focus{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3);outline:none}
-.usermenu{margin-left:auto;display:flex;align-items:center;gap:.9rem;font-size:.92rem;white-space:nowrap}
+.usermenu{margin-left:0;display:flex;align-items:center;gap:.9rem;font-size:.92rem;white-space:nowrap}
 .usermenu .who{display:flex;align-items:center;gap:.5rem;color:#fff;font-weight:500}
 .usermenu .av{width:2rem;height:2rem;border-radius:50%;background:var(--brand);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700}
 .usermenu form{margin:0}
