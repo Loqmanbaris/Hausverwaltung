@@ -2,6 +2,15 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Automatischer Kontoabruf (FinTS)
+1. Umsätze → neuer Reiter „Kontoabruf“ (nur Administrator): Das CRM holt die Umsätze direkt bei der Bank (FinTS mit PIN/TAN, z. B. Sparkasse mit S-pushTAN) – jeden Morgen im täglichen Lauf und jederzeit über „Jetzt abrufen“.
+2. Einrichtung: FinTS-Registrierungsnummer (kostenlos bei der Deutschen Kreditwirtschaft, fints.org), je Konto FinTS-Adresse, Bankleitzahl (aus der IBAN vorgeschlagen), Anmeldename und PIN; dann TAN-Verfahren wählen.
+3. Verlangt die Bank eine Freigabe (pushTAN, etwa alle 90 Tage), wartet der Abruf; nach der Freigabe in der App „Freigegeben – weiter“. Der tägliche Lauf fragt nie selbst nach einer TAN, sondern schickt eine E-Mail mit Hinweis.
+4. Die Umsätze laufen durch denselben Weg wie der CSV-Import (Zuordnung, Darlehen, Ausgaben). Schon vorhandene – auch aus früheren CSV-Dateien – werden über Buchungstag, Betrag und Gegenkonto erkannt und nicht doppelt angelegt. Erster Abruf: die letzten 90 Tage; danach ab dem letzten Abruf mit 5 Tagen Überlappung.
+5. Anmeldename, PIN und Sitzungsstand werden verschlüsselt gespeichert; es werden nur Umsätze abgerufen, keine Überweisungen.
+6. Neue Bibliothek nemiah/php-fints (composer.lock geändert).
+Migration: bank_connections. Selbsttest: kontoabruf:selbsttest
+
 ## Dunkler Modus: Übersicht und E-Mail lesbar
 Die farbigen Kacheln der Übersicht liefen in festes Weiß aus, die Ordnerspalte der E-Mails war fest hell – im dunklen Modus stand dort helle Schrift auf hellem Grund. Jetzt dunkel getönt; Zahlen in Kachelfarbe werden im Dunkeln aufgehellt. Balken im Mieteingangs-Diagramm passen sich an.
 Keine Migration.

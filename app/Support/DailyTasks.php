@@ -45,6 +45,29 @@ class DailyTasks
             }
         }
 
+        // Automatischer Kontoabruf per FinTS (Paket 47) – vor dem Mietabgleich, damit neue Zahlungen gleich zählen
+        if (\Illuminate\Support\Facades\Schema::hasTable('bank_connections') && \App\Support\Bank\Kontoabruf::productId() !== '') {
+            foreach (\App\Models\BankConnection::query()->with('account')->where('active', true)->whereNotNull('tan_mode')->whereIn('status', ['neu', 'bereit', 'fehler'])->get() as $conn) {
+                $r = \App\Support\Bank\Kontoabruf::start($conn, null);
+                $iban = substr(\App\Support\Stammdaten::normalizeIban((string) $conn->account?->iban), -4);
+                if ($r['status'] === 'fertig') {
+                    $lines[] = 'Kontoabruf …'.$iban.': '.$r['text'];
+                } else {
+                    // Eine Freigabe kann der nächtliche Lauf nicht abwarten: offenen Stand verwerfen, Hinweis senden
+                    if ($r['status'] === 'tan') {
+                        $conn->forceFill(['pending' => null, 'last_message' => 'Die Bank verlangt eine neue Freigabe. Bitte unter Umsätze → Kontoabruf „Jetzt abrufen“ tippen und in der App freigeben.'])->save();
+                    }
+                    $lines[] = 'Kontoabruf …'.$iban.': '.($r['status'] === 'tan' ? 'Freigabe nötig' : 'Fehler – '.$r['text']);
+                    try {
+                        \App\Support\Mail\Notify::message('Kontoabruf: '.($r['status'] === 'tan' ? 'Freigabe nötig' : 'fehlgeschlagen'),
+                            ($r['status'] === 'tan' ? 'Die Bank verlangt für den automatischen Kontoabruf eine neue Freigabe (etwa alle 90 Tage).' : 'Der automatische Kontoabruf ist fehlgeschlagen: '.$r['text'])
+                            ."\n\nBitte im CRM unter Umsätze → Kontoabruf „Jetzt abrufen“ tippen und in der S-pushTAN-App freigeben.");
+                    } catch (\Throwable) {
+                    }
+                }
+            }
+        }
+
         // Soll-Mieten für den laufenden Monat anlegen und Zahlungen neu zuordnen (Paket 5a)
         $rent = RentLedger::syncAll();
         $lines[] = 'Mieten: '.$rent['leases'].' Verträge geprüft, '.$rent['created'].' neue Soll-Posten'.($rent['changed'] > 0 ? ', '.$rent['changed'].' angepasst' : '');

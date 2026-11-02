@@ -65,14 +65,24 @@ class BankService
                 throw new BankImportException('In der Datei steht kein Auftragskonto. Bitte oben das Konto auswählen.');
             }
         }
-        $ownIban = Stammdaten::normalizeIban($account->iban);
-
         $stored = null;
         try {
             $stored = DocumentStore::put($raw);
         } catch (Throwable) {
             $stored = null; // Die Umsätze sind wichtiger als die Ablage der Originaldatei
         }
+
+        return self::importParsed($parsed, $filename, $account, $user, $stored);
+    }
+
+    /**
+     * Legt gelesene Umsätze an (aus der CSV-Datei oder aus dem automatischen Kontoabruf). Schon vorhandene werden übersprungen.
+     *
+     * @param  array{format: string, rows: array<int, array>, skipped: int, from: ?string, to: ?string}  $parsed
+     */
+    public static function importParsed(array $parsed, string $filename, OwnerBankAccount $account, ?User $user, ?string $stored = null): BankImport
+    {
+        $ownIban = Stammdaten::normalizeIban((string) $account->iban);
 
         try {
             return DB::transaction(function () use ($parsed, $filename, $account, $user, $stored, $ownIban) {
@@ -86,7 +96,7 @@ class BankService
                     'period_to' => $parsed['to'],
                     'rows_total' => count($parsed['rows']),
                     'rows_skipped' => $parsed['skipped'],
-                    'created_by' => $user->id,
+                    'created_by' => $user?->id,
                 ]);
 
                 $existing = DB::table('bank_transactions')->where('owner_bank_account_id', $account->id)
@@ -127,7 +137,7 @@ class BankService
                 if ($new > 0 && \Illuminate\Support\Facades\Schema::hasTable('loans')) {
                     \App\Support\Finance\LoanMatcher::autoAssign((int) $account->owner_id, \App\Models\BankTransaction::query()->where('bank_import_id', $import->id)->pluck('id')->all());
                 }
-                Audit::log('bank.imported', $import, 'Kontoauszug eingelesen: '.$filename.', '.$new.' neue Umsätze, '.(count($parsed['rows']) - $new).' schon vorhanden');
+                Audit::log('bank.imported', $import, ($parsed['format'] === 'FinTS' ? 'Kontoabruf: ' : 'Kontoauszug eingelesen: ').$filename.', '.$new.' neue Umsätze, '.(count($parsed['rows']) - $new).' schon vorhanden', label: $user ? null : 'Kontoabruf');
 
                 return $import;
             });

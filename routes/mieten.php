@@ -110,6 +110,16 @@ Route::middleware([SecurityHeaders::class, 'auth', EnsureTwoFactor::class])->gro
         Route::delete('/mietvertraege/{lease}', [LeaseController::class, 'destroy'])->name('leases.destroy');
         Route::delete('/zahlungen/{payment}', [LeaseController::class, 'paymentDestroy'])->name('payments.destroy');
         Route::delete('/kontoauszuege/{import}', [BankController::class, 'destroyImport'])->name('bank.destroy');
+        // Automatischer Kontoabruf per FinTS (Paket 47)
+        Route::get('/kontoauszuege/abruf', [\App\Http\Controllers\KontoabrufController::class, 'index'])->name('bank.abruf');
+        Route::put('/kontoauszuege/abruf/registrierung', [\App\Http\Controllers\KontoabrufController::class, 'saveProduct'])->name('bank.abruf.product');
+        Route::post('/kontoauszuege/abruf/konto/{account}', [\App\Http\Controllers\KontoabrufController::class, 'save'])->whereNumber('account')->name('bank.abruf.save');
+        Route::post('/kontoauszuege/abruf/{conn}/tan-verfahren', [\App\Http\Controllers\KontoabrufController::class, 'tanModes'])->whereNumber('conn')->name('bank.abruf.modes');
+        Route::post('/kontoauszuege/abruf/{conn}/tan-wahl', [\App\Http\Controllers\KontoabrufController::class, 'tanSelect'])->whereNumber('conn')->name('bank.abruf.select');
+        Route::post('/kontoauszuege/abruf/{conn}/abrufen', [\App\Http\Controllers\KontoabrufController::class, 'run'])->whereNumber('conn')->middleware('throttle:10,1')->name('bank.abruf.run');
+        Route::post('/kontoauszuege/abruf/{conn}/weiter', [\App\Http\Controllers\KontoabrufController::class, 'weiter'])->whereNumber('conn')->middleware('throttle:20,1')->name('bank.abruf.weiter');
+        Route::post('/kontoauszuege/abruf/{conn}/aktiv', [\App\Http\Controllers\KontoabrufController::class, 'toggle'])->whereNumber('conn')->name('bank.abruf.toggle');
+        Route::delete('/kontoauszuege/abruf/{conn}', [\App\Http\Controllers\KontoabrufController::class, 'destroy'])->whereNumber('conn')->name('bank.abruf.destroy');
         Route::put('/mieteingang/erfasst-ab', [RentIncomeController::class, 'saveStart'])->name('rent.start');
         Route::put('/mahnwesen/einstellungen', [\App\Http\Controllers\DunningController::class, 'saveSettings'])->name('dunning.settings');
         Route::post('/nebenkosten/{settlement}/oeffnen', [\App\Http\Controllers\NkController::class, 'reopen'])->name('nk.reopen');
