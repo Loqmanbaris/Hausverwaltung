@@ -30,7 +30,7 @@
           ['Interessenten', 'applicants.index', ['applicants.*'], 0, false],
           ['Mieterhöhungen', 'rent_increase.index', ['rent_increase.*'], 0, false],
           ['Kautionen', 'deposit.index', ['deposit.*'], 0, false],
-          ['Bescheinigungen', 'bescheinigung.choose', ['bescheinigung.*'], 0, false],
+          ['Schreiben an Mieter', 'bescheinigung.choose', ['bescheinigung.*'], 0, false],
       ],
       'Nebenkosten' => [
           ['Nebenkosten', 'nk.index', ['nk.index', 'nk.show', 'nk.print'], 0, false],

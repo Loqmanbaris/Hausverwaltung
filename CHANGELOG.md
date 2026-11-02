@@ -2,6 +2,15 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Abmahnung und Kündigung
+1. Menüpunkt Vermietung → „Schreiben an Mieter“ (vorher „Bescheinigungen“): Mietvertrag wählen, dann Wohnungsgeberbestätigung, Mietschuldenfreiheit, Abmahnung oder Kündigung erstellen.
+2. Abmahnung: Grund (Zahlung, Ruhestörung, Hausordnung, Untervermietung, Tierhaltung, vertragswidriger Gebrauch, Sonstiges), genaue Schilderung, Aufforderung (Standardtext je Grund), freiwillige Frist, Androhung der Kündigung.
+3. Kündigung: ordentlich (Wohnraum mit Grund nach § 573 BGB: Eigenbedarf, Pflichtverletzung, Verwertung, Sonstiges), fristlos wegen Zahlungsverzug (offene Monate aus dem Mieterkonto) oder fristlos aus wichtigem Grund; fristlos auf Wunsch mit hilfsweiser ordentlicher Kündigung.
+4. Das Ende wird berechnet: Wohnraum 3/6/9 Monate je nach Mietdauer (§ 573c BGB), Gewerbe zum Quartal (§ 580a BGB), jeweils mit Zugang bis zum 3. Werktag (Samstag zählt mit, bundesweite Feiertage nicht). Die Seite zeigt, bis wann das Schreiben beim Mieter sein muss.
+5. Prüfung des Zahlungsverzugs nach § 543 Abs. 2 Nr. 3 BGB; Hinweis auf Widerspruchsrecht (§ 574 BGB) bei Wohnraum; Widerspruch gegen stillschweigende Verlängerung (§ 545 BGB); Warnhinweise zu Schriftform und Zugang.
+6. Jedes erstellte Schreiben steht im Protokoll.
+Keine Migration. Selbsttest: bescheinigung:selbsttest
+
 ## Bescheinigungen im Menü
 Neuer Menüpunkt Vermietung → Bescheinigungen: Mietvertrag suchen und auswählen (laufende, künftige und im letzten Jahr beendete), dann Wohnungsgeberbestätigung oder Mietschuldenfreiheitsbescheinigung erstellen. Bevorstehende Ein- und Auszüge sind markiert.
 Keine Migration. Selbsttest: bescheinigung:selbsttest
