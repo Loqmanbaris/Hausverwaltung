@@ -1,19 +1,20 @@
-Ergebnis: OK (02.11.2026 20:32)
+Ergebnis: OK (02.11.2026 20:52)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    07e6b8a Merge pull request #1 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+Ziel:    45699d9 Merge pull request #2 from Loqmanbaris/ccr-ef75b8df-4kmjqe
 
-=================== 02.11.2026 20:32:03 ===================
+=================== 02.11.2026 20:52:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Merge pull request #1 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - Mieten erst ab Oktober 2026 erfassen: kein Soll und kein Rückstand für frühere Monate
-  - Umsätze: 500-Fehler behoben – Aufteilen-Fenster bindet Money selbst ein
+  - Merge pull request #2 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - „Kontoauszüge“ heißen jetzt „Umsätze“ (Menü, Seitentitel, Hinweise)
+  - Seitenmenü: Finanzthemen unter „Finanzen“ gesammelt
+  - Seitenmenü am PC/Tablet einklappbar (Knopf ☰ in der Kopfleiste, Zustand bleibt gespeichert)
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-2032.bkp (7,4 MB, 89 Tabellen, 2498 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-2052.bkp (7,4 MB, 89 Tabellen, 1068 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -66,4 +67,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 07e6b8a – Merge pull request #1 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
+FERTIG: Neuer Stand 45699d9 – Merge pull request #2 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
