@@ -15,6 +15,29 @@ class BescheinigungController extends Controller
 {
     use ScopesOwners;
 
+    /** Einstieg aus dem Menü: Mietvertrag auswählen (laufende, künftige und im letzten Jahr beendete). */
+    public function choose(Request $request)
+    {
+        $q = trim((string) $request->query('q', ''));
+        $since = date('Y-m-d', strtotime('-12 months'));
+        $leases = Lease::visibleTo($this->me())
+            ->with(['unit.property', 'tenant', 'owner'])
+            ->where(fn ($w) => $w->whereNull('leases.end_date')->orWhere('leases.end_date', '>=', $since))
+            ->get()
+            ->filter(function ($l) use ($q) {
+                if ($q === '') {
+                    return true;
+                }
+                $hay = mb_strtolower(implode(' ', [$l->tenant?->display_name, $l->tenant?->first_name, $l->tenant?->last_name, $l->tenant?->company_name, $l->unit?->label, $l->unit?->property?->name, $l->unit?->property?->street]));
+
+                return str_contains($hay, mb_strtolower($q));
+            })
+            ->sortBy(fn ($l) => [$l->unit?->property?->name, $l->unit?->label, $l->start_date->format('Y-m-d')])
+            ->values();
+
+        return view('bescheinigung.choose', ['leases' => $leases, 'q' => $q, 'today' => date('Y-m-d')]);
+    }
+
     public function index(Lease $lease)
     {
         $this->assertOwnerAccess((int) $lease->owner_id);
