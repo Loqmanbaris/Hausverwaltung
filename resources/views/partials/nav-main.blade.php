@@ -5,13 +5,11 @@
   $badge = [
       'bank' => $cnt(fn () => \App\Support\Bank\BankService::openCountFor($u)),
       'expenses' => $cnt(fn () => \App\Support\Bank\ExpenseMatcher::openCountFor($u)),
-      'inquiries' => $cnt(fn () => \App\Models\Inquiry::newCountFor($u)),
       'orders' => $cnt(fn () => \App\Models\WorkOrder::visibleTo($u)->where('status', 'gemeldet')->count()),
       'maint' => $cnt(fn () => \App\Models\MaintenanceTask::visibleTo($u)->where('active', true)->where('next_due', '<', date('Y-m-d'))->count()),
       'heat' => $cnt(fn () => \App\Support\Nk\Verbrauchsinfo::open($u)->count() + \App\Models\Co2Claim::visibleTo($u)->where('status', 'offen')->count()),
       'day' => $cnt(fn () => \App\Support\Tag\MeinTag::openCount($u)),
       'mail' => $cnt(fn () => \App\Models\ReceivedEmail::unreadCountFor($u)),
-      'docs' => $cnt(fn () => \App\Models\Document::visibleTo($u)->where('archived', false)->whereNotNull('expires_on')->where('expires_on', '<', date('Y-m-d'))->count()),
   ];
   // [Bezeichnung, Route, aktiv bei, Badge, nur Admin]
   $groups = [
@@ -19,13 +17,6 @@
           ['Mein Tag', 'tag.index', ['tag.*'], $badge['day'] ?? 0, false],
           ['Suche', 'search', ['search'], 0, false],
           ['E-Mails', 'inbox.index', ['inbox.*', 'mail.index', 'mail.compose', 'mail.write'], $badge['mail'] ?? 0, false],
-      ],
-      'Stammdaten' => [
-          ['Eigentümer', 'owners.index', ['owners.*'], 0, false],
-          ['Objekte und Einheiten', 'properties.index', ['properties.*', 'units.*', 'nk.settings', 'nk.meters'], 0, false],
-          ['Mieter', 'tenants.index', ['tenants.*'], 0, false],
-          ['Dokumente', 'documents.index', ['documents.*'], $badge['docs'] ?? 0, false],
-          ['Import aus Excel', 'import.index', ['import.*'], 0, false],
       ],
       'Vermietung' => [
           ['Mietverträge', 'leases.index', ['leases.*', 'contracts.*', 'handover.*', 'interest.*', 'installments.*'], 0, false],
@@ -60,16 +51,11 @@
           ['Schäden und Aufträge', 'workorders.index', ['workorders.*'], $badge['orders'] ?? 0, false],
           ['Wartungsplan', 'maintenance.index', ['maintenance.*'], $badge['maint'] ?? 0, false],
       ],
-      'Webseite' => [
-          ['Inserate', 'listings.index', ['listings.*', 'bookings.*'], 0, false],
-          ['Anfragen', 'inquiries.index', ['inquiries.*'], $badge['inquiries'], false],
-          ['Webseite gestalten', 'site.edit', ['site.*'], 0, true],
-      ],
-      // Gruppe „Verwaltung“ (Benutzer, Einstellungen, E-Mail einrichten, Sicherungen …) steht seit 01.11.2026 als Kacheln unter Profilmenü → Einstellungen
+      // Gruppen „Stammdaten“, „Webseite“ und „Verwaltung“ stehen seit 02.11.2026 als Kacheln unter Profilmenü → Einstellungen
   ];
   // Ansicht: „Alltag“ zeigt nur, was täglich gebraucht wird; „Verwaltung“ zeigt alles. Die Wahl wird pro Gerät gemerkt.
   $mode = request()->cookie('nav_mode') === 'verwaltung' ? 'verwaltung' : 'alltag';
-  $daily = ['tag.index', 'search', 'inbox.index', 'mail.index', 'tenants.index', 'leases.index', 'applicants.index', 'rent.month', 'rent.open', 'dunning.index',
+  $daily = ['tag.index', 'search', 'inbox.index', 'mail.index', 'leases.index', 'applicants.index', 'rent.month', 'rent.open', 'dunning.index',
       'bank.transactions', 'invoices.index', 'receipts.index', 'bank.expenses', 'workorders.index', 'inquiries.index', 'documents.index'];
   $menu = [];
   foreach ($groups as $title => $items) {
@@ -95,7 +81,6 @@
       'properties.index' => '<path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6M9 10h.01M15 10h.01"/>',
       'tenants.index' => '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
       'documents.index' => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
-      'import.index' => '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/>',
       'leases.index' => '<path d="M9 12h6M9 16h6M9 8h2"/><rect x="4" y="2" width="16" height="20" rx="2"/>',
       'applicants.index' => '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>',
       'rent_increase.index' => '<path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/>',

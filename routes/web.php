@@ -81,7 +81,6 @@ require __DIR__ . '/profil.php';
 require __DIR__ . '/vertraege.php';
 require __DIR__ . '/uebergabe.php';
 require __DIR__ . '/zinsen.php';
-require __DIR__ . '/import.php';
 require __DIR__ . '/seite.php';
 require __DIR__ . '/uebersicht.php';
 require __DIR__ . '/email.php';

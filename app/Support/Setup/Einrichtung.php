@@ -82,7 +82,7 @@ class Einrichtung
         $out[] = self::item('Stammdaten', 'Objekte und Einheiten', $props > 0 && $units > 0, $props === 0 ? 'Noch kein Objekt.' : 'Objekte ohne Einheiten.', $props.' Objekte, '.$units.' Einheiten.', 'properties.index', 'Objekte');
         $noArea = self::count('units', fn ($q) => $q->where(fn ($w) => $w->whereNull('area_sqm')->orWhere('area_sqm', 0)));
         $out[] = self::item('Stammdaten', 'Wohnflächen eingetragen', $units > 0 && $noArea === 0, $units === 0 ? 'Erst Einheiten anlegen.' : $noArea.' Einheit(en) ohne Fläche – wichtig für Nebenkosten und Rendite.', 'Alle Einheiten haben eine Fläche.', 'properties.index', 'Objekte');
-        $out[] = self::item('Stammdaten', 'Mieter und Mietverträge', $tenants > 0 && $leases > 0, $tenants === 0 ? 'Noch keine Mieter (am schnellsten per Excel-Import).' : 'Mieter ohne Mietvertrag.', $tenants.' Mieter, '.$leases.' Mietverträge.', 'import.index', 'Import aus Excel');
+        $out[] = self::item('Stammdaten', 'Mieter und Mietverträge', $tenants > 0 && $leases > 0, $tenants === 0 ? 'Noch keine Mieter angelegt.' : 'Mieter ohne Mietvertrag.', $tenants.' Mieter, '.$leases.' Mietverträge.', 'tenants.index', 'Mieter');
         $accounts = self::count('owner_bank_accounts');
         $out[] = self::item('Stammdaten', 'Bankkonto beim Eigentümer', $accounts > 0, 'Kein Bankkonto hinterlegt – wird für Kontoauszüge, Mahnungen und Abrechnungen gebraucht.', $accounts.' Konto/Konten hinterlegt.', 'owners.index', 'Eigentümer');
 

@@ -2,6 +2,11 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Stammdaten und Webseite unter Einstellungen, Excel-Import entfernt
+1. Die Gruppen „Stammdaten“ (Eigentümer, Objekte und Einheiten, Mieter, Dokumente) und „Webseite“ (Inserate, Anfragen, Webseite gestalten, Webseite ansehen) stehen nicht mehr im Seitenmenü, sondern als Kacheln unter Profilmenü → Einstellungen. Zahlen für neue Anfragen und abgelaufene Dokumente stehen an den Kacheln und als Punkt am Profilzeichen.
+2. „Import aus Excel“ (Paket 15) ist gelöscht: Seite, Vorlage, Selbsttest und Knopf auf der Übersicht. Schon übernommene Daten bleiben unverändert.
+Keine Migration.
+
 ## Kontoumsätze bearbeiten
 1. Jeder Umsatz unter Kontoauszüge → Umsätze (und unter Ausgaben abgleichen) hat jetzt „Bearbeiten“.
 2. Angaben korrigieren: Buchungstag, Wertstellung, Betrag, Auftraggeber/Empfänger, Buchungstext, Verwendungszweck. Zugeordnete Zahlungen übernehmen einen neuen Buchungstag; ein Betrag unter dem schon Zugeordneten wird abgelehnt. Wechselt das Vorzeichen, wird aus der Gutschrift eine Abbuchung (und umgekehrt).

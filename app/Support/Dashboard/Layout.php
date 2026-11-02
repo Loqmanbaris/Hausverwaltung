@@ -45,7 +45,6 @@ class Layout
         'darlehen' => ['Finanzierung', 'finance.index', false, false],
         'schaden' => ['Schaden erfassen', 'workorders.create', false, true],
         'anlagev' => ['Anlage V', 'anlage-v.index', false, false],
-        'import' => ['Import aus Excel', 'import.index', false, false],
     ];
 
     public const NOTE_MAX = 5000;

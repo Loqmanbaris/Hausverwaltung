@@ -10,10 +10,6 @@
   <strong>Mieter</strong>
   Privatpersonen und Firmen mit Ansprechpartnern.
 </a>
-<a class="tile" href="{{ route('import.index') }}">
-  <strong>Import aus Excel</strong>
-  Objekte, Einheiten, Mieter, Verträge und Zähler auf einmal übernehmen.
-</a>
 @php($rentLate = \App\Support\Rent\RentDashboard::overdueCount(auth()->user()))
 <a class="tile" href="{{ route('rent.month') }}">
   <strong>Mieten</strong>
