@@ -155,6 +155,89 @@
     <div style="margin-top:.8rem"><button class="sd-btn" type="submit">Kündigung erstellen</button></div>
   </form>
 </div>
+<div class="sd-card" id="kuendigungsbestaetigung">
+  <h2>Kündigung des Mieters bestätigen</h2>
+  <p class="sd-muted" style="margin-top:0">Wenn der Mieter kündigt: Eingang und Ende bestätigen, Übergabetermin vorschlagen. Kündigungsfrist des Mieters: @if ($gewerbe) zum Ende des nächsten Quartals (§ 580a BGB, sofern der Vertrag nichts anderes regelt) @else immer 3 Monate (§ 573c BGB) @endif – bei Eingang heute endet das Mietverhältnis am <strong>{{ $bsDe($mieterFrist['ende']) }}</strong>.</p>
+  <form method="POST" action="{{ route('bescheinigung.kuendigungsbestaetigung', $lease) }}" target="_blank">
+    @csrf
+    <div class="sd-grid">
+      <div class="sd-field">
+        <label for="kb-eingang">Kündigung eingegangen am *</label>
+        <input id="kb-eingang" class="bs-date" type="date" name="eingang" value="{{ old('eingang', $today) }}" required>
+      </div>
+      <div class="sd-field">
+        <label for="kb-wunsch">Vom Mieter gewünschtes Ende (freiwillig)</label>
+        <input id="kb-wunsch" class="bs-date" type="date" name="gewuenscht" value="{{ old('gewuenscht') }}">
+        <small class="sd-muted">Ist es früher als erlaubt, bestätigt das Schreiben das richtige Ende.</small>
+      </div>
+      <div class="sd-field">
+        <label for="kb-tag">Übergabe der Wohnung am (freiwillig)</label>
+        <input id="kb-tag" class="bs-date" type="date" name="uebergabe_tag" value="{{ old('uebergabe_tag') }}">
+      </div>
+      <div class="sd-field">
+        <label for="kb-zeit">Uhrzeit</label>
+        <input id="kb-zeit" type="text" name="uebergabe_zeit" maxlength="20" value="{{ old('uebergabe_zeit') }}" placeholder="z. B. 10:00 Uhr">
+      </div>
+      <div class="sd-field">
+        <label for="kb-brief">Datum des Schreibens *</label>
+        <input id="kb-brief" class="bs-date" type="date" name="briefdatum" value="{{ old('briefdatum', $today) }}" required>
+      </div>
+    </div>
+    <div class="sd-field">
+      <label for="kb-zusatz">Zusätzlicher Text (freiwillig)</label>
+      <textarea id="kb-zusatz" name="zusatz" rows="2" maxlength="2000" placeholder="z. B. Hinweise zu Schönheitsreparaturen laut Mietvertrag">{{ old('zusatz') }}</textarea>
+    </div>
+    <label class="sd-check" style="font-weight:400"><input type="checkbox" name="eintragen" value="1" @checked(old('eintragen', true))> Vertragsende gleich im Mietvertrag eintragen (Soll-Mieten enden dann automatisch)</label>
+    <div style="margin-top:.8rem"><button class="sd-btn" type="submit">Bestätigung erstellen</button></div>
+  </form>
+</div>
+
+<div class="sd-card" id="termin">
+  <h2>Termin ankündigen</h2>
+  <p class="sd-muted" style="margin-top:0">Handwerker, Wartung, Zählerablesung oder Besichtigung in der Wohnung rechtzeitig ankündigen – üblich sind mindestens 1 bis 2 Wochen vorher. Für Modernisierungen gilt eine eigene Ankündigungspflicht (3 Monate, § 555c BGB); dafür bitte das Verfahren unter Mieterhöhungen nutzen.</p>
+  <form method="GET" action="{{ route('bescheinigung.termin', $lease) }}" target="_blank" rel="noopener">
+    <div class="sd-grid">
+      <div class="sd-field">
+        <label for="tm-art">Anlass *</label>
+        <select id="tm-art" name="art" required>
+          @foreach ($terminArten as $k => $label)<option value="{{ $k }}" @selected(old('art') === $k)>{{ $label }}</option>@endforeach
+        </select>
+      </div>
+      <div class="sd-field">
+        <label for="tm-tag">Tag *</label>
+        <input id="tm-tag" class="bs-date" type="date" name="tag" value="{{ old('tag', date('Y-m-d', strtotime('+14 days'))) }}" required>
+      </div>
+      <div class="sd-field">
+        <label>Uhrzeit von – bis</label>
+        <div style="display:flex;gap:.4rem"><input class="bs-date" type="time" name="von" value="{{ old('von', '09:00') }}"><input class="bs-date" type="time" name="bis" value="{{ old('bis', '12:00') }}"></div>
+      </div>
+      <div class="sd-field">
+        <label for="tm-wer">Wer kommt? (freiwillig)</label>
+        <input id="tm-wer" type="text" name="wer" maxlength="190" value="{{ old('wer') }}" placeholder="z. B. Firma Müller Heizungsbau">
+      </div>
+      <div class="sd-field">
+        <label for="tm-kontakt">Rückfragen an (freiwillig)</label>
+        <input id="tm-kontakt" type="text" name="kontakt" maxlength="190" value="{{ old('kontakt') }}" placeholder="z. B. Tel. 0171 1234567">
+      </div>
+      <div class="sd-field">
+        <label for="tm-melden">Bei Verhinderung melden bis (freiwillig)</label>
+        <input id="tm-melden" class="bs-date" type="date" name="melden_bis" value="{{ old('melden_bis') }}">
+      </div>
+      <div class="sd-field">
+        <label for="tm-brief">Datum des Schreibens *</label>
+        <input id="tm-brief" class="bs-date" type="date" name="briefdatum" value="{{ old('briefdatum', $today) }}" required>
+      </div>
+    </div>
+    <div class="sd-field">
+      <label for="tm-beschr">Worum geht es? <span class="sd-muted" style="font-weight:400">(bei „Sonstiger Termin“ Pflicht)</span></label>
+      <textarea id="tm-beschr" name="beschreibung" rows="3" maxlength="2000" placeholder="z. B. Austausch des Thermostatventils im Badezimmer">{{ old('beschreibung') }}</textarea>
+    </div>
+    @if ($hausAnzahl > 1)
+      <label class="sd-check" style="font-weight:400"><input type="checkbox" name="alle" value="1" @checked(old('alle'))> An alle {{ $hausAnzahl }} Mietparteien im Haus (je ein Brief, z. B. für Ablesung oder Wartung)</label>
+    @endif
+    <div style="margin-top:.8rem"><button class="sd-btn" type="submit">Ankündigung erstellen</button></div>
+  </form>
+</div>
 <script>
 (function () {
   var art = document.getElementById('kd-art');

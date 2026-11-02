@@ -12,7 +12,7 @@ use App\Support\Rent\Mieten;
 use App\Support\Rent\RentLedger;
 use Illuminate\Http\Request;
 
-/** Schreiben an Mieter: Wohnungsgeberbestätigung, Mietschuldenfreiheit (Paket 44), Abmahnung und Kündigung (Paket 45). */
+/** Schreiben an Mieter: Wohnungsgeberbestätigung, Mietschuldenfreiheit (Paket 44), Abmahnung, Kündigung (Paket 45), Kündigungsbestätigung, Terminankündigung (Paket 46). */
 class BescheinigungController extends Controller
 {
     use ScopesOwners;
@@ -58,6 +58,117 @@ class BescheinigungController extends Controller
             'gewerbe' => $lease->lease_type === 'gewerbe',
             'frist' => $lease->start_date ? Kuendigung::ordentlichesEnde((string) $lease->lease_type, $lease->start_date->format('Y-m-d'), $today) : null,
             'verzug' => $this->verzug($lease, $today),
+            'mieterFrist' => Kuendigung::mieterEnde((string) $lease->lease_type, $today),
+            'terminArten' => Kuendigung::TERMIN_ARTEN,
+            'hausAnzahl' => $this->hausLeases($lease, $today)->count(),
+        ]);
+    }
+
+    /** Laufende Mietverträge im selben Haus (für Ankündigungen an alle). */
+    private function hausLeases(Lease $lease, string $date)
+    {
+        $propertyId = $lease->unit?->property_id;
+        if (! $propertyId) {
+            return collect([$lease]);
+        }
+
+        return Lease::visibleTo($this->me())->activeOn($date)
+            ->whereIn('leases.unit_id', \App\Models\Unit::query()->where('property_id', $propertyId)->select('id'))
+            ->with(['unit.property', 'tenant', 'owner'])->get()
+            ->sortBy(fn ($l) => $l->unit?->label)->values();
+    }
+
+    /** Bestätigung der Kündigung durch den Mieter; auf Wunsch wird das Vertragsende eingetragen. */
+    public function kuendigungsbestaetigung(Request $request, Lease $lease)
+    {
+        $this->assertOwnerAccess((int) $lease->owner_id);
+        $data = $request->validate([
+            'eingang' => ['required', 'date_format:Y-m-d'],
+            'gewuenscht' => ['nullable', 'date_format:Y-m-d'],
+            'uebergabe_tag' => ['nullable', 'date_format:Y-m-d'],
+            'uebergabe_zeit' => ['nullable', 'string', 'max:20'],
+            'briefdatum' => ['required', 'date_format:Y-m-d'],
+            'eintragen' => ['nullable', 'boolean'],
+            'zusatz' => ['nullable', 'string', 'max:2000'],
+        ], [
+            'eingang.*' => 'Bitte angeben, wann die Kündigung des Mieters eingegangen ist.',
+            'briefdatum.*' => 'Bitte das Datum des Schreibens angeben.',
+        ]);
+        $frist = Kuendigung::mieterEnde((string) $lease->lease_type, $data['eingang']);
+        $gewuenscht = $data['gewuenscht'] ?? null;
+        // Ein späterer Wunschtermin des Mieters gilt, ein früherer nicht
+        $ende = $gewuenscht !== null && $gewuenscht > $frist['ende'] ? $gewuenscht : $frist['ende'];
+
+        if ((bool) ($data['eintragen'] ?? false) && $lease->start_date && $ende >= $lease->start_date->format('Y-m-d')) {
+            $old = $lease->end_date?->format('Y-m-d');
+            if ($old !== $ende) {
+                $lease->end_date = $ende;
+                $lease->save();
+                RentLedger::sync($lease->fresh());
+                Audit::log('lease.ended', $lease, 'Vertragsende nach Kündigung des Mieters eingetragen: '.Bescheinigung::de($ende).($old ? ' (vorher '.Bescheinigung::de($old).')' : '').' – '.$lease->title());
+            }
+        }
+
+        Audit::log('letter.termination_confirmed', $lease, 'Kündigungsbestätigung (Ende '.Bescheinigung::de($ende).') erstellt: '.$lease->title());
+
+        return view('bescheinigung.kuendigungsbestaetigung', Bescheinigung::basis($lease->fresh()) + [
+            'eingang' => $data['eingang'],
+            'gewuenscht' => $gewuenscht,
+            'endeNeu' => $ende,
+            'frist' => $frist,
+            'frueher' => $gewuenscht !== null && $gewuenscht < $frist['ende'],
+            'uebergabeTag' => $data['uebergabe_tag'] ?? null,
+            'uebergabeZeit' => trim((string) ($data['uebergabe_zeit'] ?? '')),
+            'briefdatum' => $data['briefdatum'],
+            'zusatz' => trim((string) ($data['zusatz'] ?? '')),
+            'gewerbe' => $lease->lease_type === 'gewerbe',
+        ]);
+    }
+
+    /** Ankündigung eines Termins in der Wohnung (Handwerker, Wartung, Ablesung, Besichtigung), auf Wunsch an alle Mieter im Haus. */
+    public function termin(Request $request, Lease $lease)
+    {
+        $this->assertOwnerAccess((int) $lease->owner_id);
+        $data = $request->validate([
+            'art' => ['required', 'in:'.implode(',', array_keys(Kuendigung::TERMIN_ARTEN))],
+            'beschreibung' => ['nullable', 'string', 'max:2000'],
+            'tag' => ['required', 'date_format:Y-m-d'],
+            'von' => ['nullable', 'date_format:H:i'],
+            'bis' => ['nullable', 'date_format:H:i'],
+            'wer' => ['nullable', 'string', 'max:190'],
+            'kontakt' => ['nullable', 'string', 'max:190'],
+            'melden_bis' => ['nullable', 'date_format:Y-m-d'],
+            'briefdatum' => ['required', 'date_format:Y-m-d'],
+            'alle' => ['nullable', 'boolean'],
+        ], [
+            'art.*' => 'Bitte den Anlass wählen.',
+            'tag.*' => 'Bitte den Tag des Termins angeben.',
+            'von.*' => 'Bitte die Uhrzeit als HH:MM angeben.',
+            'bis.*' => 'Bitte die Uhrzeit als HH:MM angeben.',
+            'briefdatum.*' => 'Bitte das Datum des Schreibens angeben.',
+        ]);
+        if ($data['art'] === 'sonstiges' && trim((string) ($data['beschreibung'] ?? '')) === '') {
+            return redirect()->route('bescheinigung.index', $lease)->withErrors(['termin' => 'Bitte kurz beschreiben, worum es bei dem Termin geht.'])->withInput();
+        }
+        $leases = (bool) ($data['alle'] ?? false) ? $this->hausLeases($lease, $data['tag']) : collect([$lease]);
+        if ($leases->isEmpty()) {
+            $leases = collect([$lease]);
+        }
+        $briefe = $leases->map(fn ($l) => Bescheinigung::basis($l))->all();
+        Audit::log('letter.appointment', $lease, 'Terminankündigung ('.Kuendigung::TERMIN_ARTEN[$data['art']].' am '.Bescheinigung::de($data['tag']).') für '.count($briefe).' Mietverhältnis(se) erstellt: '.$lease->title());
+
+        return view('bescheinigung.termin', [
+            'briefe' => $briefe,
+            'art' => $data['art'],
+            'artText' => Kuendigung::TERMIN_ARTEN[$data['art']],
+            'beschreibung' => trim((string) ($data['beschreibung'] ?? '')),
+            'tag' => $data['tag'],
+            'von' => $data['von'] ?? null,
+            'bis' => $data['bis'] ?? null,
+            'wer' => trim((string) ($data['wer'] ?? '')),
+            'kontakt' => trim((string) ($data['kontakt'] ?? '')),
+            'meldenBis' => $data['melden_bis'] ?? null,
+            'briefdatum' => $data['briefdatum'],
         ]);
     }
 

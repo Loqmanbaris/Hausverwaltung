@@ -12,5 +12,7 @@ Route::middleware([SecurityHeaders::class, 'auth', EnsureTwoFactor::class])->gro
     Route::get('/mietvertraege/{lease}/wohnungsgeberbestaetigung', [BescheinigungController::class, 'wohnungsgeber'])->whereNumber('lease')->name('bescheinigung.wohnungsgeber');
     Route::get('/mietvertraege/{lease}/abmahnung', [BescheinigungController::class, 'abmahnung'])->whereNumber('lease')->name('bescheinigung.abmahnung');
     Route::get('/mietvertraege/{lease}/kuendigung', [BescheinigungController::class, 'kuendigung'])->whereNumber('lease')->name('bescheinigung.kuendigung');
+    Route::post('/mietvertraege/{lease}/kuendigungsbestaetigung', [BescheinigungController::class, 'kuendigungsbestaetigung'])->whereNumber('lease')->name('bescheinigung.kuendigungsbestaetigung');
+    Route::get('/mietvertraege/{lease}/terminankuendigung', [BescheinigungController::class, 'termin'])->whereNumber('lease')->name('bescheinigung.termin');
     Route::get('/mietvertraege/{lease}/mietschuldenfreiheit', [BescheinigungController::class, 'mietschuldenfrei'])->whereNumber('lease')->name('bescheinigung.mietschuldenfrei');
 });
