@@ -1,10 +1,11 @@
-{{-- Umsätze (Kontoauszüge): eine Seite mit drei Reitern (Eingänge, Ausgaben, Einlesen) --}}
+{{-- Umsätze (Kontoauszüge): eine Seite mit Reitern (Eingänge, Ausgaben, Wiederkehrende Ausgaben, Einlesen) --}}
 @php
   $kzUser = auth()->user();
   $kzCount = function (callable $f) { try { return (int) $f(); } catch (\Throwable) { return 0; } };
   $kzTabs = [
       ['Eingänge zuordnen', 'bank.transactions', ['bank.transactions'], $kzCount(fn () => \App\Support\Bank\BankService::openCountFor($kzUser))],
       ['Ausgaben zuordnen', 'bank.expenses', ['bank.expenses*'], $kzCount(fn () => \App\Support\Bank\ExpenseMatcher::openCountFor($kzUser))],
+      ['Wiederkehrende Ausgaben', 'recurring.index', ['recurring.*'], 0],
       ['Kontoauszug einlesen', 'bank.index', ['bank.index'], 0],
   ];
 @endphp

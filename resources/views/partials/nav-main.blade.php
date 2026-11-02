@@ -13,6 +13,20 @@
   ];
   // [Bezeichnung, Route, aktiv bei, Badge, nur Admin]
   $groups = [
+      // Alles rund ums Geld steht seit 02.11.2026 gesammelt unter „Finanzen“, ganz oben
+      'Finanzen' => [
+          ['Rechnungen schreiben', 'invoices.index', ['invoices.*'], 0, true],
+          ['Umsätze', 'bank.transactions', ['bank.index', 'bank.transactions', 'bank.edit', 'bank.expenses*', 'recurring.*'], $badge['bank'] + $badge['expenses'], false],
+          ['Mieteingang', 'rent.month', ['rent.month'], 0, false],
+          ['Offene Posten', 'rent.open', ['rent.open'], 0, false],
+          ['Mahnwesen', 'dunning.index', ['dunning.*'], 0, false],
+          ['Belege', 'receipts.index', ['receipts.*', 'einvoice.*'], 0, false],
+          ['E-Rechnung (Mieten)', 'erechnung.index', ['erechnung.*'], 0, false],
+          ['Finanzierung', 'finance.index', ['finance.*', 'loans.*', 'properties.values'], 0, false],
+          ['Anlage V', 'anlage-v.index', ['anlage-v.*'], 0, false],
+          ['Jahresbericht', 'report.index', ['report.*'], 0, false],
+          ['DATEV-Export', 'datev.index', ['datev.*'], 0, true],
+      ],
       '' => [
           ['Mein Tag', 'tag.index', ['tag.*'], $badge['day'] ?? 0, false],
           ['E-Mails', 'inbox.index', ['inbox.*', 'mail.index', 'mail.compose', 'mail.write'], $badge['mail'] ?? 0, false],
@@ -22,21 +36,6 @@
           ['Interessenten', 'applicants.index', ['applicants.*'], 0, false],
           ['Mieterhöhungen', 'rent_increase.index', ['rent_increase.*'], 0, false],
           ['Kautionen', 'deposit.index', ['deposit.*'], 0, false],
-      ],
-      // Alles rund ums Geld steht seit 02.11.2026 gesammelt unter „Finanzen“
-      'Finanzen' => [
-          ['Mieteingang', 'rent.month', ['rent.month'], 0, false],
-          ['Offene Posten', 'rent.open', ['rent.open'], 0, false],
-          ['Mahnwesen', 'dunning.index', ['dunning.*'], 0, false],
-          ['Umsätze', 'bank.transactions', ['bank.index', 'bank.transactions', 'bank.edit', 'bank.expenses*'], $badge['bank'] + $badge['expenses'], false],
-          ['Belege', 'receipts.index', ['receipts.*', 'einvoice.*'], 0, false],
-          ['Wiederkehrende Ausgaben', 'recurring.index', ['recurring.*'], 0, false],
-          ['Rechnungen schreiben', 'invoices.index', ['invoices.*'], 0, true],
-          ['E-Rechnung (Mieten)', 'erechnung.index', ['erechnung.*'], 0, false],
-          ['Finanzierung', 'finance.index', ['finance.*', 'loans.*', 'properties.values'], 0, false],
-          ['Anlage V', 'anlage-v.index', ['anlage-v.*'], 0, false],
-          ['Jahresbericht', 'report.index', ['report.*'], 0, false],
-          ['DATEV-Export', 'datev.index', ['datev.*'], 0, true],
       ],
       'Nebenkosten' => [
           ['Nebenkosten', 'nk.index', ['nk.index', 'nk.show', 'nk.print'], 0, false],

@@ -2,6 +2,12 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Finanzen ganz oben, Wiederkehrende Ausgaben unter Umsätze
+1. Die Gruppe „Finanzen“ steht ganz oben im Seitenmenü. Reihenfolge: Rechnungen schreiben, Umsätze, Mieteingang, Offene Posten, Mahnwesen, Belege, E-Rechnung, Finanzierung, Anlage V, Jahresbericht, DATEV-Export.
+2. „Wiederkehrende Ausgaben“ ist jetzt ein Reiter auf der Seite Umsätze (Eingänge, Ausgaben, Wiederkehrende Ausgaben, Kontoauszug einlesen) und kein eigener Menüpunkt mehr.
+3. Kontoauszug einlesen: Die Dateiauswahl lässt jede Datei zu (auf Handy und iPad war die CSV-Datei teils ausgegraut). Nach dem Einlesen werden alle Monate gezeigt, damit die neuen Umsätze nicht von einer gespeicherten Monatsauswahl verdeckt werden.
+Keine Migration. Selbsttest: design:selbsttest, mieten:selbsttest
+
 ## Kontoauszüge heißen jetzt „Umsätze“
 Menüpunkt, Seitentitel und Hinweise sagen „Umsätze“ (Reiter Eingänge, Ausgaben, Einlesen). Die eingelesene Datei heißt weiter Kontoauszug.
 Keine Migration.

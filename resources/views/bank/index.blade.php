@@ -21,7 +21,7 @@
     <div class="sd-grid">
       <div class="sd-field">
         <label for="f-datei">Datei (CSV) *</label>
-        <input id="f-datei" type="file" name="datei" accept=".csv,.CSV,.txt,text/csv" required>
+        <input id="f-datei" type="file" name="datei" required>
       </div>
       <div class="sd-field">
         <label for="f-account_id">Konto</label>
