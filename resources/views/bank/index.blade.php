@@ -4,8 +4,8 @@
 @include('partials.sd-styles')
 @include('partials.rent-styles')
 @include('partials.sd-flash')
-@php($isAdmin = auth()->user()->isAdmin())
 @php
+  $isAdmin = auth()->user()->isAdmin();
   $kzActions = '<a class="sd-btn sec" href="'.e(route('rent.month')).'">Mieteingang</a>';
 @endphp
 @include('partials.bank-tabs')
