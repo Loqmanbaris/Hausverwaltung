@@ -13,7 +13,7 @@
     <a class="sd-btn" href="{{ route('dunning.index') }}">Mahnwesen</a>
   </div>
 </div>
-<p class="sd-muted">Alle Mieten, die fällig und noch nicht (ganz) bezahlt sind, Stand heute. Zahlungserinnerungen und Mahnungen erstellst du im <a href="{{ route('dunning.index') }}">Mahnwesen</a>.</p>
+<p class="sd-muted">Alle Mieten ab {{ \Carbon\Carbon::parse(\App\Support\Rent\Mieten::start())->format('m.Y') }}, die fällig und noch nicht (ganz) bezahlt sind, Stand heute. Zahlungserinnerungen und Mahnungen erstellst du im <a href="{{ route('dunning.index') }}">Mahnwesen</a>.</p>
 
 @if ($owners->count() > 1)
   <form class="rt-filter" method="GET" action="{{ route('rent.open') }}">
@@ -64,4 +64,12 @@
     </div>
   @endif
 </div>
+@if (auth()->user()?->isAdmin())
+  <form class="sd-card rt-filter" id="erfasst-ab" method="POST" action="{{ route('rent.start') }}" style="margin-top:1rem;align-items:center">
+    @csrf @method('PUT')
+    <label style="margin:0">Mieten erfasst ab <input type="month" name="rent_start" value="{{ substr(\App\Support\Rent\Mieten::start(), 0, 7) }}" required></label>
+    <button class="sd-btn sec small" type="submit" onclick="return confirm('Alle Mietkonten neu berechnen? Soll-Mieten vor diesem Monat werden entfernt.')">Speichern</button>
+    <span class="sd-muted">Für Monate davor gibt es kein Soll, keinen Rückstand und keine Mahnung.</span>
+  </form>
+@endif
 @endsection

@@ -2,6 +2,12 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Mieten erfasst ab 10.2026
+1. Soll-Mieten entstehen erst ab dem Monat „Mieten erfasst ab“ (Standard Oktober 2026). Ältere Monate gelten als erledigt: kein Rückstand, keine Mahnung, kein Kündigungshinweis. Vorhandene ältere Soll-Posten werden bei der nächsten Berechnung entfernt.
+2. Der Monat lässt sich unter Mieteingang → Offene Posten (unten, nur Administrator) ändern; danach werden alle Mietkonten sofort neu berechnet.
+3. Behoben: Kontoauszüge → Eingänge brach mit „500 Server Error“ ab (Fenster „Aufteilen …“).
+Keine Migration. Selbsttest: mieten:selbsttest
+
 ## Miete korrigieren
 1. Im Mietvertrag unter „Mietstand und Verlauf“ hat jede Zeile „✎ Korrigieren“, auch die Miete zum Vertragsbeginn. Dort lassen sich falsch erfasste Beträge (Kaltmiete, Vorauszahlungen, Stellplatz usw.) und die Notiz ändern; der Monat bleibt. Alle betroffenen Monate werden neu berechnet, die Änderung steht im Protokoll.
 2. Die Seite zeigt die Umsatzsteuer des Vertrags mit Link zu „Vertrag bearbeiten“, wo sie umgestellt wird (z. B. auf „keine“).

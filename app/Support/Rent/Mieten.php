@@ -5,6 +5,20 @@ namespace App\Support\Rent;
 /** Feste Listen und Bezeichnungen rund um Mietverträge. */
 class Mieten
 {
+    /** Ab diesem Monat werden Mieten im System erfasst (Soll, Rückstand, Mahnwesen). Davor gilt alles als erledigt. */
+    public const START_DEFAULT = '2026-10-01';
+
+    /** Erster Monat der Erfassung (JJJJ-MM-01), einstellbar unter „Offene Posten“. */
+    public static function start(): string
+    {
+        $v = (string) \App\Support\Settings::get('rent_start', self::START_DEFAULT);
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) !== 1 || ! checkdate((int) substr($v, 5, 2), (int) substr($v, 8, 2), (int) substr($v, 0, 4))) {
+            $v = self::START_DEFAULT;
+        }
+
+        return substr($v, 0, 7).'-01';
+    }
+
     public const LEASE_TYPES = [
         'wohnen' => 'Wohnraum',
         'gewerbe' => 'Gewerbe',
