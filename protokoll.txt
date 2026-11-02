@@ -1,29 +1,24 @@
-Ergebnis: OK (02.11.2026 22:57)
+Ergebnis: OK (02.11.2026 23:17)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    549377d Merge pull request #17 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+Ziel:    51f8207 Merge pull request #18 from Loqmanbaris/ccr-ef75b8df-4kmjqe
 
-=================== 02.11.2026 22:57:03 ===================
+=================== 02.11.2026 23:17:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Merge pull request #17 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - Kontoabruf ohne composer: php-fints unter lib/ mit eigenem Autoloader
-  - Merge pull request #16 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - Automatischer Kontoabruf per FinTS (Sparkasse/pushTAN)
-  - Dunkler Modus: Kacheln der Übersicht und E-Mail-Ordnerspalte lesbar
+  - Merge pull request #18 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - Kontoabruf als Paket 48 kennzeichnen (Paket 47 ist der Beleg-Scanner)
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-2257.bkp (7,5 MB, 89 Tabellen, 1093 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-2317.bkp (7,7 MB, 90 Tabellen, 1095 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
 Datenbank umstellen ...
 
-   INFO  Running migrations.  
-
-  2026_11_20_000001_create_bank_connections ..................... 28.77ms DONE
+   INFO  Nothing to migrate.  
 
 
 Selbsttests ...
@@ -72,4 +67,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 549377d – Merge pull request #17 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
+FERTIG: Neuer Stand 51f8207 – Merge pull request #18 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
