@@ -1,18 +1,18 @@
-Ergebnis: OK (02.11.2026 21:42)
+Ergebnis: OK (02.11.2026 22:02)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    728e6c4 Merge pull request #8 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+Ziel:    330660d Merge pull request #9 from Loqmanbaris/ccr-ef75b8df-4kmjqe
 
-=================== 02.11.2026 21:42:03 ===================
+=================== 02.11.2026 22:02:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Merge pull request #8 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - Menü: Gruppen-Überschriften deutlich erkennbar, Lieferanten unter Einstellungen → Stammdaten
+  - Merge pull request #9 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - Bescheinigungen: Wohnungsgeberbestätigung (§ 19 BMG) und Mietschuldenfreiheitsbescheinigung
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-2142.bkp (7,4 MB, 89 Tabellen, 1079 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-2202.bkp (7,4 MB, 89 Tabellen, 1082 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -25,6 +25,7 @@ Selbsttests ...
   OK      afa:selbsttest
   OK      anpassen:selbsttest
   OK      ausgaben:selbsttest
+  OK      bescheinigung:selbsttest
   OK      design:selbsttest
   OK      dokumente:selbsttest
   OK      einrichtung:selbsttest
@@ -65,4 +66,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 728e6c4 – Merge pull request #8 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
+FERTIG: Neuer Stand 330660d – Merge pull request #9 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
