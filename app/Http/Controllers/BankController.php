@@ -71,7 +71,8 @@ class BankController extends Controller
 
         $open = BankTransaction::query()->where('bank_import_id', $import->id)->where('status', 'offen')->count();
 
-        return redirect()->route('bank.transactions', ['konto' => $import->owner_bank_account_id])
+        // Alle Monate zeigen, damit die neuen Umsätze nicht von einer gespeicherten Monatsauswahl verdeckt werden
+        return redirect()->route('bank.transactions', ['konto' => $import->owner_bank_account_id, 'monat' => ''])
             ->with('status', 'Kontoauszug eingelesen: '.$import->rows_new.' neue Umsätze'
                 .($import->rows_duplicate > 0 ? ', '.$import->rows_duplicate.' waren schon vorhanden' : '')
                 .($import->rows_skipped > 0 ? ', '.$import->rows_skipped.' vorgemerkte übersprungen' : '')

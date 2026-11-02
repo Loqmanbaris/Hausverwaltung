@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Wiederkehrende Ausgaben')
+@section('title', 'Umsätze – Wiederkehrende Ausgaben')
 @section('content')
 @include('partials.sd-styles')
 @include('partials.sd-flash')
@@ -10,13 +10,10 @@
 .rx-miss{color:#b42318;font-weight:600}
 .rx-num{white-space:nowrap}
 </style>
-<div class="sd-head">
-  <h1>Wiederkehrende Ausgaben</h1>
-  <div class="sd-actions">
-    <a class="sd-btn" href="{{ route('recurring.create') }}">Wiederkehrende Ausgabe anlegen</a>
-    <a class="sd-btn sec" href="{{ route('receipts.index') }}">Zu den Belegen</a>
-  </div>
-</div>
+@php
+  $kzActions = '<a class="sd-btn" href="'.e(route('recurring.create')).'">Wiederkehrende Ausgabe anlegen</a> <a class="sd-btn sec" href="'.e(route('receipts.index')).'">Zu den Belegen</a>';
+@endphp
+@include('partials.bank-tabs')
 <p class="sd-muted">Hier legst du Ausgaben an, die regelmäßig kommen, zum Beispiel Grundsteuer, Versicherung oder Darlehensraten. Das System zeigt, wann sie fällig sind, und ob dazu schon ein Beleg erfasst ist. Ein Beleg passt, wenn Eigentümer, Objekt und Kostenart stimmen und sein Datum nahe am Termin liegt (bis {{ \App\Support\Receipts\RecurrenceSchedule::DAYS_BEFORE }} Tage davor oder {{ \App\Support\Receipts\RecurrenceSchedule::DAYS_AFTER }} Tage danach).</p>
 
 <div class="sd-card">
