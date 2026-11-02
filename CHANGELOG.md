@@ -2,6 +2,11 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Menü-Überschriften deutlicher, Lieferanten unter Stammdaten
+1. Gruppen-Überschriften im Seitenmenü (Finanzen, Vermietung, Nebenkosten, Instandhaltung und Dienstleister) sind jetzt hell und fett, mit Trennlinie darüber und Farbstrich links; die Punkte darunter sind eingerückt.
+2. „Lieferanten“ steht nicht mehr im Seitenmenü, sondern als Kachel unter Einstellungen → Stammdaten.
+Keine Migration. Selbsttest: design:selbsttest
+
 ## DATEV-Export unter Einstellungen
 Der DATEV-Export steht nicht mehr im Seitenmenü, sondern als Kachel unter Einstellungen → Finanzen und Steuer (nur Administrator).
 Keine Migration. Selbsttest: design:selbsttest

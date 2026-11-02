@@ -52,6 +52,7 @@ class ProfileSettingsController extends Controller
                 ['Objekte und Einheiten', 'Häuser, Wohnungen, Gewerbe, Zähler', '🏢', $link('properties.index')],
                 ['Mieter', 'Privatpersonen und Firmen mit Ansprechpartnern', '🧑‍🤝‍🧑', $link('tenants.index')],
                 ['Mietverträge', 'Verträge, Mietverlauf, Übergaben, Mieterkonto', '📝', $link('leases.index')],
+                ['Lieferanten', 'Handwerker, Versorger, Versicherungen – Kontakt und übliche Kostenart', '🚚', $link('vendors.index')],
                 ['Dokumente', 'Ablage mit Fristen', '🗂️', $link('documents.index'),
                     $count(fn () => \App\Models\Document::visibleTo($user)->where('archived', false)->whereNotNull('expires_on')->where('expires_on', '<', date('Y-m-d'))->count())],
             ]],

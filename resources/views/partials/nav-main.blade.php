@@ -39,9 +39,8 @@
           ['Schäden und Aufträge', 'workorders.index', ['workorders.*'], $badge['orders'] ?? 0, false],
           ['Wartungsplan', 'maintenance.index', ['maintenance.*'], $badge['maint'] ?? 0, false],
           ['Laufende Verträge', 'svc.index', ['svc.*'], 0, false],
-          ['Lieferanten', 'vendors.index', ['vendors.*'], 0, false],
       ],
-      // Mietverträge, Finanzierung, Anlage V, Jahresbericht und DATEV-Export stehen seit 02.11.2026 als Kacheln unter Einstellungen
+      // Mietverträge, Lieferanten, Finanzierung, Anlage V, Jahresbericht und DATEV-Export stehen seit 02.11.2026 als Kacheln unter Einstellungen
       // Gruppen „Stammdaten“, „Webseite“ und „Verwaltung“ stehen seit 02.11.2026 als Kacheln unter Profilmenü → Einstellungen
   ];
   // Ein Menü für alle: Die frühere Trennung „Alltag“/„Verwaltung“ gibt es seit 02.11.2026 nicht mehr, es steht immer alles da.
