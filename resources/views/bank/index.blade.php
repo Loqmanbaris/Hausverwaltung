@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Kontoauszüge')
+@section('title', 'Umsätze – Einlesen')
 @section('content')
 @include('partials.sd-styles')
 @include('partials.rent-styles')

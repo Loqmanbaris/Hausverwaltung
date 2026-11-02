@@ -88,7 +88,7 @@ class Einrichtung
 
         // Laufender Betrieb
         $recentImport = self::count('bank_imports', fn ($q) => $q->where('created_at', '>=', now()->subDays(35)));
-        $out[] = self::item('Laufender Betrieb', 'Kontoauszüge eingelesen', $recentImport > 0, 'In den letzten 5 Wochen kein Kontoauszug eingelesen – sonst fehlen Mieteingänge.', 'Kontoauszug in den letzten 5 Wochen eingelesen.', 'bank.index', 'Kontoauszüge');
+        $out[] = self::item('Laufender Betrieb', 'Kontoauszüge eingelesen', $recentImport > 0, 'In den letzten 5 Wochen kein Kontoauszug eingelesen – sonst fehlen Mieteingänge.', 'Kontoauszug in den letzten 5 Wochen eingelesen.', 'bank.index', 'Umsätze einlesen');
         $rateOk = true;
         try {
             $rateOk = ! \App\Support\Interest\Verzugszinsen::missingCurrentRate($today);
