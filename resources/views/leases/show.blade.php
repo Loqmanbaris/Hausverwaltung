@@ -68,7 +68,8 @@
             <td>{{ $r->partsLabel() }}</td>
             <td class="rt-num">{{ Money::format($r->netTotal()) }}</td>
             @if ($vat > 0)<td class="rt-num">{{ Money::format($gross($r->netTotal())) }}</td>@endif
-            <td>
+            <td style="white-space:nowrap">
+              <a class="sd-btn sec small" href="{{ route('leases.rent.edit', [$lease, $r]) }}">✎ Korrigieren</a>
               @if ($i > 0)
                 <form class="sd-inline" method="POST" action="{{ route('leases.rent.destroy', [$lease, $r]) }}" onsubmit="return confirm('Diese Mietänderung wirklich entfernen? Betroffene Monate werden neu berechnet.')">
                   @csrf @method('DELETE')

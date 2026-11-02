@@ -44,10 +44,10 @@ class MietenSelbsttest extends Command
         }
 
         // 2. Seiten
-        foreach (['leases.index', 'leases.create', 'leases.show', 'leases.rent.create', 'rent.month', 'rent.open', 'rent.quick-pay', 'payments.destroy', 'bank.index', 'bank.store', 'bank.transactions', 'bank.assign', 'bank.split', 'bank.item.remove', 'bank.accept', 'bank.edit', 'bank.update', 'bank.payment.update', 'bank.payment.remove', 'datev.rent', 'datev.rent.export', 'datev.rent.accounts'] as $name) {
+        foreach (['leases.index', 'leases.create', 'leases.show', 'leases.rent.create', 'leases.rent.edit', 'leases.rent.update', 'rent.month', 'rent.open', 'rent.quick-pay', 'payments.destroy', 'bank.index', 'bank.store', 'bank.transactions', 'bank.assign', 'bank.split', 'bank.item.remove', 'bank.accept', 'bank.edit', 'bank.update', 'bank.payment.update', 'bank.payment.remove', 'datev.rent', 'datev.rent.export', 'datev.rent.accounts'] as $name) {
             $this->check('Seite '.$name, Route::has($name));
         }
-        foreach (['leases.index', 'leases.form', 'leases.show', 'leases.rent', 'rent.month', 'rent.open', 'partials.rent-dashboard', 'partials.rent-styles', 'partials.bank-tabs', 'partials.bank-filter', 'bank.index', 'bank.transactions', 'bank.expenses', 'bank.split-dialog', 'bank.edit', 'datev.rent', 'datev.rent-accounts'] as $view) {
+        foreach (['leases.index', 'leases.form', 'leases.show', 'leases.rent', 'leases.rent-edit', 'rent.month', 'rent.open', 'partials.rent-dashboard', 'partials.rent-styles', 'partials.bank-tabs', 'partials.bank-filter', 'bank.index', 'bank.transactions', 'bank.expenses', 'bank.split-dialog', 'bank.edit', 'datev.rent', 'datev.rent-accounts'] as $view) {
             $this->check('Vorlage '.$view, view()->exists($view));
         }
 

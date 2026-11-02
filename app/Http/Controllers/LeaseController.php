@@ -291,6 +291,49 @@ class LeaseController extends Controller
         return redirect()->route('leases.show', $lease)->with('status', 'Mietänderung ab '.substr($from, 5, 2).'/'.substr($from, 0, 4).' wurde gespeichert.'.($isPast ? ' Sie liegt in der Vergangenheit, die betroffenen Monate wurden neu berechnet.' : '').$this->syncNote($r));
     }
 
+    /** Eine Zeile im Mietverlauf korrigieren (auch die Miete zum Vertragsbeginn): Beträge und Notiz, der Monat bleibt. */
+    public function rentEdit(Lease $lease, LeaseRent $rent)
+    {
+        $this->assertOwnerAccess((int) $lease->owner_id);
+        abort_unless((int) $rent->lease_id === (int) $lease->id, 404);
+        $lease->load(['unit.property', 'tenant']);
+
+        return view('leases.rent-edit', ['lease' => $lease, 'rent' => $rent, 'locked' => $this->rentLocked($rent)]);
+    }
+
+    public function rentUpdate(Request $request, Lease $lease, LeaseRent $rent)
+    {
+        $this->assertOwnerAccess((int) $lease->owner_id);
+        abort_unless((int) $rent->lease_id === (int) $lease->id, 404);
+        $lease->load(['unit.property', 'tenant']);
+        if ($this->rentLocked($rent)) {
+            return back()->withErrors(['rent' => 'Beträge, die schon gelten, kann nur der Administrator korrigieren.']);
+        }
+
+        $raw = $request->validate(['note' => ['nullable', 'string', 'max:2000']] + $this->componentRules(), $this->messages(), $this->attributes());
+        $values = $this->components($raw);
+        if ((float) $values['rent_cold'] <= 0) {
+            throw ValidationException::withMessages(['rent_cold' => 'Bitte die Kaltmiete eintragen.']);
+        }
+        $note = trim((string) ($raw['note'] ?? '')) ?: null;
+        $old = $this->auditValues($rent->only(array_keys(Mieten::COMPONENTS)) + ['note' => $rent->note]);
+
+        DB::transaction(function () use ($lease, $rent, $values, $note, $old) {
+            $rent->update($values + ['note' => $note]);
+            Audit::log('lease.rent_corrected', $lease, 'Miete ab '.$rent->valid_from->format('m/Y').' korrigiert: '.$lease->title(), $old, $this->auditValues($values + ['note' => $note]));
+        });
+
+        $r = RentLedger::sync($lease);
+
+        return redirect()->route('leases.show', $lease)->with('status', 'Miete ab '.$rent->valid_from->format('m/Y').' wurde korrigiert.'.$this->syncNote($r));
+    }
+
+    /** Schon geltende Beträge darf nur der Administrator ändern (wie beim Entfernen). */
+    private function rentLocked(LeaseRent $rent): bool
+    {
+        return $rent->valid_from->format('Y-m-d') < date('Y-m-01') && ! $this->me()->isAdmin();
+    }
+
     public function rentDestroy(Lease $lease, LeaseRent $rent)
     {
         $this->assertOwnerAccess((int) $lease->owner_id);
@@ -299,7 +342,7 @@ class LeaseController extends Controller
 
         $first = $lease->rents()->orderBy('valid_from')->first();
         if ($first && (int) $first->id === (int) $rent->id) {
-            return back()->withErrors(['rent' => 'Die Miete zum Vertragsbeginn kann nicht entfernt werden. Ändere sie über „Mietänderung“ mit Art „Korrektur“ oder bearbeite den Vertrag.']);
+            return back()->withErrors(['rent' => 'Die Miete zum Vertragsbeginn kann nicht entfernt werden. Ändere die Beträge mit „Korrigieren“.']);
         }
         if ($rent->valid_from->format('Y-m-d') < date('Y-m-01') && ! $this->me()->isAdmin()) {
             return back()->withErrors(['rent' => 'Mietänderungen, die schon gelten, kann nur der Administrator entfernen.']);

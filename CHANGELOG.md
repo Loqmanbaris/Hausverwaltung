@@ -2,6 +2,12 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Miete korrigieren
+1. Im Mietvertrag unter „Mietstand und Verlauf“ hat jede Zeile „✎ Korrigieren“, auch die Miete zum Vertragsbeginn. Dort lassen sich falsch erfasste Beträge (Kaltmiete, Vorauszahlungen, Stellplatz usw.) und die Notiz ändern; der Monat bleibt. Alle betroffenen Monate werden neu berechnet, die Änderung steht im Protokoll.
+2. Die Seite zeigt die Umsatzsteuer des Vertrags mit Link zu „Vertrag bearbeiten“, wo sie umgestellt wird (z. B. auf „keine“).
+3. Schon geltende Beträge darf nur der Administrator korrigieren (wie beim Entfernen).
+Keine Migration. Selbsttest: mieten:selbsttest
+
 ## Gutschrift aufteilen wie bei Objego
 1. Unter Kontoauszüge → Eingänge zuordnen hat jede offene Gutschrift den Knopf „Aufteilen …“. Es öffnet sich ein Fenster mit beliebig vielen Zeilen: Einnahmeart, Mietvertrag, Monat, Betrag, Notiz. Darunter steht die Gesamtsumme; sie darf den offenen Betrag nicht übersteigen (ein Rest bleibt offen).
 2. Einnahmearten: Miete (auf den gewählten Monat oder automatisch auf den ältesten offenen), Nebenkosten-Nachzahlung (geht auf offene Nachzahlungen), Mahngebühr / Zinsen (geht auf diese Posten), Kaution (wird bei der Kaution als Einzahlung gebucht), Sonstiges (keine Miete, mit Notiz).

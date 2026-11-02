@@ -32,6 +32,8 @@ Route::middleware([SecurityHeaders::class, 'auth', EnsureTwoFactor::class])->gro
 
     Route::get('/mietvertraege/{lease}/mietaenderung', [LeaseController::class, 'rentCreate'])->name('leases.rent.create');
     Route::post('/mietvertraege/{lease}/mietaenderung', [LeaseController::class, 'rentStore'])->name('leases.rent.store');
+    Route::get('/mietvertraege/{lease}/mietaenderung/{rent}/korrigieren', [LeaseController::class, 'rentEdit'])->name('leases.rent.edit');
+    Route::put('/mietvertraege/{lease}/mietaenderung/{rent}', [LeaseController::class, 'rentUpdate'])->name('leases.rent.update');
     Route::delete('/mietvertraege/{lease}/mietaenderung/{rent}', [LeaseController::class, 'rentDestroy'])->name('leases.rent.destroy');
 
     Route::post('/mietvertraege/{lease}/zahlungen', [LeaseController::class, 'paymentStore'])->name('leases.payments.store');
