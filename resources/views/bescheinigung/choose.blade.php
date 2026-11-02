@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Bescheinigungen')
+@section('title', 'Schreiben an Mieter')
 @section('content')
 @include('partials.sd-styles')
 @include('partials.rent-styles')
 @include('partials.sd-flash')
-<div class="sd-head"><h1>Bescheinigungen</h1></div>
-<p class="sd-muted">Wohnungsgeberbestätigung (Pflicht bei Ein- und Auszug) und Mietschuldenfreiheitsbescheinigung. Bitte den Mietvertrag wählen.</p>
+<div class="sd-head"><h1>Schreiben an Mieter</h1></div>
+<p class="sd-muted">Wohnungsgeberbestätigung, Mietschuldenfreiheitsbescheinigung, Abmahnung und Kündigung. Bitte den Mietvertrag wählen.</p>
 
 <form class="rt-filter" method="GET" action="{{ route('bescheinigung.choose') }}">
   <input type="text" name="q" value="{{ $q }}" maxlength="80" placeholder="Mieter, Objekt oder Wohnung suchen" aria-label="Suche">
@@ -27,7 +27,7 @@
               <td data-l="Zeitraum">ab {{ $l->start_date->format('d.m.Y') }}@if ($l->end_date) bis {{ $l->end_date->format('d.m.Y') }}@endif
                 @if ($l->start_date->format('Y-m-d') > $today)<br><span class="rt-part">Einzug steht bevor</span>@elseif ($l->end_date && $l->end_date->format('Y-m-d') < $today)<br><span class="sd-muted">beendet</span>@elseif ($l->end_date)<br><span class="rt-part">Auszug steht bevor</span>@endif
               </td>
-              <td><a class="sd-btn small" href="{{ route('bescheinigung.index', $l) }}">Bescheinigung erstellen</a></td>
+              <td><a class="sd-btn small" href="{{ route('bescheinigung.index', $l) }}">Auswählen</a></td>
             </tr>
           @endforeach
         </tbody>
