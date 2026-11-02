@@ -1,20 +1,18 @@
-Ergebnis: OK (02.11.2026 21:27)
+Ergebnis: OK (02.11.2026 21:32)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    bd5d2b2 Merge pull request #5 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+Ziel:    5827422 Merge pull request #6 from Loqmanbaris/ccr-ef75b8df-4kmjqe
 
-=================== 02.11.2026 21:27:03 ===================
+=================== 02.11.2026 21:32:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Merge pull request #5 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - E-Mails löschen, Menü: Mein Tag und E-Mails über Finanzen
-  - Merge pull request #4 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - Kontoauszug einlesen: 500-Fehler behoben, Offene Posten aus dem Menü
+  - Merge pull request #6 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+  - Mietverträge, Finanzierung, Anlage V und Jahresbericht als Kacheln unter Einstellungen
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-2127.bkp (7,4 MB, 89 Tabellen, 1076 Zeilen)
+Sicherung erstellt: sicherung-2026-11-02-2132.bkp (7,4 MB, 89 Tabellen, 1077 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -67,4 +65,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand bd5d2b2 – Merge pull request #5 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
+FERTIG: Neuer Stand 5827422 – Merge pull request #6 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
