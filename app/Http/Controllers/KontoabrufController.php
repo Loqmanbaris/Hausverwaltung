@@ -10,7 +10,7 @@ use App\Support\Bank\Kontoabruf;
 use App\Support\Settings;
 use Illuminate\Http\Request;
 
-/** Automatischer Kontoabruf per FinTS einrichten und ausführen (Paket 47, nur Administrator). */
+/** Automatischer Kontoabruf per FinTS einrichten und ausführen (Paket 48, nur Administrator). */
 class KontoabrufController extends Controller
 {
     use ScopesOwners;

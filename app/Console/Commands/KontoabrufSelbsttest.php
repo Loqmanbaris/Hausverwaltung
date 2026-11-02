@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 
-/** Selbsttest Paket 47 (automatischer Kontoabruf per FinTS). */
+/** Selbsttest Paket 48 (automatischer Kontoabruf per FinTS). */
 class KontoabrufSelbsttest extends Command
 {
     protected $signature = 'kontoabruf:selbsttest';
 
-    protected $description = 'Selbsttest automatischer Kontoabruf (Paket 47)';
+    protected $description = 'Selbsttest automatischer Kontoabruf (Paket 48)';
 
     public function handle(): int
     {
@@ -47,7 +47,7 @@ class KontoabrufSelbsttest extends Command
             'Seiten' => Route::has('bank.abruf') && Route::has('bank.abruf.save') && Route::has('bank.abruf.run') && Route::has('bank.abruf.weiter'),
             'Ansicht' => view()->exists('bank.kontoabruf') && $compiles('bank.kontoabruf'),
         ];
-        $this->line('Selbsttest Paket 47 (Kontoabruf)');
+        $this->line('Selbsttest Paket 48 (Kontoabruf)');
         $failed = 0;
         foreach ($checks as $label => $ok) {
             $failed += $ok ? 0 : 1;
