@@ -8,7 +8,7 @@ Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 3. Verlangt die Bank eine Freigabe (pushTAN, etwa alle 90 Tage), wartet der Abruf; nach der Freigabe in der App „Freigegeben – weiter“. Der tägliche Lauf fragt nie selbst nach einer TAN, sondern schickt eine E-Mail mit Hinweis.
 4. Die Umsätze laufen durch denselben Weg wie der CSV-Import (Zuordnung, Darlehen, Ausgaben). Schon vorhandene – auch aus früheren CSV-Dateien – werden über Buchungstag, Betrag und Gegenkonto erkannt und nicht doppelt angelegt. Erster Abruf: die letzten 90 Tage; danach ab dem letzten Abruf mit 5 Tagen Überlappung.
 5. Anmeldename, PIN und Sitzungsstand werden verschlüsselt gespeichert; es werden nur Umsätze abgerufen, keine Überweisungen.
-6. Neue Bibliothek nemiah/php-fints (composer.lock geändert).
+6. Bibliothek nemiah/php-fints 4.1.0 (MIT) liegt unter lib/php-fints und wird ohne composer geladen, weil auf dem Server kein composer verfügbar ist (das Einspielen mit geänderter composer.lock war deshalb abgebrochen). deploy.sh sucht composer künftig auch unter ~/bin und ~/composer.phar.
 Migration: bank_connections. Selbsttest: kontoabruf:selbsttest
 
 ## Dunkler Modus: Übersicht und E-Mail lesbar

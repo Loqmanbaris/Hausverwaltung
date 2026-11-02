@@ -277,14 +277,26 @@ class Kontoabruf
 
     public static function zeile(Transaction $t): array
     {
-        $s = $t->getStructuredDescription();
-        $purpose = trim((string) ($t->getMainDescription() ?: trim($t->getDescription1().' '.$t->getDescription2())));
+        // Die Bibliothek lässt Felder ohne Wert uninitialisiert (z. B. kein Gegenkonto bei Gebühren): Zugriff absichern
+        $g = static function (callable $f): string {
+            try {
+                return trim((string) $f());
+            } catch (\Error) {
+                return '';
+            }
+        };
+        try {
+            $s = $t->getStructuredDescription();
+        } catch (\Error) {
+            $s = [];
+        }
+        $purpose = trim((string) (($s['SVWZ'] ?? '') ?: trim($g(fn () => $t->getDescription1()).' '.$g(fn () => $t->getDescription2()))));
         $amount = number_format(abs($t->getAmount()), 2, '.', '');
         if ($t->getCreditDebit() === Transaction::CD_DEBIT) {
             $amount = '-'.$amount;
         }
-        $iban = Stammdaten::normalizeIban((string) $t->getAccountNumber());
-        $eref = trim((string) $t->getEndToEndID());
+        $iban = Stammdaten::normalizeIban($g(fn () => $t->getAccountNumber()));
+        $eref = $g(fn () => $t->getEndToEndID());
         $booking = $t->getBookingDate() ?? $t->getValutaDate() ?? $t->getDate();
 
         return [
@@ -293,11 +305,11 @@ class Kontoabruf
             'value_date' => $t->getValutaDate()?->format('Y-m-d'),
             'amount' => $amount,
             'currency' => 'EUR',
-            'booking_text' => mb_substr(trim($t->getBookingText()), 0, 100) ?: null,
+            'booking_text' => mb_substr($g(fn () => $t->getBookingText()), 0, 100) ?: null,
             'purpose' => $purpose !== '' ? $purpose : null,
-            'name' => mb_substr(trim($t->getName()), 0, 190) ?: null,
+            'name' => mb_substr($g(fn () => $t->getName()), 0, 190) ?: null,
             'iban' => preg_match('/^[A-Z]{2}\d{2}[A-Z0-9]{8,30}$/', $iban) ? $iban : null,
-            'bic' => mb_substr(strtoupper(trim($t->getBankCode())), 0, 11) ?: null,
+            'bic' => mb_substr(strtoupper($g(fn () => $t->getBankCode())), 0, 11) ?: null,
             'end_to_end' => $eref !== '' ? mb_substr($eref, 0, 100) : null,
             'mandate_ref' => isset($s['MREF']) ? mb_substr(trim($s['MREF']), 0, 100) : null,
             'creditor_id' => isset($s['CRED']) ? mb_substr(trim($s['CRED']), 0, 40) : null,
