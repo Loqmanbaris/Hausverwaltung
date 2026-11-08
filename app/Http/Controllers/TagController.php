@@ -64,6 +64,8 @@ class TagController extends Controller
             'mailUnread' => $this->safe(fn () => \App\Models\ReceivedEmail::unreadCountFor($user)),
             // Montags: Wochenüberblick als Karte
             'weekCard' => $date === $today && date('N', strtotime($today)) === '1' ? \App\Support\Tag\Woche::overview($user, $today) : null,
+            'contracts' => $date === $today ? MeinTag::contractDates($user, $today) : [],
+            'dunning' => $date === $today ? $this->dunningStates($user, $today) : [],
             'needsPush' => ! \App\Support\Push\Push::hasDevice($user),
             'vapid' => \App\Support\Push\Push::publicKey(),
         ]);
@@ -128,6 +130,19 @@ class TagController extends Controller
         }
 
         return redirect()->back()->with('status', '„'.$row->title.'“ liegt jetzt auf '.($to === $today ? 'heute' : 'morgen').'.');
+    }
+
+    /** Mahnstand je Mietvertrag für den Knopf „Erinnern“: [lease_id => ['state', 'level', 'pay_by']] */
+    private function dunningStates($user, string $today): array
+    {
+        try {
+            return \App\Support\Dunning\Mahnwesen::overview($user, null, $today)
+                ->mapWithKeys(fn ($r) => [(int) $r['lease']->id => ['state' => $r['state'], 'level' => (int) $r['level'], 'pay_by' => $r['last']?->pay_by?->format('d.m.')]])->all();
+        } catch (\Throwable $e) {
+            report($e);
+
+            return [];
+        }
     }
 
     private function safe(callable $f): int

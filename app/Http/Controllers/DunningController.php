@@ -58,7 +58,7 @@ class DunningController extends Controller
             'level' => ['nullable', 'array'],
             'level.*' => ['integer', 'between:1,3'],
             'note' => ['nullable', 'string', 'max:2000'],
-            'back' => ['nullable', 'in:vertrag'],
+            'back' => ['nullable', 'in:vertrag,tag'],
         ], ['leases.required' => 'Bitte mindestens einen Mietvertrag auswählen.']);
 
         $created = [];
@@ -75,6 +75,13 @@ class DunningController extends Controller
             } catch (RuntimeException $e) {
                 $errors[] = $e->getMessage();
             }
+        }
+
+        // Aus „Mein Tag“: gleich das Schreiben zum Drucken öffnen
+        if (($data['back'] ?? null) === 'tag') {
+            return count($created) === 1
+                ? redirect()->route('dunning.print', $created[0])
+                : redirect()->route('tag.index')->withErrors(['dunning' => implode(' ', $errors) ?: 'Es wurde kein Schreiben erstellt.']);
         }
 
         $msg = count($created) === 0 ? 'Es wurde kein Schreiben erstellt.' : (count($created) === 1 ? 'Ein Schreiben erstellt.' : count($created).' Schreiben erstellt.');

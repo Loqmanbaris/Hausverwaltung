@@ -2,6 +2,11 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Mein Tag: Erinnern und Vertragsdaten
+1. Überfällige Miete in „Mein Tag“ mit einem Tipp anmahnen: „✉ Erinnern“ (bzw. Mahnung/Letzte Mahnung je nach Stand) erstellt über das Mahnwesen das Schreiben und öffnet es zum Drucken. Läuft schon eine Frist, steht „gemahnt · Frist …“ da.
+2. „Heute zu tun“ zeigt 30 Tage vorher auslaufende Mietverträge und mögliche Indexmieterhöhungen, mit Link zum Vertrag bzw. zur Mieterhöhung.
+Keine Migration. Selbsttest: tag:selbsttest
+
 ## Mitteilungen aufs Handy, Wochenüberblick, Mein Tag als Startseite
 1. Mitteilungen aufs Handy (wie im Portal): Erinnerungen aus „Mein Tag“ kommen als Push-Mitteilung, auch wenn die Seite zu ist. Einschalten je Gerät über Einstellungen → Dieses Gerät → „Mitteilungen aufs Handy“ oder den Hinweis in „Mein Tag“. iPhone/iPad: nur in der installierten App.
 2. Wochenüberblick montags um 07:30 Uhr per E-Mail und Mitteilung: letzte Woche (erledigte To-dos, Zahlungen, Aufträge), noch offen, diese Woche. Montags auch als Karte in „Mein Tag“, jederzeit unter /mein-tag/woche. E-Mail ein/aus in den Einstellungen.

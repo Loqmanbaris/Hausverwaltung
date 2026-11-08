@@ -170,6 +170,7 @@
   .m3-rentrow{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid var(--line)}
   .m3-rentrow>span{flex:1;min-width:0}.m3-rentrow b{display:block;font-size:14px;font-weight:600}.m3-rentrow small{color:var(--muted);font-size:12px}.m3-rentrow em{color:var(--danger);font-style:normal;font-weight:700}
   .m3-rentrow form{margin:0}
+  .m3-rentrow{flex-wrap:wrap}.m3-rentrow>span{flex:1 1 180px}
   .m3-week{border-left:4px solid var(--brand)}
   .m3-wk{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:8px}
   .m3-wk>div{background:var(--soft);border-radius:10px;padding:8px 10px}
@@ -419,7 +420,7 @@
         </section>
       @endif
       <section class="m3-card">
-        <div class="m3-h"><b style="font-size:20px">{{ $isToday ? 'Heute zu tun' : 'Zu tun' }}</b><span>Überfällig, Mieten, Fristen, Hinweise</span></div>
+        <div class="m3-h"><b style="font-size:20px">{{ $isToday ? 'Heute zu tun' : 'Zu tun' }}</b><span>Überfällig, Mieten, Verträge, Fristen</span></div>
         @if ($overdue->isNotEmpty())
           <div class="m3-grp is-bad" id="m3-late">Überfällig · <span data-count="late">{{ $overdue->count() }}</span></div>
           @foreach ($overdue as $o)
@@ -447,10 +448,21 @@
           </a>
           @if (! empty($rent['items']))
             <details class="m3-rentlist">
-              <summary>Offene Mieten direkt abhaken ({{ $rent['open'] }}) ▾</summary>
+              <summary>Offene Mieten abhaken oder erinnern ({{ $rent['open'] }}) ▾</summary>
               @foreach ($rent['items'] as $c)
                 <div class="m3-rentrow">
                   <span><b>{{ $c['title'] }}</b><small>{{ $money($c['open']) }}@if ($c['due']) · fällig {{ date('d.m.', strtotime($c['due'])) }}@endif @if ($c['late'])<em> · überfällig</em>@endif</small></span>
+                  @php $dn = $dunning[$c['lease_id']] ?? null; @endphp
+                  @if ($dn && $dn['state'] === 'vorschlag')
+                    <form method="POST" action="{{ route('dunning.store') }}" onsubmit="return confirm('{{ \App\Models\DunningNotice::LEVELS[$dn['level']] }} für {{ addslashes($c['title']) }} erstellen und zum Drucken öffnen?')">
+                      @csrf<input type="hidden" name="leases[]" value="{{ $c['lease_id'] }}"><input type="hidden" name="level[{{ $c['lease_id'] }}]" value="{{ $dn['level'] }}"><input type="hidden" name="back" value="tag">
+                      <button type="submit" class="td-move" title="{{ \App\Models\DunningNotice::LEVELS[$dn['level']] }} als Brief erstellen">✉ {{ $dn['level'] === 1 ? 'Erinnern' : \App\Models\DunningNotice::LEVELS[$dn['level']] }}</button>
+                    </form>
+                  @elseif ($dn && $dn['state'] === 'frist')
+                    <span class="td-tag" title="Zahlungsfrist aus dem letzten Schreiben">gemahnt · Frist {{ $dn['pay_by'] }}</span>
+                  @elseif ($dn && $dn['state'] === 'raten')
+                    <span class="td-tag">Ratenzahlung</span>
+                  @endif
                   <form method="POST" action="{{ route('rent.quick-pay') }}" onsubmit="return confirm('{{ addslashes($c['title']) }}: {{ $money($c['open']) }} heute als bezahlt (Überweisung) erfassen?')">
                     @csrf
                     <input type="hidden" name="charge_id" value="{{ $c['id'] }}"><input type="hidden" name="amount" value="{{ number_format($c['open'], 2, ',', '') }}">
@@ -459,9 +471,22 @@
                   </form>
                 </div>
               @endforeach
-              <p class="sd-muted" style="font-size:12px;margin:6px 2px 0">Erfasst den offenen Betrag mit heutigem Datum als Überweisung. Teilzahlungen und andere Daten im <a href="{{ route('rent.month') }}">Mieteingang</a>.</p>
+              <p class="sd-muted" style="font-size:12px;margin:6px 2px 0">„Erinnern“ erstellt über das Mahnwesen eine Zahlungserinnerung als Brief und öffnet sie zum Drucken. „✓ bezahlt“ erfasst den offenen Betrag mit heutigem Datum als Überweisung. Teilzahlungen und andere Daten im <a href="{{ route('rent.month') }}">Mieteingang</a>.</p>
             </details>
           @endif
+        @endif
+
+        @if ($contracts)
+          <div class="m3-grp">Verträge · nächste 30 Tage</div>
+          @foreach ($contracts as $k)
+            <div class="ag-todo">
+              <span class="td-dot" style="--c:{{ $k['kind'] === 'ende' ? '#7c3aed' : 'var(--brand)' }}"><i></i></span>
+              <div class="ag-body">
+                <a class="ag-name" href="{{ $k['url'] }}">{{ $k['title'] }}</a>
+                <div class="td-tags"><span @class(['td-tag', 'td-late' => $k['days'] <= 7])>{{ $k['sub'] }}</span></div>
+              </div>
+            </div>
+          @endforeach
         @endif
 
         @if ($fristen !== [])
@@ -484,7 +509,7 @@
           @endforeach
         @endif
 
-        @if ($overdue->isEmpty() && ! $rentDue && $fristen === [] && ! $alerts)
+        @if ($overdue->isEmpty() && ! $rentDue && ! $contracts && $fristen === [] && ! $alerts)
           <div class="ag-empty">Nichts Überfälliges, keine Fristen. 🎉</div>
         @endif
       </section>

@@ -491,9 +491,52 @@ class MeinTag
             'late' => $open->filter(fn ($c) => $c->due_date && $c->due_date->format('Y-m-d') < $today)->count(),
             // Offene Mieten zum direkten Abhaken in „Mein Tag“
             'items' => $open->sortBy(fn ($c) => [$c->due_date?->format('Y-m-d'), $c->lease?->unit?->property?->name, $c->lease?->unit?->label])->take(25)
-                ->map(fn ($c) => ['id' => $c->id, 'title' => $c->lease?->title() ?? 'Mietvertrag', 'open' => round((float) $c->total - (float) $c->paid_amount, 2),
+                ->map(fn ($c) => ['id' => $c->id, 'lease_id' => (int) $c->lease_id, 'title' => $c->lease?->title() ?? 'Mietvertrag', 'open' => round((float) $c->total - (float) $c->paid_amount, 2),
                     'due' => $c->due_date?->format('Y-m-d'), 'late' => $c->due_date && $c->due_date->format('Y-m-d') < $today])->values()->all(),
         ];
+    }
+
+    /**
+     * Mietverträge, bei denen in den nächsten Tagen etwas ansteht: Vertragsende und mögliche Indexmieterhöhung.
+     *
+     * @return array<int, array{title: string, sub: string, url: string, days: int, kind: string}>
+     */
+    public static function contractDates(User $user, string $today, int $days = 30): array
+    {
+        $out = [];
+        try {
+            $d = \App\Support\Rent\RentDashboard::forUser($user);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return [];
+        }
+        if ($d === null) {
+            return [];
+        }
+        $limit = date('Y-m-d', strtotime($today.' +'.$days.' days'));
+        $in = fn (string $date) => (int) round((strtotime($date) - strtotime($today)) / 86400);
+        foreach ($d['ending'] as $l) {
+            $end = $l->end_date->format('Y-m-d');
+            if ($end <= $limit) {
+                $n = $in($end);
+                $out[] = ['kind' => 'ende', 'title' => 'Mietvertrag endet: '.$l->title(), 'days' => $n,
+                    'sub' => 'am '.$l->end_date->format('d.m.Y').($n === 0 ? ' (heute)' : ' (in '.$n.' '.($n === 1 ? 'Tag' : 'Tagen').')').' – Übergabe und Kaution planen',
+                    'url' => route('leases.show', $l)];
+            }
+        }
+        foreach ($d['index_due'] as $x) {
+            $from = $x['since']->copy()->addYear()->format('Y-m-d');
+            if ($from <= $limit) {
+                $n = $in($from);
+                $out[] = ['kind' => 'index', 'title' => 'Indexmiete prüfen: '.$x['lease']->title(), 'days' => $n,
+                    'sub' => ($n <= 0 ? 'Erhöhung seit '.date('d.m.Y', strtotime($from)).' möglich' : 'Erhöhung ab '.date('d.m.Y', strtotime($from)).' möglich (in '.$n.' '.($n === 1 ? 'Tag' : 'Tagen').')'),
+                    'url' => \Illuminate\Support\Facades\Route::has('rent_increase.create') ? route('rent_increase.create', $x['lease']) : route('leases.show', $x['lease'])];
+            }
+        }
+        usort($out, fn ($a, $b) => $a['days'] <=> $b['days']);
+
+        return $out;
     }
 
     /**
