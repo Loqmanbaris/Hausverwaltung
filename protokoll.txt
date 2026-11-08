@@ -1,17 +1,17 @@
-Ergebnis: OK (08.11.2026 09:27)
+Ergebnis: OK (08.11.2026 10:07)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    14f5c30 Mein Tag: eine Seite statt Reiter Mein Tag / Kalender / Aufträge
+Ziel:    b8f5522 Mein Tag wie im Portal: dunkler Kopf, drei Spalten, Zeitleiste
 
-=================== 08.11.2026 09:27:02 ===================
+=================== 08.11.2026 10:07:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Mein Tag: eine Seite statt Reiter Mein Tag / Kalender / Aufträge
+  - Mein Tag wie im Portal: dunkler Kopf, drei Spalten, Zeitleiste
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-08-0927.bkp (8,8 MB, 90 Tabellen, 1130 Zeilen)
+Sicherung erstellt: sicherung-2026-11-08-1007.bkp (8,8 MB, 90 Tabellen, 1132 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -66,4 +66,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 14f5c30 – Mein Tag: eine Seite statt Reiter Mein Tag / Kalender / Aufträge ist online.
+FERTIG: Neuer Stand b8f5522 – Mein Tag wie im Portal: dunkler Kopf, drei Spalten, Zeitleiste ist online.
