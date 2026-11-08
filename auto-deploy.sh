@@ -24,6 +24,8 @@ flock -n 9 || exit 0
 for c in php8.4-cli /usr/bin/php8.4-cli; do
   if command -v "$c" >/dev/null 2>&1; then
     timeout 120 "$c" artisan mail:abrufen --cron </dev/null >/dev/null 2>&1
+    # Mein Tag: Erinnerungen aufs Handy, montags 07:30 Wochenüberblick
+    timeout 60 "$c" artisan tag:takt </dev/null >/dev/null 2>&1
     break
   fi
 done

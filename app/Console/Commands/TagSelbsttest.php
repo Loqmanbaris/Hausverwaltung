@@ -36,7 +36,11 @@ class TagSelbsttest extends Command
             'Alarm im Kalender-Abo' => MeinTag::icsTrigger($timed) === '-PT60M' && MeinTag::icsTrigger($allDay) === 'PT8H' && MeinTag::icsTrigger($morning) === '-PT180M',
             'ICS mit Alarm und Ende' => str_contains($ics, 'TRIGGER:-PT60M') && str_contains($ics, 'DTEND:') && ! str_contains($ics, 'TRIGGER:-P1D'),
             'Seiten' => Route::has('tag.index') && Route::has('tag.store') && Route::has('tag.done') && Route::has('tag.move') && Route::has('tag.mail'),
-            'Ansicht' => view()->exists('tag.index'),
+            'Ansicht' => view()->exists('tag.index') && view()->exists('tag.week'),
+            'Mitteilungen und Wochenüberblick' => Schema::hasTable('push_subscriptions') && Schema::hasTable('tag_notifications') && Schema::hasColumn('users', 'week_mail')
+                && Route::has('push.subscribe') && Route::has('push.test') && Route::has('tag.week') && Route::has('tag.weekmail')
+                && class_exists(\Minishlink\WebPush\WebPush::class) && array_key_exists('tag:takt', \Illuminate\Support\Facades\Artisan::all()),
+            'Wochenbeginn' => \App\Support\Tag\Woche::monday('2026-11-08') === '2026-11-02' && \App\Support\Tag\Woche::monday('2026-11-09') === '2026-11-09',
         ];
         $this->line('Selbsttest Paket 42 (Mein Tag)');
         $failed = 0;

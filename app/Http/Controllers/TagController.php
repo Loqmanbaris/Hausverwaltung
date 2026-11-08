@@ -25,17 +25,7 @@ class TagController extends Controller
         $first = date('Y-m-d', strtotime($date.' +1 day'));
         $last = date('Y-m-d', strtotime($date.' +7 days'));
 
-        $all = MeinTag::entries($user, $date, $last);
-        // Aufträge mit Termin gehören in die Zeitleiste und die nächsten Tage
-        // (ersetzt die Kalender-Einträge „Handwerker … Uhr“ derselben Aufträge, damit nichts doppelt steht)
-        $orderUrl = rtrim(route('workorders.index'), '/').'/';
-        foreach ($all as $d => $rows) {
-            $all[$d] = array_values(array_filter($rows, fn ($r) => ! ($r['source'] === 'frist' && str_starts_with((string) ($r['url'] ?? ''), $orderUrl))));
-        }
-        foreach (MeinTag::orderRows($user, $date, $last) as $d => $rows) {
-            $all[$d] = array_merge($all[$d] ?? [], $rows);
-            usort($all[$d], fn ($a, $b) => strcmp($a['time'] ?? '99', $b['time'] ?? '99'));
-        }
+        $all = MeinTag::entriesWithOrders($user, $date, $last);
         $upcoming = array_filter(array_diff_key($all, [$date => true]), fn ($rows) => $rows !== []);
         ksort($upcoming);
 
@@ -72,6 +62,10 @@ class TagController extends Controller
             'rent' => MeinTag::rentStatus($user, $today),
             'bankOpen' => \App\Support\Bank\BankService::openCountFor($user),
             'mailUnread' => $this->safe(fn () => \App\Models\ReceivedEmail::unreadCountFor($user)),
+            // Montags: Wochenüberblick als Karte
+            'weekCard' => $date === $today && date('N', strtotime($today)) === '1' ? \App\Support\Tag\Woche::overview($user, $today) : null,
+            'needsPush' => ! \App\Support\Push\Push::hasDevice($user),
+            'vapid' => \App\Support\Push\Push::publicKey(),
         ]);
     }
 
@@ -190,6 +184,31 @@ class TagController extends Controller
         }
 
         return redirect()->route('tag.index')->with('status', Vorlagen::TEMPLATES[$key]['title'].': '.implode(', ', $parts).'.');
+    }
+
+    /** Wochenüberblick (letzte Woche, offen, diese Woche) als eigene Seite. */
+    public function week(Request $request)
+    {
+        $today = (new DateTimeImmutable('now', MeinTag::tz()))->format('Y-m-d');
+        $monday = \App\Support\Tag\Woche::monday($this->date((string) $request->query('datum'), $today));
+
+        return view('tag.week', [
+            'o' => \App\Support\Tag\Woche::overview($request->user(), $monday),
+            'monday' => $monday,
+            'prev' => date('Y-m-d', strtotime($monday.' -7 days')),
+            'next' => date('Y-m-d', strtotime($monday.' +7 days')),
+            'thisWeek' => $monday === \App\Support\Tag\Woche::monday($today),
+            'weekMail' => (bool) ($request->user()->week_mail ?? false),
+        ]);
+    }
+
+    /** Wochenüberblick per E-Mail ein- oder ausschalten. */
+    public function weekMail(Request $request)
+    {
+        $on = $request->boolean('on');
+        $request->user()->forceFill(['week_mail' => $on])->save();
+
+        return redirect()->back()->with('status', $on ? 'Du bekommst den Wochenüberblick montags um 07:30 Uhr per E-Mail.' : 'Wochenüberblick per E-Mail ist aus.');
     }
 
     /** E-Mail am Morgen ein- oder ausschalten. */

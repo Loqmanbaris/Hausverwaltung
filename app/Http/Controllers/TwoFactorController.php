@@ -27,7 +27,7 @@ class TwoFactorController extends Controller
             return redirect()->route('two-factor.setup');
         }
         if ($request->session()->get('two_factor_passed')) {
-            return redirect()->route('dashboard');
+            return redirect()->route('tag.index'); // Startseite nach der Anmeldung: Mein Tag
         }
 
         return view('two-factor.challenge');
@@ -89,7 +89,7 @@ class TwoFactorController extends Controller
         }
         Audit::log('login.success', 'Angemeldet', $user);
 
-        return redirect()->route('dashboard');
+        return redirect()->route('tag.index'); // Startseite nach der Anmeldung: Mein Tag
     }
 
     /** Ersteinrichtung der Authenticator-App */

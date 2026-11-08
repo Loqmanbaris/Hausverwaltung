@@ -15,6 +15,7 @@
   $groups = [
       '' => [
           ['Mein Tag', 'tag.index', ['tag.*'], $badge['day'] ?? 0, false],
+          ['Übersicht', 'dashboard', ['dashboard', 'dashboard.*'], 0, false],
           ['E-Mails', 'inbox.index', ['inbox.*', 'mail.index', 'mail.compose', 'mail.write'], $badge['mail'] ?? 0, false],
       ],
       // Alles rund ums Geld steht seit 02.11.2026 gesammelt unter „Finanzen“ (unter Mein Tag und E-Mails)
@@ -61,6 +62,7 @@
   }
   // Symbole vor den Menüpunkten (wie im Portal), Linien-Symbole im Stil von Heroicons
   $icPaths = [
+      'dashboard' => '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
       'tag.index' => '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
       'search' => '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
       'inbox.index' => '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',

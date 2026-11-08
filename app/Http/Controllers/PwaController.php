@@ -44,7 +44,7 @@ class PwaController extends Controller
     public function worker()
     {
         $js = <<<'JS'
-const CACHE = 'verwaltung-offline-v1';
+const CACHE = 'verwaltung-offline-v2';
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.add('/offline')).then(() => self.skipWaiting()));
 });
@@ -57,6 +57,29 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.mode !== 'navigate') { return; }
   event.respondWith(fetch(req).catch(() => caches.match('/offline')));
+});
+// Mitteilungen (Erinnerungen aus „Mein Tag“, Wochenüberblick)
+self.addEventListener('push', (event) => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch (e) { data = { title: event.data ? event.data.text() : '' }; }
+  event.waitUntil(self.registration.showNotification(data.title || 'Hausverwaltung', {
+    body: data.body || '',
+    icon: '/app-icon-192.png',
+    badge: '/app-icon-192.png',
+    tag: data.tag || undefined,
+    renotify: !!data.tag,
+    silent: false,
+    vibrate: [200, 100, 200],
+    data: { url: data.url || '/mein-tag' },
+  }));
+});
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = new URL((event.notification.data && event.notification.data.url) || '/mein-tag', self.location.origin).href;
+  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+    for (const c of list) { if (c.url.startsWith(self.location.origin) && 'focus' in c) { c.navigate(target); return c.focus(); } }
+    return self.clients.openWindow(target);
+  }));
 });
 JS;
 

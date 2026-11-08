@@ -164,11 +164,24 @@
   .m3-rent{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:var(--accbg);border:1px solid color-mix(in srgb,var(--brand) 25%,transparent);text-decoration:none;color:var(--ink);margin-bottom:6px}
   .m3-rent b{font-size:18px;font-weight:800;color:var(--acc);white-space:nowrap}
   .m3-rent span{flex:1;min-width:0}.m3-rent small{display:block;color:var(--muted);font-size:12.5px}
+  .m3-rentlist{margin:0 0 6px}
+  .m3-rentlist summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--acc);padding:4px 2px;list-style:none}
+  .m3-rentlist summary::-webkit-details-marker{display:none}
+  .m3-rentrow{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid var(--line)}
+  .m3-rentrow>span{flex:1;min-width:0}.m3-rentrow b{display:block;font-size:14px;font-weight:600}.m3-rentrow small{color:var(--muted);font-size:12px}.m3-rentrow em{color:var(--danger);font-style:normal;font-weight:700}
+  .m3-rentrow form{margin:0}
+  .m3-week{border-left:4px solid var(--brand)}
+  .m3-wk{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:8px}
+  .m3-wk>div{background:var(--soft);border-radius:10px;padding:8px 10px}
+  .m3-wk b{display:block;font-size:22px;font-weight:800;line-height:1.1}.m3-wk span{font-size:12px;font-weight:600;color:var(--muted)}.m3-wk small{display:block;font-weight:500}
+  .m3-wk .is-bad b{color:var(--danger)}
+  @@media (max-width:560px){.m3-wk{grid-template-columns:1fr 1fr}}
   .is-fading{opacity:0;transform:translateX(8px);transition:opacity .25s,transform .25s}
 
   @@media (min-width:1280px){.m3-side{position:sticky;top:76px}}
   @@media (max-width:1180px){.m3-grid{grid-template-columns:minmax(0,1fr) minmax(0,280px)}.m3-grid>aside:first-child{grid-column:1/-1;position:static}}
   @@media (max-width:820px){.m3-grid{grid-template-columns:minmax(0,1fr)}.m3-right{display:contents}.m3-right .m3-tiles{order:-1}.m3-right>section{order:5}.m3-side{position:static}.mt-hero{padding:18px}.mt-hero h1{font-size:26px}.mt-hero-r{align-items:center;flex-direction:row;flex-wrap:wrap;width:100%;gap:8px}.mt-chips{justify-content:flex-start}.mt-chip{padding:6px 10px;font-size:13px}.mt-nb{height:34px;min-width:34px}.mt-hero{gap:10px}}
+  html[data-theme=dark] .mt-hero,html[data-theme=dark] .m3-tile.is-all{background:#24313c;border:1px solid var(--line)}
   .mt-edit-card{max-width:760px}
   .mt-edit-card .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
   .mt-edit-card .w{grid-column:1/-1}
@@ -274,6 +287,14 @@
       </div>
     </div>
   </div>
+
+  @if ($needsPush && $isToday)
+    <div class="mt-banner mt-pushbar" id="mt-pushbar" hidden>📲 <strong>Erinnerungen aufs Handy:</strong> einmal auf diesem Gerät einschalten, dann kommen Termine und der Wochenüberblick als Mitteilung.
+      <button type="button" class="mt-btn" style="padding:4px 12px;margin-left:6px" data-push>Einschalten</button>
+      <button type="button" class="mt-x" aria-label="Ausblenden" title="Ausblenden" onclick="try{localStorage.setItem('hvPushHide','1')}catch(e){}document.getElementById('mt-pushbar').hidden=true">×</button>
+    </div>
+    <script>(function(){var b=document.getElementById('mt-pushbar');var hide=false;try{hide=localStorage.getItem('hvPushHide')==='1'}catch(e){}if(!hide&&('Notification' in window||/iphone|ipad/i.test(navigator.userAgent)))b.hidden=false;})();</script>
+  @endif
 
   @if (count($reminders) > 0)
     <div class="mt-banner">🔔 <strong>Erinnerung:</strong>
@@ -384,6 +405,19 @@
 
     {{-- MITTE: Heute zu tun und die nächsten 7 Tage --}}
     <main class="m3-main">
+      @if ($weekCard)
+        @php $o = $weekCard; $openW = ($o['rent']['open'] ?? 0) + $o['overdue'] + $o['bank_open']; @endphp
+        <section class="m3-card m3-week">
+          <div class="m3-h"><b>Wochenüberblick KW {{ $o['kw'] }}</b><span>Montag</span><a class="m3-mini" href="{{ route('tag.week') }}">Ansehen</a></div>
+          <div class="m3-wk">
+            <div><b>{{ $o['todos_done'] }}</b><span>To-dos erledigt</span></div>
+            <div><b>{{ $o['payments'] }}</b><span>Zahlungen<small>{{ \App\Support\Tag\Woche::money($o['payments_sum']) }}</small></span></div>
+            <div><b>{{ $o['orders_done'] }}</b><span>Aufträge erledigt</span></div>
+            <div @class(['is-bad' => $openW > 0])><b>{{ $openW }}</b><span>noch offen</span></div>
+          </div>
+          <small class="sd-muted">Letzte Woche {{ date('d.m.', strtotime($o['from'])) }} – {{ date('d.m.', strtotime($o['to'])) }} · diese Woche {{ $o['week_count'] }} {{ $o['week_count'] === 1 ? 'Eintrag' : 'Einträge' }}</small>
+        </section>
+      @endif
       <section class="m3-card">
         <div class="m3-h"><b style="font-size:20px">{{ $isToday ? 'Heute zu tun' : 'Zu tun' }}</b><span>Überfällig, Mieten, Fristen, Hinweise</span></div>
         @if ($overdue->isNotEmpty())
@@ -411,6 +445,23 @@
               <small>noch offen {{ $money($rent['open_sum']) }}@if ($rent['late'] > 0) · {{ $rent['late'] }} überfällig @endif @if ($rent['due_today'] > 0) · {{ $rent['due_today'] }} heute fällig @endif</small></span>
             <span class="mt-link" style="flex:none">öffnen ›</span>
           </a>
+          @if (! empty($rent['items']))
+            <details class="m3-rentlist">
+              <summary>Offene Mieten direkt abhaken ({{ $rent['open'] }}) ▾</summary>
+              @foreach ($rent['items'] as $c)
+                <div class="m3-rentrow">
+                  <span><b>{{ $c['title'] }}</b><small>{{ $money($c['open']) }}@if ($c['due']) · fällig {{ date('d.m.', strtotime($c['due'])) }}@endif @if ($c['late'])<em> · überfällig</em>@endif</small></span>
+                  <form method="POST" action="{{ route('rent.quick-pay') }}" onsubmit="return confirm('{{ addslashes($c['title']) }}: {{ $money($c['open']) }} heute als bezahlt (Überweisung) erfassen?')">
+                    @csrf
+                    <input type="hidden" name="charge_id" value="{{ $c['id'] }}"><input type="hidden" name="amount" value="{{ number_format($c['open'], 2, ',', '') }}">
+                    <input type="hidden" name="paid_on" value="{{ $today }}"><input type="hidden" name="method" value="ueberweisung"><input type="hidden" name="zurueck" value="tag">
+                    <button type="submit" class="td-move" style="border-style:solid">✓ bezahlt</button>
+                  </form>
+                </div>
+              @endforeach
+              <p class="sd-muted" style="font-size:12px;margin:6px 2px 0">Erfasst den offenen Betrag mit heutigem Datum als Überweisung. Teilzahlungen und andere Daten im <a href="{{ route('rent.month') }}">Mieteingang</a>.</p>
+            </details>
+          @endif
         @endif
 
         @if ($fristen !== [])

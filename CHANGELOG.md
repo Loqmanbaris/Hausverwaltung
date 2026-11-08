@@ -2,6 +2,14 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Mitteilungen aufs Handy, Wochenüberblick, Mein Tag als Startseite
+1. Mitteilungen aufs Handy (wie im Portal): Erinnerungen aus „Mein Tag“ kommen als Push-Mitteilung, auch wenn die Seite zu ist. Einschalten je Gerät über Einstellungen → Dieses Gerät → „Mitteilungen aufs Handy“ oder den Hinweis in „Mein Tag“. iPhone/iPad: nur in der installierten App.
+2. Wochenüberblick montags um 07:30 Uhr per E-Mail und Mitteilung: letzte Woche (erledigte To-dos, Zahlungen, Aufträge), noch offen, diese Woche. Montags auch als Karte in „Mein Tag“, jederzeit unter /mein-tag/woche. E-Mail ein/aus in den Einstellungen.
+3. Offene Mieten direkt in „Mein Tag“ abhaken („✓ bezahlt“ erfasst den offenen Betrag mit heutigem Datum als Überweisung).
+4. Nach dem Anmelden (auch aus dem Portal) startet die Hausverwaltung mit „Mein Tag“. „Übersicht“ steht im Menü.
+5. Dunkler Modus für „Mein Tag“ und den Wochenüberblick geprüft und angepasst.
+Neues Paket minishlink/web-push (composer.lock), Migration push_subscriptions, tag_notifications, users.week_mail. Takt: `tag:takt` alle 5 Minuten in auto-deploy.sh. Selbsttest: tag:selbsttest
+
 ## Mein Tag: Verbesserungen
 1. Abhaken ohne Neuladen: Haken wird sofort grün, Zahlen und Balken zählen mit, die Seite springt nicht mehr nach oben.
 2. Aufträge mit Termin stehen in der Zeitleiste und in den nächsten 7 Tagen (statt als „Handwerker … Uhr“-Frist).

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PushController;
 use App\Http\Controllers\TagController;
 use App\Http\Middleware\EnsureTwoFactor;
 use App\Http\Middleware\SecurityHeaders;
@@ -19,4 +20,11 @@ Route::middleware([SecurityHeaders::class, 'auth', EnsureTwoFactor::class])->gro
     Route::delete('/mein-tag/eintraege/{item}', [TagController::class, 'destroy'])->name('tag.destroy');
     Route::post('/mein-tag/vorlagen/{key}', [TagController::class, 'template'])->where('key', '[a-z]+')->name('tag.template');
     Route::post('/mein-tag/mail', [TagController::class, 'mail'])->name('tag.mail');
+    Route::post('/mein-tag/wochenmail', [TagController::class, 'weekMail'])->name('tag.weekmail');
+    Route::get('/mein-tag/woche', [TagController::class, 'week'])->name('tag.week');
+
+    // Mitteilungen aufs Handy (Web-Push)
+    Route::post('/push/abo', [PushController::class, 'subscribe'])->middleware('throttle:20,1')->name('push.subscribe');
+    Route::post('/push/abo/loeschen', [PushController::class, 'unsubscribe'])->middleware('throttle:20,1')->name('push.unsubscribe');
+    Route::post('/push/test', [PushController::class, 'test'])->middleware('throttle:5,1')->name('push.test');
 });

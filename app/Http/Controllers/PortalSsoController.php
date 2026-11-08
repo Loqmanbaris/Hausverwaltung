@@ -88,7 +88,7 @@ class PortalSsoController extends Controller
 
         Audit::log('login.sso', 'Angemeldet über den gemeinsamen Zugang (Portal-Benutzer: '.$by.')', actor: $user);
 
-        return redirect()->route('dashboard');
+        return redirect()->route('tag.index'); // Startseite: Mein Tag
     }
 
     private function fail(string $why): RedirectResponse

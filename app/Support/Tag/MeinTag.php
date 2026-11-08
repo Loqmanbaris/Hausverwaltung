@@ -336,6 +336,7 @@ class MeinTag
                     continue;
                 }
                 $c = $i->replicate();
+                $c->id = $i->id; // Kennung behalten (Mitteilung nur einmal je Eintrag und Tag)
                 $c->due_on = $d;
                 $out[] = $c;
             }
@@ -470,7 +471,7 @@ class MeinTag
             \App\Support\Rent\RentLedger::syncAllIfStale();
             $period = substr($today, 0, 7).'-01';
             $charges = \App\Models\RentCharge::visibleTo($user)->where('rent_charges.kind', 'miete')->whereDate('period', $period)
-                ->get(['rent_charges.id', 'total', 'paid_amount', 'due_date']);
+                ->with(['lease.unit.property', 'lease.tenant'])->get(['rent_charges.id', 'rent_charges.lease_id', 'total', 'paid_amount', 'due_date']);
         } catch (\Throwable $e) {
             report($e);
 
@@ -488,7 +489,31 @@ class MeinTag
             'open_sum' => round((float) $open->sum(fn ($c) => (float) $c->total - (float) $c->paid_amount), 2),
             'due_today' => $charges->filter(fn ($c) => $c->due_date && $c->due_date->format('Y-m-d') === $today)->count(),
             'late' => $open->filter(fn ($c) => $c->due_date && $c->due_date->format('Y-m-d') < $today)->count(),
+            // Offene Mieten zum direkten Abhaken in „Mein Tag“
+            'items' => $open->sortBy(fn ($c) => [$c->due_date?->format('Y-m-d'), $c->lease?->unit?->property?->name, $c->lease?->unit?->label])->take(25)
+                ->map(fn ($c) => ['id' => $c->id, 'title' => $c->lease?->title() ?? 'Mietvertrag', 'open' => round((float) $c->total - (float) $c->paid_amount, 2),
+                    'due' => $c->due_date?->format('Y-m-d'), 'late' => $c->due_date && $c->due_date->format('Y-m-d') < $today])->values()->all(),
         ];
+    }
+
+    /**
+     * Wie entries(), dazu offene Aufträge mit Termin als eigene Zeilen. Die Kalender-Einträge „Handwerker … Uhr“
+     * derselben Aufträge fallen weg, damit nichts doppelt steht.
+     */
+    public static function entriesWithOrders(User $user, string $from, string $to): array
+    {
+        $all = self::entries($user, $from, $to);
+        $orderUrl = rtrim(route('workorders.index'), '/').'/';
+        foreach ($all as $d => $rows) {
+            $all[$d] = array_values(array_filter($rows, fn ($r) => ! ($r['source'] === 'frist' && str_starts_with((string) ($r['url'] ?? ''), $orderUrl))));
+        }
+        foreach (self::orderRows($user, $from, $to) as $d => $rows) {
+            $all[$d] = array_merge($all[$d] ?? [], $rows);
+            usort($all[$d], fn ($a, $b) => strcmp($a['time'] ?? '99', $b['time'] ?? '99'));
+        }
+        ksort($all);
+
+        return $all;
     }
 
     /**

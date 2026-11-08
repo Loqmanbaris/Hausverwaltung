@@ -212,6 +212,44 @@ document.querySelectorAll('[data-sb-toggle]').forEach(function(b){b.addEventList
   });
 })();
 </script>
+@auth
+@php($hvVapid = (function () { try { return \App\Support\Push\Push::publicKey(); } catch (\Throwable) { return null; } })())
+<script>
+// Mitteilungen aufs Handy ein-/ausschalten (Knöpfe mit data-push, z. B. in Einstellungen und Mein Tag)
+(function(){
+  var vapid=@json($hvVapid), ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+  var csrf=@json(csrf_token());
+  var post=function(url,body){return fetch(url,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':csrf},body:JSON.stringify(body||{})});};
+  var key=function(b64){var p='='.repeat((4-b64.length%4)%4),s=(b64+p).replace(/-/g,'+').replace(/_/g,'/'),r=atob(s),o=new Uint8Array(r.length);for(var i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o;};
+  window.hvPush={toggle:async function(){
+    if(!vapid){alert('Mitteilungen sind auf dem Server noch nicht bereit.');return;}
+    if(ios&&!standalone){alert('Auf iPhone und iPad gehen Mitteilungen nur in der installierten App:\n„Teilen“ → „Zum Home-Bildschirm“, dann die Hausverwaltung über das neue Symbol öffnen und hier erneut tippen.');return;}
+    if(!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window)){alert('Dieser Browser kann keine Mitteilungen empfangen.');return;}
+    var reg=await navigator.serviceWorker.register('/sw.js',{scope:'/'}).then(function(){return navigator.serviceWorker.ready;});
+    var ex=await reg.pushManager.getSubscription();
+    if(ex){
+      if(confirm('Mitteilungen sind auf diesem Gerät an.\n\nOK = Test-Mitteilung senden\nAbbrechen = auf diesem Gerät ausschalten')){
+        var r=await post(@json(route('push.test'))).then(function(x){return x.json();}).catch(function(){return {};});
+        alert(r.sent?'Test-Mitteilung gesendet.':'Test konnte nicht gesendet werden.');return;
+      }
+      await post(@json(route('push.unsubscribe')),{endpoint:ex.endpoint});await ex.unsubscribe();
+      alert('Mitteilungen auf diesem Gerät ausgeschaltet.');location.reload();return;
+    }
+    var perm=await Notification.requestPermission();
+    if(perm!=='granted'){alert('Mitteilungen wurden nicht erlaubt. Bitte in den Einstellungen des Geräts für die Hausverwaltung erlauben.');return;}
+    try{
+      var sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key(vapid)});
+      var enc=(PushManager.supportedContentEncodings||['aes128gcm']).indexOf('aes128gcm')>=0?'aes128gcm':'aesgcm';
+      var j=sub.toJSON();j.contentEncoding=enc;
+      var res=await post(@json(route('push.subscribe')),j);if(!res.ok)throw new Error('Fehler '+res.status);
+      alert('Mitteilungen sind an. Erinnerungen aus „Mein Tag“ und der Wochenüberblick kommen jetzt aufs Gerät.');location.reload();
+    }catch(e){alert('Mitteilungen konnten nicht eingeschaltet werden: '+(e.message||e));}
+  }};
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-push]');if(b){e.preventDefault();window.hvPush.toggle();}});
+})();
+</script>
+@endauth
 <script>
 (function(){
   if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(function(){});});}

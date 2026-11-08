@@ -18,7 +18,7 @@ class ProfileSettingsController extends Controller
 
     /**
      * Gruppen mit Kacheln: [Titel, [[Bezeichnung, Beschreibung, Symbol, Ziel, Badge], …]].
-     * Ziel: ['url' => …, 'blank' => bool] | ['post' => Route, 'fields' => […]] | ['install' => true]. Nur sichtbare Einträge.
+     * Ziel: ['url' => …, 'blank' => bool] | ['post' => Route, 'fields' => […]] | ['install' => true] | ['push' => true]. Nur sichtbare Einträge.
      *
      * @return array<int, array{0: string, 1: array<int, array>}>
      */
@@ -39,13 +39,17 @@ class ProfileSettingsController extends Controller
         $groups = [
             ['Mein Konto', [
                 ['Passwort ändern', 'Eigenes Passwort neu festlegen', '🔑', $link('password.change')],
-                ['Startseite anpassen', 'Kacheln der Übersicht anordnen', '🧩', $link('dashboard.layout')],
+                ['Übersicht anpassen', 'Kacheln der Übersicht anordnen', '🧩', $link('dashboard.layout')],
                 ['Kalender-Abo', 'Termine und Fristen im Handy-Kalender', '📅', $link('calendar.index')],
                 ['„Mein Tag“ per E-Mail', $dayMail ? 'Zurzeit an – tippen zum Ausschalten' : 'Zurzeit aus – tippen zum Einschalten', '☀️',
                     Route::has('tag.mail') ? ['post' => 'tag.mail', 'fields' => ['on' => $dayMail ? '0' : '1']] : null],
+                ['Wochenüberblick per E-Mail', ($user->week_mail ?? false) ? 'Montags 07:30 – zurzeit an, tippen zum Ausschalten' : 'Montags 07:30 – zurzeit aus, tippen zum Einschalten', '🗓️',
+                    Route::has('tag.weekmail') ? ['post' => 'tag.weekmail', 'fields' => ['on' => ($user->week_mail ?? false) ? '0' : '1']] : null],
+                ['Wochenüberblick ansehen', 'Letzte Woche, offen, diese Woche', '📊', $link('tag.week')],
             ]],
             ['Dieses Gerät', [
                 ['Als App installieren', 'Verwaltung wie eine App auf den Startbildschirm', '📱', ['install' => true]],
+                ['Mitteilungen aufs Handy', 'Erinnerungen und Wochenüberblick als Mitteilung – auf diesem Gerät ein- oder ausschalten', '🔔', ['push' => true]],
             ]],
             ['Stammdaten', [
                 ['Eigentümer', 'Stammdaten, Bankverbindungen, Freigaben', '👤', $link('owners.index')],

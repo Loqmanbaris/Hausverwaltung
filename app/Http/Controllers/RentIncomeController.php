@@ -67,6 +67,12 @@ class RentIncomeController extends Controller
 
         $payment = app(LeaseController::class)->createPayment($request, $lease);
 
+        // Aus „Mein Tag“: dorthin zurück
+        if ($request->input('zurueck') === 'tag') {
+            return redirect()->route('tag.index')
+                ->with('status', 'Miete von '.$lease->load(['unit.property', 'tenant'])->title().' als bezahlt erfasst ('.Money::format($payment->amount).').');
+        }
+
         return redirect()
             ->to(route('rent.month', array_filter(['monat' => $charge->period->format('Y-m'), 'eigentuemer' => $request->input('eigentuemer')])).'#posten-'.$charge->id)
             ->with('status', 'Zahlung über '.Money::format($payment->amount).' für '.$lease->load(['unit.property', 'tenant'])->title().' wurde erfasst.');

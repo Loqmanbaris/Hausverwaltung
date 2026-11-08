@@ -36,6 +36,8 @@
               @foreach ($target['fields'] as $k => $v)<input type="hidden" name="{{ $k }}" value="{{ $v }}">@endforeach
               <button type="submit" class="ps-i">{!! $inner !!}</button>
             </form>
+          @elseif (! empty($target['push']))
+            <a class="ps-i" href="#" data-push>{!! $inner !!}</a>
           @else
             <a class="ps-i" href="#" data-install>{!! $inner !!}</a>
           @endif
