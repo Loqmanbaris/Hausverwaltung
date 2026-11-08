@@ -6,10 +6,10 @@
 @php
   use App\Support\Tag\MeinTag;
   $wd = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+  $wdShort = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
   $months = ['', 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
-  $label = fn ($d) => $wd[(int) date('w', strtotime($d))].', '.date('d.m.Y', strtotime($d));
-  $long = fn ($d) => $wd[(int) date('w', strtotime($d))].', '.(int) date('j', strtotime($d)).'. '.$months[(int) date('n', strtotime($d))].' '.date('Y', strtotime($d));
-  $box = 'padding:.6rem;border:1px solid var(--line-strong);border-radius:.6rem;font:inherit;width:100%;box-sizing:border-box';
+  $long = fn ($d) => $wd[(int) date('w', strtotime($d))].', '.(int) date('j', strtotime($d)).'. '.$months[(int) date('n', strtotime($d))];
+  $short = fn ($d) => $wdShort[(int) date('w', strtotime($d))].' '.date('d.m.', strtotime($d));
   $editing = $item !== null;
   $val = function (string $key, $default = '') use ($item, $editing) {
       if (! $editing) {
@@ -24,268 +24,214 @@
       return old($key, $current ?? $default);
   };
   $formDate = $editing ? $item->due_on->format('Y-m-d') : $date;
-  $todoTotal = 0;
-  $todoDone = 0;
-  foreach ($days as $dayRows) {
-      foreach ($dayRows as $dr) {
-          if ($dr['source'] === 'own' && $dr['kind'] === 'todo') {
-              $todoTotal++;
-              $todoDone += $dr['done'] ? 1 : 0;
-          }
-      }
-  }
-  $pct = $todoTotal > 0 ? (int) round($todoDone / $todoTotal * 100) : 0;
-  $userName = auth()->user()->name ?? '';
+  $hasMore = $editing ? ($item->end_time || $item->remind || $item->repeat || $item->notes) : (old('remind') || old('repeat_rule') || old('notes') || old('end_time'));
+  $isToday = $date === $today;
+  $tomorrow = date('Y-m-d', strtotime($today.' +1 day'));
 @endphp
 <style>
-  .mt-pills{display:flex;gap:.5rem;margin:0 0 1rem}
-  .mt-pills a,.mt-pills button{flex:1;text-align:center;padding:.8rem .4rem;background:var(--surface);border:1px solid var(--line);border-radius:14px;font:inherit;font-weight:700;color:var(--ink);text-decoration:none;cursor:pointer;white-space:nowrap}
-  .mt-pills .on{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
-  @@media (min-width:961px){.mt-pills .more{display:none}}
-  .mt-hero{background:linear-gradient(160deg,#141b2d 0%,#26345a 100%);color:#fff;border-radius:24px;padding:1.2rem 1.2rem 1.3rem;margin-bottom:1rem;box-shadow:0 8px 24px rgba(20,27,45,.25)}
-  .mt-hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;flex-wrap:wrap}
-  .mt-eyebrow{color:#e8b64c;font-weight:800;letter-spacing:.09em;text-transform:uppercase;font-size:.85rem}
-  .mt-hero h1{margin:.1rem 0 .2rem;font-size:2.5rem;line-height:1.05;color:#fff}
-  .mt-sub{color:#aab3c5;font-size:1.02rem}
-  .mt-ctrl{display:flex;gap:.45rem;align-items:center}
-  .mt-ctrl select,.mt-ctrl a{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:12px;padding:.55rem .8rem;font:inherit;font-weight:700;text-decoration:none;line-height:1.2}
-  .mt-ctrl select option{color:var(--ink)}
-  .mt-ctrl a{min-width:2.5rem;text-align:center}
-  .mt-chips{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.1rem}
-  .mt-chip{display:flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:.55rem 1rem;font-size:1.05rem}
-  .mt-chip b{font-size:1.15rem}
-  .mt-ring{width:1.9rem;height:1.9rem;border-radius:50%;display:inline-block;background:conic-gradient(#34d399 calc(var(--p) * 1%),rgba(255,255,255,.2) 0);position:relative}
-  .mt-ring::after{content:"";position:absolute;inset:.32rem;border-radius:50%;background:#26345a}
-  .mt-install{display:inline-block;margin-top:.9rem;color:#aab3c5;font-size:.9rem}
-  .mt-tiles{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.2rem}
-  .mt-tile{display:block;border-radius:16px;padding:1rem 1.1rem 1.1rem;min-height:6.4rem;text-decoration:none;color:#fff;border:1px solid transparent}
-  .mt-tile b{display:block;font-size:2.7rem;line-height:1.1;font-weight:800}
-  .mt-tile span{display:block;font-size:1.08rem;margin-top:.15rem}
-  .mt-tile.green{background:#1e8a4c}.mt-tile.brown{background:#a8541b}.mt-tile.orange{background:#f47b14}
-  .mt-tile.purple{background:#6b42bd}.mt-tile.teal{background:#0f8b8d}.mt-tile.pink{background:#d614b5}
-  .mt-tile.white{background:var(--surface);color:var(--ink);border-color:var(--line)}
-  .mt-tile.zero{opacity:.82}
-  .mt-day{margin-bottom:1rem;border-radius:16px}
-  .mt-day h2{margin:0 0 .5rem;font-size:1.05rem}
-  .mt-day.today h2{color:var(--info)}
-  .mt-row{display:flex;gap:.6rem;align-items:flex-start;padding:.6rem 0;border-top:1px solid #e5e8ec}
+  .mt{max-width:860px}
+  .mt-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:.6rem;margin:0 0 1rem}
+  .mt-head h1{margin:0;font-size:1.7rem;line-height:1.15}
+  .mt-hi{color:var(--muted);font-size:.95rem;margin-bottom:.1rem}
+  .mt-nav{display:flex;gap:.35rem;align-items:center}
+  .mt-nav a{display:inline-flex;align-items:center;justify-content:center;min-width:2.4rem;height:2.4rem;padding:0 .7rem;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface);color:var(--ink);text-decoration:none;font-weight:600}
+  .mt-nav a:hover{border-color:var(--ink)}
+  .mt-alerts{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+  .mt-alert{display:inline-flex;align-items:center;gap:.45rem;padding:.4rem .8rem;border-radius:999px;background:var(--brass-bg);border:1px solid var(--brass-line);color:var(--brass);text-decoration:none;font-size:.92rem;font-weight:600}
+  .mt-alert b{font-size:1rem}
+  .mt-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem;margin:0 0 1rem}
+  .mt-card h2{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin:0 0 .4rem;font-size:1.05rem}
+  .mt-card h2 a{font-size:.85rem;font-weight:500;color:var(--muted)}
+  .mt-add{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+  .mt-add .t{flex:1 1 14rem;min-width:0}
+  .mt-add input,.mt-add select,.mt-more input,.mt-more select,.mt-more textarea{padding:.6rem .7rem;border:1px solid var(--line-strong);border-radius:10px;font:inherit;background:var(--surface);color:var(--ink);width:100%;box-sizing:border-box}
+  .mt-add input[type=time]{width:7.2rem}
+  .mt-add input[type=date]{width:10.5rem}
+  .mt-seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:10px;overflow:hidden;flex:none}
+  .mt-seg label{margin:0;cursor:pointer}
+  .mt-seg input{position:absolute;opacity:0;width:1px;height:1px}
+  .mt-seg span{display:block;padding:.55rem .8rem;font-weight:600;font-size:.92rem;color:var(--muted)}
+  .mt-seg input:checked+span{background:var(--ink);color:var(--surface)}
+  .mt-seg input:focus-visible+span{outline:2px solid var(--focus);outline-offset:-2px}
+  .mt-more{margin-top:.6rem}
+  .mt-more summary{cursor:pointer;color:var(--muted);font-size:.9rem}
+  .mt-more .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.6rem;margin-top:.6rem}
+  .mt-more .g .w{grid-column:1/-1}
+  .mt-more label{display:block;font-size:.85rem;color:var(--muted);margin:0 0 .2rem;font-weight:500}
+  .mt-row{display:flex;gap:.7rem;align-items:center;padding:.6rem 0;border-top:1px solid var(--line)}
   .mt-row:first-of-type{border-top:0}
-  .mt-time{min-width:3.6rem;font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
+  .mt-check{flex:none;width:2.2rem;height:2.2rem;border-radius:50%;border:2px solid var(--line-strong);background:var(--surface);color:var(--ok);font-size:1rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
+  .mt-check:hover{border-color:var(--ok)}
+  .mt-done .mt-check{background:var(--ok);border-color:var(--ok);color:#fff}
+  .mt-dot{flex:none;width:2.2rem;display:flex;justify-content:center}
+  .mt-dot i{width:.65rem;height:.65rem;border-radius:50%;background:var(--brand)}
+  .mt-dot i.frist{background:var(--danger)}
+  .mt-time:empty{display:none}
+  .mt-time{flex:none;min-width:3.4rem;font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600;font-size:.92rem}
   .mt-main{flex:1;min-width:0;overflow-wrap:anywhere}
-  .mt-done .mt-title{text-decoration:line-through;color:#8a94a0}
-  .mt-tag{display:inline-block;font-size:.72rem;padding:.05rem .45rem;border-radius:1rem;background:var(--surface-2);color:var(--muted);margin-right:.3rem}
+  .mt-title{color:var(--ink);text-decoration:none}
+  a.mt-title:hover{text-decoration:underline}
+  .mt-done .mt-title{text-decoration:line-through;color:var(--muted)}
+  .mt-sub{color:var(--muted);font-size:.85rem}
+  .mt-edit{flex:none;color:var(--muted);text-decoration:none;font-size:1.05rem;padding:.2rem .35rem;border-radius:6px}
+  .mt-edit:hover{background:var(--surface-2);color:var(--ink)}
+  .mt-tag{display:inline-block;font-size:.72rem;font-weight:700;padding:.02rem .45rem;border-radius:1rem;background:var(--surface-2);color:var(--muted);margin-right:.25rem;vertical-align:1px}
   .mt-tag.warn{background:var(--danger-bg);color:var(--danger)}
-  .mt-tag.todo{background:var(--info-bg);color:var(--info)}
-  .mt-check{border:1px solid var(--line-strong);background:var(--surface);border-radius:.6rem;width:2.4rem;height:2.4rem;font-size:1.1rem;cursor:pointer}
-  .mt-banner{background:var(--brass-bg);border:1px solid #f5c26b;border-radius:14px;padding:.7rem .9rem;margin-bottom:1rem}
-  .mt-form{display:grid;gap:.8rem}
-  .mt-two{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
-  .mt-kind label{margin-right:1rem}
-  .mt-link{font-size:.85rem}
-  .mt-fab{position:fixed;right:1.1rem;bottom:1.1rem;width:3.6rem;height:3.6rem;border-radius:50%;background:#1d4ed8;color:#fff;font-size:2rem;line-height:3.5rem;text-align:center;text-decoration:none;box-shadow:0 8px 20px rgba(29,78,216,.4);z-index:20}
-  @@media (min-width:700px){.mt-tiles{grid-template-columns:repeat(4,1fr)}}
+  .mt-tag.ok{background:var(--ok-bg);color:var(--ok)}
+  .mt-empty{color:var(--muted);margin:.2rem 0}
+  .mt-daylabel{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:.9rem 0 .1rem}
+  .mt-daylabel:first-of-type{margin-top:.2rem}
+  .mt-skip{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit;font-size:.82rem}
+  .mt-banner{background:var(--brass-bg);border:1px solid var(--brass-line);color:var(--ink);border-radius:12px;padding:.7rem .9rem;margin-bottom:1rem}
+  .mt-extra summary{cursor:pointer;font-weight:600;padding:.2rem 0}
+  .mt-extra details{border-top:1px solid var(--line);padding:.6rem 0}
+  .mt-extra details:first-of-type{border-top:0}
+  @@media (max-width:560px){.mt-add input[type=date],.mt-add input[type=time]{flex:1 1 8rem;width:auto}.mt-head h1{font-size:1.45rem}}
 </style>
 
+<div class="mt">
 @if ($editing)
-  <div class="sd-head"><h1>Eintrag bearbeiten</h1></div>
-  <a class="sd-btn sec" href="{{ route('tag.index', ['datum' => $formDate]) }}">Zurück</a>
+  <div class="mt-head">
+    <div><h1>Eintrag bearbeiten</h1></div>
+    <div class="mt-nav"><a href="{{ route('tag.index', ['datum' => $formDate]) }}">Zurück</a></div>
+  </div>
 @else
-  <nav class="mt-pills" aria-label="Schnellwahl">
-    <a class="{{ ! $week ? 'on' : '' }}" href="{{ route('tag.index') }}">Mein Tag</a>
-    <a class="{{ $week ? 'on' : '' }}" href="{{ route('tag.index', ['ansicht' => 'woche']) }}">Kalender</a>
-    <a href="{{ route('workorders.index') }}">Aufträge</a>
-    <button type="button" class="more" onclick="document.body.classList.add('nav-open')">Mehr</button>
-  </nav>
+  {{-- Kopf: Gruß, Datum, blättern --}}
+  <div class="mt-head">
+    <div>
+      <div class="mt-hi">{{ $greeting }}, {{ auth()->user()->name }}</div>
+      <h1>{{ $isToday ? 'Heute' : ($date === $tomorrow ? 'Morgen' : $long($date)) }}@if ($isToday || $date === $tomorrow) <span style="font-weight:400;color:var(--muted);font-size:1.1rem">· {{ $long($date) }}</span>@endif</h1>
+    </div>
+    <nav class="mt-nav" aria-label="Tag wählen">
+      <a href="{{ route('tag.index', ['datum' => $prev]) }}" aria-label="Vorheriger Tag">‹</a>
+      @unless ($isToday)<a href="{{ route('tag.index') }}">Heute</a>@endunless
+      <a href="{{ route('tag.index', ['datum' => $next]) }}" aria-label="Nächster Tag">›</a>
+    </nav>
+  </div>
 
-  <section class="mt-hero">
-    <div class="mt-hero-top">
-      <div>
-        <div class="mt-eyebrow">{{ $greeting }}, {{ $userName }}</div>
-        <h1>Mein Tag</h1>
-        <div class="mt-sub">@if ($week) Woche vom {{ date('d.m.', strtotime($from)) }} bis {{ date('d.m.Y', strtotime($to)) }} @else {{ $long($date) }} @endif · KW {{ date('W', strtotime($date)) }}</div>
-      </div>
-      <div class="mt-ctrl">
-        <form method="GET" action="{{ route('tag.index') }}" style="margin:0">
-          <input type="hidden" name="datum" value="{{ $date }}">
-          <select name="ansicht" onchange="this.form.submit()" aria-label="Ansicht">
-            <option value="tag" @selected(! $week)>Tag</option>
-            <option value="woche" @selected($week)>Woche</option>
-          </select>
-          <noscript><button type="submit">OK</button></noscript>
-        </form>
-        <a href="{{ route('tag.index', ['datum' => $prev, 'ansicht' => $week ? 'woche' : null]) }}" aria-label="Zurück">‹</a>
-        <a href="{{ route('tag.index', ['datum' => $next, 'ansicht' => $week ? 'woche' : null]) }}" aria-label="Weiter">›</a>
-      </div>
+  @if ($alerts)
+    <div class="mt-alerts">
+      @foreach ($alerts as $a)<a class="mt-alert" href="{{ $a['url'] }}"><b>{{ $a['count'] }}</b> {{ $a['label'] }} ›</a>@endforeach
     </div>
-    <div class="mt-chips">
-      <div class="mt-chip"><span class="mt-ring" style="--p:{{ $pct }}"></span><b>{{ $todoDone }}/{{ $todoTotal }}</b> erledigt</div>
-      <div class="mt-chip">☑ <b>{{ $openTodos }}</b> To-dos offen</div>
+  @endif
+
+  @if (count($reminders) > 0)
+    <div class="mt-banner"><strong>Erinnerung:</strong>
+      @foreach ($reminders as $r){{ $r->start_time ? $r->start_time.' Uhr' : 'Heute' }} – {{ $r->title }}@if (! $loop->last) · @endif @endforeach
     </div>
-    <a class="mt-install" href="#" data-install>⬇ App installieren</a>
-    @if ($date !== $today && ! $week)
-      <div style="margin-top:.6rem"><a class="mt-install" href="{{ route('tag.index') }}" style="margin:0">Zurück zu heute</a></div>
+  @endif
+@endif
+
+{{-- Neuer Eintrag (oben, schnell) / Bearbeiten --}}
+<form class="mt-card" id="neu" method="POST" action="{{ $editing ? route('tag.update', $item->id) : route('tag.store') }}">
+  @csrf
+  @if ($editing) @method('PUT') @endif
+  <div class="mt-add">
+    <span class="mt-seg" role="radiogroup" aria-label="Art">
+      <label><input type="radio" name="kind" value="todo" @checked($val('kind', 'todo') === 'todo')><span>To-do</span></label>
+      <label><input type="radio" name="kind" value="termin" @checked($val('kind', 'todo') === 'termin')><span>Termin</span></label>
+    </span>
+    <input class="t" name="title" type="text" maxlength="190" required value="{{ $val('title') }}" placeholder="{{ $editing ? 'Titel' : 'Was steht an?' }}" aria-label="Titel">
+    <input name="due_on" type="date" required value="{{ $val('due_on', $formDate) }}" aria-label="Tag">
+    <input name="start_time" type="time" value="{{ $val('start_time') }}" aria-label="Uhrzeit (leer = ganztägig)" title="Uhrzeit (leer = ganztägig)">
+    <button class="sd-btn" type="submit">{{ $editing ? 'Speichern' : 'Hinzufügen' }}</button>
+  </div>
+  @foreach (['title', 'due_on', 'start_time', 'end_time'] as $f)@error($f)<div style="color:var(--danger);font-size:.88rem;margin-top:.3rem">{{ $message }}</div>@enderror @endforeach
+  <details class="mt-more" @if ($hasMore) open @endif>
+    <summary>Mehr: Ende, Erinnerung, Wiederholen, Notiz</summary>
+    <div class="g">
+      <div><label for="mt-end">Bis (Uhrzeit)</label><input id="mt-end" name="end_time" type="time" value="{{ $val('end_time') }}"></div>
+      <div><label for="mt-remind">Erinnerung</label>
+        <select id="mt-remind" name="remind">@foreach (MeinTag::REMINDERS as $k => $text)<option value="{{ $k }}" @selected((string) $val('remind', '') === (string) $k)>{{ $text }}</option>@endforeach</select></div>
+      <div><label for="mt-repeat">Wiederholen</label>
+        <select id="mt-repeat" name="repeat_rule">@foreach (MeinTag::REPEATS as $k => $text)<option value="{{ $k }}" @selected((string) $val('repeat_rule', '') === (string) $k)>{{ $text }}</option>@endforeach</select></div>
+      <div><label for="mt-until">Wiederholen bis</label><input id="mt-until" name="repeat_until" type="date" value="{{ $val('repeat_until') }}"></div>
+      <div class="w"><label for="mt-notes">Notiz</label><textarea id="mt-notes" name="notes" rows="2" maxlength="2000">{{ $val('notes') }}</textarea></div>
+    </div>
+    @if ($editing && $item->repeat)<p class="mt-sub" style="margin:.5rem 0 0">Änderungen gelten für die ganze Serie. Einzelne Tage lässt du in der Liste aus.</p>@endif
+  </details>
+</form>
+@if ($editing)
+  <form method="POST" action="{{ route('tag.destroy', $item->id) }}" onsubmit="return confirm('Eintrag löschen?')">@csrf @method('DELETE')<button class="sd-btn sec" type="submit">Löschen</button></form>
+@endif
+
+@unless ($editing)
+  {{-- Eine Zeile der Liste --}}
+  @php
+    $line = function (array $r, bool $showDay = false) use ($short) {
+        return view('tag.row', ['r' => $r, 'showDay' => $showDay, 'short' => $short])->render();
+    };
+  @endphp
+
+  {{-- Der Tag --}}
+  <section class="mt-card" aria-label="{{ $isToday ? 'Heute' : $long($date) }}">
+    <h2>{{ $isToday ? 'Heute' : $long($date) }}</h2>
+    @foreach ($overdue as $o)
+      <div class="mt-row">
+        <form method="POST" action="{{ route('tag.done', $o->id) }}" style="margin:0">@csrf<button class="mt-check" type="submit" title="Erledigt" aria-label="Erledigt"></button></form>
+        <div class="mt-time" style="color:var(--danger)">{{ $o->due_on->format('d.m.') }}</div>
+        <div class="mt-main"><span class="mt-tag warn">überfällig</span><span class="mt-title">{{ $o->title }}</span></div>
+        <a class="mt-edit" href="{{ route('tag.edit', $o->id) }}" title="Bearbeiten" aria-label="Bearbeiten">✎</a>
+      </div>
+    @endforeach
+    @foreach ($rows as $r){!! $line($r) !!}@endforeach
+    @if ($overdue->isEmpty() && $rows === [])
+      <p class="mt-empty">{{ $isToday ? 'Heute steht nichts an.' : 'An diesem Tag steht nichts an.' }}</p>
     @endif
   </section>
 
-  <div class="mt-tiles">
-    @foreach ($tiles as $t)
-      <a class="mt-tile {{ $t['color'] }} {{ $t['count'] === 0 ? 'zero' : '' }}" href="{{ $t['url'] }}"><b>{{ $t['count'] }}</b><span>{{ $t['label'] }}</span></a>
-    @endforeach
-  </div>
+  {{-- Die nächsten 7 Tage (früher „Kalender“) --}}
+  <section class="mt-card" id="woche" aria-label="Nächste 7 Tage">
+    <h2>Nächste 7 Tage <a href="{{ route('calendar.index') }}">Kalender-Abo ›</a></h2>
+    @forelse ($upcoming as $d => $dayRows)
+      <div class="mt-daylabel">{{ $d === $tomorrow ? 'Morgen' : $long($d) }}</div>
+      @foreach ($dayRows as $r){!! $line($r) !!}@endforeach
+    @empty
+      <p class="mt-empty">In den nächsten 7 Tagen steht nichts an.</p>
+    @endforelse
+  </section>
 
-  @if (count($reminders) > 0)
-    <div class="mt-banner">
-      <strong>Erinnerung</strong>
-      @foreach ($reminders as $r)
-        <div>{{ $r->start_time ? $r->start_time.' Uhr' : 'Heute' }}: {{ $r->title }}</div>
-      @endforeach
-    </div>
-  @endif
+  {{-- Offene Aufträge (früher eigener Reiter) --}}
+  <section class="mt-card" aria-label="Offene Aufträge">
+    <h2>Offene Aufträge @if ($ordersTotal > 0)<span class="mt-tag">{{ $ordersTotal }}</span>@endif <a href="{{ route('workorders.index') }}">Alle Aufträge ›</a></h2>
+    @forelse ($orders as $o)
+      <div class="mt-row">
+        <div class="mt-dot"><i @if ($o->priority !== 'normal') class="frist" @endif></i></div>
+        <div class="mt-main">
+          @if ($o->priority === 'notfall')<span class="mt-tag warn">Notfall</span>@elseif ($o->priority === 'dringend')<span class="mt-tag warn">dringend</span>@endif
+          <span class="mt-tag {{ $o->status === 'termin' ? 'ok' : '' }}">{{ $o->statusLabel() }}</span>
+          <a class="mt-title" href="{{ route('workorders.show', $o) }}">{{ $o->title }}</a>
+          <div class="mt-sub">{{ collect([$o->property?->name, $o->unit?->label, $o->vendor?->name, $o->appointment_at ? 'Termin '.$o->appointment_at->timezone('Europe/Berlin')->format('d.m. H:i') : null])->filter()->implode(' · ') }}</div>
+        </div>
+      </div>
+    @empty
+      <p class="mt-empty">Keine offenen Aufträge.</p>
+    @endforelse
+    <div style="margin-top:.6rem"><a class="sd-btn sec small" href="{{ route('workorders.create') }}">+ Auftrag / Schaden erfassen</a></div>
+  </section>
 
-  @if ($overdue->count() > 0)
-    <div class="sd-card mt-day">
-      <h2 style="color:var(--danger)">Überfällig</h2>
-      @foreach ($overdue as $o)
-        <div class="mt-row">
-          <form method="POST" action="{{ route('tag.done', $o->id) }}">@csrf<button class="mt-check" type="submit" title="Erledigt">○</button></form>
-          <div class="mt-time">{{ $o->due_on->format('d.m.') }}</div>
-          <div class="mt-main"><span class="mt-title">{{ $o->title }}</span> <a class="mt-link" href="{{ route('tag.edit', $o->id) }}">bearbeiten</a></div>
+  {{-- Selten gebraucht: zugeklappt --}}
+  <section class="mt-card mt-extra">
+    <details>
+      <summary>Vorlagen für deinen Plan</summary>
+      <p class="mt-sub">Fertige Listen, die du mit einem Tipp übernimmst. Was es schon gibt, wird nicht doppelt angelegt.</p>
+      @foreach ($templates as $tkey => $tpl)
+        <div style="padding:.5rem 0;border-top:1px solid var(--line)">
+          <strong>{{ $tpl['title'] }}</strong> <span class="mt-sub">({{ count($tpl['entries']) }} Einträge) – {{ $tpl['text'] }}</span>
+          <form method="POST" action="{{ route('tag.template', $tkey) }}" style="margin:.4rem 0 0">@csrf<button class="sd-btn sec small" type="submit">Übernehmen</button></form>
         </div>
       @endforeach
-    </div>
-  @endif
-
-  @php
-    $dayList = [];
-    $cursor = $from;
-    while ($cursor <= $to) {
-        $dayList[] = $cursor;
-        $cursor = date('Y-m-d', strtotime($cursor.' +1 day'));
-    }
-  @endphp
-  @foreach ($dayList as $d)
-    @php($rows = $days[$d] ?? [])
-    <div class="sd-card mt-day {{ $d === $today ? 'today' : '' }}">
-      @if ($week)<h2><a href="{{ route('tag.index', ['datum' => $d]) }}" style="color:inherit;text-decoration:none">{{ $label($d) }}@if ($d === $today) (heute)@endif</a></h2>@endif
-      @forelse ($rows as $r)
-        <div class="mt-row {{ $r['done'] ? 'mt-done' : '' }}">
-          @if ($r['source'] === 'own' && $r['kind'] === 'todo')
-            <form method="POST" action="{{ route('tag.done', $r['id']) }}">@csrf<input type="hidden" name="datum" value="{{ $r['date'] }}"><button class="mt-check" type="submit" title="{{ $r['done'] ? 'Wieder öffnen' : 'Erledigt' }}">{{ $r['done'] ? '✓' : '○' }}</button></form>
-          @else
-            <div style="width:2.4rem"></div>
-          @endif
-          <div class="mt-time">{{ $r['time'] ?? 'ganztägig' }}@if ($r['end'])<br><span style="font-weight:400;color:var(--muted)">bis {{ $r['end'] }}</span>@endif</div>
-          <div class="mt-main">
-            @if ($r['source'] === 'own' && ! empty($r['recurring']))<span class="mt-tag">↻ {{ $r['repeat'] }}</span>@endif
-            @if ($r['source'] === 'frist')<span class="mt-tag {{ $r['tone'] === 'warn' ? 'warn' : '' }}">Frist</span>@elseif ($r['kind'] === 'todo')<span class="mt-tag todo">To-do</span>@else<span class="mt-tag">Termin</span>@endif
-            @if ($r['source'] === 'frist' && $r['url'] !== '')<a class="mt-title" href="{{ $r['url'] }}">{{ $r['title'] }}</a>@else<span class="mt-title">{{ $r['title'] }}</span>@endif
-            @if ($r['detail'] !== '')<div class="sd-muted">{{ $r['detail'] }}</div>@endif
-            @if ($r['source'] === 'own')
-              @if ($r['remind'] !== '')<div class="sd-muted">Erinnerung: {{ MeinTag::REMINDERS[$r['remind']] ?? '' }}</div>@endif
-              <a class="mt-link" href="{{ route('tag.edit', $r['id']) }}">bearbeiten{{ ! empty($r['recurring']) ? ' (ganze Serie)' : '' }}</a>
-              @if (! empty($r['recurring']))
-                <form method="POST" action="{{ route('tag.skip', $r['id']) }}" style="display:inline" onsubmit="return confirm('Nur diesen Tag auslassen?')">@csrf<input type="hidden" name="datum" value="{{ $r['date'] }}"><button type="submit" class="mt-link" style="background:none;border:0;padding:0 0 0 .6rem;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit;font-size:.85rem">diesen Tag auslassen</button></form>
-              @endif
-            @endif
-          </div>
-        </div>
-      @empty
-        <p class="sd-muted" style="margin:0">@if ($week) Nichts eingetragen. @else Für diesen Tag steht nichts an. @endif</p>
-      @endforelse
-    </div>
-  @endforeach
-@endif
-
-<div class="sd-card" id="neu" style="border-radius:16px">
-  <h2>@if ($editing) Eintrag ändern @else Neuer Eintrag @endif</h2>
-  <form class="mt-form" method="POST" action="{{ $editing ? route('tag.update', $item->id) : route('tag.store') }}">
-    @csrf
-    @if ($editing) @method('PUT') @endif
-    <div class="mt-kind">
-      <label><input type="radio" name="kind" value="termin" @checked($val('kind', 'termin') === 'termin')> Termin</label>
-      <label><input type="radio" name="kind" value="todo" @checked($val('kind', 'termin') === 'todo')> To-do</label>
-    </div>
-    <div>
-      <label for="mt-title">Titel *</label>
-      <input id="mt-title" name="title" type="text" maxlength="190" required value="{{ $val('title') }}" style="{{ $box }}">
-      @error('title')<small style="color:var(--danger)">{{ $message }}</small>@enderror
-    </div>
-    <div>
-      <label for="mt-due">Tag *</label>
-      <input id="mt-due" name="due_on" type="date" required value="{{ $val('due_on', $formDate) }}" style="{{ $box }}">
-      @error('due_on')<small style="color:var(--danger)">{{ $message }}</small>@enderror
-    </div>
-    <div class="mt-two">
-      <div>
-        <label for="mt-start">Uhrzeit (leer = ganztägig)</label>
-        <input id="mt-start" name="start_time" type="time" value="{{ $val('start_time') }}" style="{{ $box }}">
-        @error('start_time')<small style="color:var(--danger)">{{ $message }}</small>@enderror
-      </div>
-      <div>
-        <label for="mt-end">Bis (freiwillig)</label>
-        <input id="mt-end" name="end_time" type="time" value="{{ $val('end_time') }}" style="{{ $box }}">
-        @error('end_time')<small style="color:var(--danger)">{{ $message }}</small>@enderror
-      </div>
-    </div>
-    <div>
-      <label for="mt-remind">Erinnerung</label>
-      <select id="mt-remind" name="remind" style="{{ $box }}">
-        @foreach (MeinTag::REMINDERS as $k => $text)
-          <option value="{{ $k }}" @selected((string) $val('remind', '') === (string) $k)>{{ $text }}</option>
-        @endforeach
-      </select>
-      <small class="sd-muted">Die Erinnerung kommt als Alarm in dein Handy, wenn du das Kalender-Abo eingerichtet hast. Zusätzlich erscheint sie hier.</small>
-    </div>
-    <div class="mt-two">
-      <div>
-        <label for="mt-repeat">Wiederholen</label>
-        <select id="mt-repeat" name="repeat_rule" style="{{ $box }}">
-          @foreach (MeinTag::REPEATS as $k => $text)
-            <option value="{{ $k }}" @selected((string) $val('repeat_rule', '') === (string) $k)>{{ $text }}</option>
-          @endforeach
-        </select>
-      </div>
-      <div>
-        <label for="mt-until">Wiederholen bis (freiwillig)</label>
-        <input id="mt-until" name="repeat_until" type="date" value="{{ $val('repeat_until') }}" style="{{ $box }}">
-      </div>
-    </div>
-    @if ($editing && $item->repeat)<small class="sd-muted">Änderungen gelten für die ganze Serie. Einzelne Tage kannst du in der Liste auslassen.</small>@endif
-    <div>
-      <label for="mt-notes">Notiz (freiwillig)</label>
-      <textarea id="mt-notes" name="notes" rows="3" maxlength="2000" style="{{ $box }}">{{ $val('notes') }}</textarea>
-    </div>
-    <div class="sd-actions"><button class="sd-btn" type="submit">Speichern</button></div>
-  </form>
-  @if ($editing)
-    <form method="POST" action="{{ route('tag.destroy', $item->id) }}" onsubmit="return confirm('Eintrag löschen?')" style="margin-top:.6rem">@csrf @method('DELETE')<button class="sd-btn sec" type="submit">Löschen</button></form>
-  @endif
-</div>
-
-@unless ($editing)
-  <div class="sd-card" style="border-radius:16px">
-    <h2>Vorlagen für deinen Plan</h2>
-    <p class="sd-muted" style="margin-top:0">Fertige Listen, die du mit einem Tipp in „Mein Tag“ übernimmst. Was es schon gibt, wird nicht doppelt angelegt.</p>
-    @foreach ($templates as $tkey => $tpl)
-      <details style="border-top:1px solid #e5e8ec;padding:.6rem 0">
-        <summary style="cursor:pointer;font-weight:700">{{ $tpl['title'] }} <span class="sd-muted" style="font-weight:400">({{ count($tpl['entries']) }} Einträge)</span></summary>
-        <p class="sd-muted" style="margin:.4rem 0">{{ $tpl['text'] }}</p>
-        <ul style="margin:.2rem 0 .6rem 1.1rem;padding:0">
-          @foreach ($tpl['entries'] as $te)<li>{{ $te['title'] }}@if (! empty($te['time'])) <span class="sd-muted">· {{ $te['time'] }} Uhr</span>@endif @if (! empty($te['repeat']))<span class="sd-muted">· ↻ {{ MeinTag::REPEATS_SHORT[$te['repeat']] ?? '' }}</span>@endif</li>@endforeach
-        </ul>
-        <form method="POST" action="{{ route('tag.template', $tkey) }}">@csrf<button class="sd-btn" type="submit">In meinen Plan übernehmen</button></form>
-      </details>
-    @endforeach
-  </div>
-  <div class="sd-card" style="border-radius:16px">
-    <h2>Erinnerungen aufs Handy</h2>
-    <p class="sd-muted" style="margin-top:0">Eigene Einträge stehen auch im <a href="{{ route('calendar.index') }}">Kalender-Abo</a>. Dein Handy-Kalender löst dann den Alarm aus. Wie schnell neue Einträge dort erscheinen, bestimmt die Kalender-App, oft dauert es einige Stunden.</p>
-    <form method="POST" action="{{ route('tag.mail') }}">
-      @csrf
-      <label><input type="checkbox" name="on" value="1" @checked($dayMail) onchange="this.form.submit()"> „Mein Tag“ morgens per E-Mail an meine Adresse schicken (nur wenn etwas ansteht)</label>
-      <noscript><button class="sd-btn sec" type="submit">Speichern</button></noscript>
-    </form>
-  </div>
-  <a class="mt-fab" href="#neu" aria-label="Neuer Eintrag">+</a>
+    </details>
+    <details>
+      <summary>Erinnerungen und E-Mail am Morgen</summary>
+      <p class="mt-sub">Eigene Einträge stehen auch im <a href="{{ route('calendar.index') }}">Kalender-Abo</a>, dein Handy-Kalender löst dann den Alarm aus.</p>
+      <form method="POST" action="{{ route('tag.mail') }}" style="margin:0">
+        @csrf
+        <label style="font-weight:400"><input type="checkbox" name="on" value="1" @checked($dayMail) onchange="this.form.submit()"> „Mein Tag“ morgens per E-Mail schicken (nur wenn etwas ansteht)</label>
+        <noscript><button class="sd-btn sec small" type="submit">Speichern</button></noscript>
+      </form>
+    </details>
+  </section>
 @endunless
+</div>
 @endsection

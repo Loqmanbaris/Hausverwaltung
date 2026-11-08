@@ -447,7 +447,7 @@ class MeinTag
             ['label' => 'Termine heute', 'color' => 'green', 'url' => route('tag.index'),
                 'count' => $count([$week[$today] ?? []], fn ($r) => $r['kind'] !== 'todo' && ! $r['done'])],
             ['label' => 'To-dos offen', 'color' => 'brown', 'url' => route('tag.index'), 'count' => $safe(fn () => self::openCount($user, $today))],
-            ['label' => 'Fristen diese Woche', 'color' => 'white', 'url' => route('tag.index', ['ansicht' => 'woche']),
+            ['label' => 'Fristen diese Woche', 'color' => 'white', 'url' => route('tag.index').'#woche',
                 'count' => $count($week, fn ($r) => $r['source'] === 'frist')],
             ['label' => 'Mahnungen vorgeschlagen', 'color' => 'orange', 'url' => route('dunning.index'),
                 'count' => $safe(fn () => \App\Support\Dunning\Mahnwesen::proposalCountFor($user))],

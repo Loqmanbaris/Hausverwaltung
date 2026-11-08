@@ -29,7 +29,7 @@ class PwaController extends Controller
             ],
             'shortcuts' => [
                 ['name' => 'Mein Tag', 'url' => '/mein-tag'],
-                ['name' => 'Woche', 'url' => '/mein-tag?ansicht=woche'],
+                ['name' => 'Aufträge', 'url' => '/auftraege'],
                 ['name' => 'Neuer Eintrag', 'url' => '/mein-tag#neu'],
             ],
         ];

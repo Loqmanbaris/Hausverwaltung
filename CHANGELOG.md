@@ -2,6 +2,12 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Mein Tag: eine Seite statt drei Reiter
+1. „Mein Tag“, „Kalender“ und „Aufträge“ sind jetzt eine Seite: oben Neuer Eintrag, darunter Heute (mit Überfälligem), die nächsten 7 Tage und die offenen Aufträge. Keine Umschaltung Tag/Woche mehr.
+2. Einfacher: weniger Kacheln oben, nur Hinweise, die nicht schon in der Liste stehen; Erledigt-Kreis, Bearbeiten-Stift und „diesen Tag auslassen“ direkt in der Zeile.
+3. Vorlagen und „Mein Tag per E-Mail“ unten zugeklappt. App-Verknüpfung „Woche“ ersetzt durch „Aufträge“.
+Keine Migration. Selbsttest: tag:selbsttest
+
 ## Automatischer Kontoabruf (FinTS)
 1. Umsätze → neuer Reiter „Kontoabruf“ (nur Administrator): Das CRM holt die Umsätze direkt bei der Bank (FinTS mit PIN/TAN, z. B. Sparkasse mit S-pushTAN) – jeden Morgen im täglichen Lauf und jederzeit über „Jetzt abrufen“.
 2. Einrichtung: FinTS-Registrierungsnummer (kostenlos bei der Deutschen Kreditwirtschaft, fints.org), je Konto FinTS-Adresse, Bankleitzahl (aus der IBAN vorgeschlagen), Anmeldename und PIN; dann TAN-Verfahren wählen.

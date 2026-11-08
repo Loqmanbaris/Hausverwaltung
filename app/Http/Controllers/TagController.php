@@ -4,41 +4,60 @@ namespace App\Http\Controllers;
 
 use App\Models\PersonalItem;
 use App\Models\PersonalItemMark;
+use App\Models\WorkOrder;
 use App\Support\Tag\MeinTag;
 use App\Support\Tag\Vorlagen;
 use DateTimeImmutable;
 use Illuminate\Http\Request;
 
-/** „Mein Tag“ (Paket 42): Tages- und Wochenansicht, eigene Termine und To-dos, Menü-Ansicht. */
+/** „Mein Tag“ (Paket 42): eine Seite mit Tag, nächsten 7 Tagen und offenen Aufträgen; eigene Termine und To-dos. */
 class TagController extends Controller
 {
+    /**
+     * Eine Seite für alles: der gewählte Tag (Standard heute) mit Überfälligem, darunter die nächsten 7 Tage
+     * und die offenen Aufträge. Früher drei Reiter (Mein Tag, Kalender, Aufträge), seit 08.11.2026 eine Seite.
+     */
     public function index(Request $request)
     {
         $user = $request->user();
         $today = (new DateTimeImmutable('now', MeinTag::tz()))->format('Y-m-d');
         $date = $this->date((string) $request->query('datum'), $today);
-        $week = $request->query('ansicht') === 'woche';
-        if ($week) {
-            $from = date('Y-m-d', strtotime($date.' monday this week'));
-            $to = date('Y-m-d', strtotime($from.' +6 days'));
-            $prev = date('Y-m-d', strtotime($from.' -7 days'));
-            $next = date('Y-m-d', strtotime($from.' +7 days'));
-        } else {
-            $from = $to = $date;
-            $prev = date('Y-m-d', strtotime($date.' -1 day'));
-            $next = date('Y-m-d', strtotime($date.' +1 day'));
+        $first = date('Y-m-d', strtotime($date.' +1 day'));
+        $last = date('Y-m-d', strtotime($date.' +7 days'));
+
+        $all = MeinTag::entries($user, $date, $last);
+        $upcoming = array_filter(array_diff_key($all, [$date => true]), fn ($rows) => $rows !== []);
+        ksort($upcoming);
+
+        $orders = collect();
+        $ordersTotal = 0;
+        try {
+            $q = WorkOrder::visibleTo($user)->whereIn('status', WorkOrder::OPEN);
+            $ordersTotal = (clone $q)->count();
+            $orders = $q->with(['property', 'unit', 'vendor'])
+                ->orderByRaw("CASE priority WHEN 'notfall' THEN 0 WHEN 'dringend' THEN 1 ELSE 2 END")
+                ->orderByRaw('CASE WHEN appointment_at IS NULL THEN 1 ELSE 0 END')->orderBy('appointment_at')->orderByDesc('id')
+                ->limit(8)->get();
+        } catch (\Throwable $e) {
+            report($e);
         }
 
+        // Nur Hinweise, die nicht schon in der Liste stehen, und nur wenn etwas offen ist
+        $skip = ['Termine heute', 'To-dos offen', 'Fristen diese Woche', 'Schäden gemeldet'];
+        $alerts = array_values(array_filter(MeinTag::tiles($user, $today), fn ($t) => $t['count'] > 0 && ! in_array($t['label'], $skip, true)));
+
         return view('tag.index', [
-            'week' => $week, 'date' => $date, 'from' => $from, 'to' => $to, 'prev' => $prev, 'next' => $next, 'today' => $today,
-            'days' => MeinTag::entries($user, $from, $to),
-            'overdue' => $date === $today || $week ? MeinTag::overdue($user, $today) : collect(),
+            'date' => $date, 'today' => $today, 'first' => $first, 'last' => $last,
+            'prev' => date('Y-m-d', strtotime($date.' -1 day')), 'next' => $first,
+            'rows' => $all[$date] ?? [],
+            'upcoming' => $upcoming,
+            'overdue' => $date === $today ? MeinTag::overdue($user, $today) : collect(),
             'reminders' => MeinTag::dueReminders($user),
+            'orders' => $orders, 'ordersTotal' => $ordersTotal,
+            'alerts' => $alerts,
             'dayMail' => (bool) $user->day_mail,
             'item' => null,
             'greeting' => MeinTag::greeting(),
-            'tiles' => MeinTag::tiles($user, $today),
-            'openTodos' => MeinTag::openCount($user, $today),
             'templates' => Vorlagen::TEMPLATES,
         ]);
     }
@@ -57,10 +76,8 @@ class TagController extends Controller
         $today = (new DateTimeImmutable('now', MeinTag::tz()))->format('Y-m-d');
 
         return view('tag.index', [
-            'week' => false, 'date' => $row->due_on->format('Y-m-d'), 'from' => $row->due_on->format('Y-m-d'), 'to' => $row->due_on->format('Y-m-d'),
-            'prev' => null, 'next' => null, 'today' => $today, 'days' => [], 'overdue' => collect(), 'reminders' => [],
-            'dayMail' => (bool) $request->user()->day_mail, 'item' => $row,
-            'greeting' => '', 'tiles' => [], 'openTodos' => 0, 'templates' => [],
+            'date' => $row->due_on->format('Y-m-d'), 'today' => $today, 'item' => $row,
+            'dayMail' => (bool) $request->user()->day_mail,
         ]);
     }
 
@@ -133,7 +150,7 @@ class TagController extends Controller
             $parts[] = $r['past'].' liegen in der Vergangenheit und wurden übersprungen';
         }
 
-        return redirect()->route('tag.index', ['ansicht' => 'woche'])->with('status', Vorlagen::TEMPLATES[$key]['title'].': '.implode(', ', $parts).'.');
+        return redirect()->route('tag.index')->with('status', Vorlagen::TEMPLATES[$key]['title'].': '.implode(', ', $parts).'.');
     }
 
     /** E-Mail am Morgen ein- oder ausschalten. */
