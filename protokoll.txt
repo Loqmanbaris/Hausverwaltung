@@ -1,27 +1,24 @@
-Ergebnis: FEHLER (08.11.2026 17:07)
+Ergebnis: FEHLER (08.11.2026 17:12)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    1428825 Mitteilungen aufs Handy, Wochenüberblick Mo 07:30, Mieten abhaken, Mein Tag als Startseite
+Ziel:    fd74337 Einspielen: composer auch über Shell-Wrapper aufrufen (Schritt 1)
 
-=================== 08.11.2026 17:07:02 ===================
+=================== 08.11.2026 17:12:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
+  - Einspielen: composer auch über Shell-Wrapper aufrufen (Schritt 1)
   - Mitteilungen aufs Handy, Wochenüberblick Mo 07:30, Mieten abhaken, Mein Tag als Startseite
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-08-1707.bkp (8,9 MB, 90 Tabellen, 1135 Zeilen)
+Sicherung erstellt: sicherung-2026-11-08-1712.bkp (8,9 MB, 92 Tabellen, 1137 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
-Programmbibliotheken aktualisieren ...
-exec php8.4-cli "$HOME/bin/composer.phar" "$@"
 Datenbank umstellen ...
 
-   INFO  Running migrations.  
-
-  2026_11_21_000001_create_push_and_week_overview ............... 56.31ms DONE
+   INFO  Nothing to migrate.  
 
 
 Selbsttests ...
@@ -84,7 +81,6 @@ Selbsttests ...
 
 !!! Selbsttest fehlgeschlagen: tag:selbsttest
 Stelle den alten Programmstand wieder her ...
-exec php8.4-cli "$HOME/bin/composer.phar" "$@"
 Alter Stand ist wieder aktiv, die Seite ist online.
 Datenbank-Änderungen wurden NICHT zurückgedreht (Sicherung liegt vor).
 Bitte die ganze Ausgabe an Claude schicken.
