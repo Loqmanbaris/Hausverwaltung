@@ -2,6 +2,12 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Mein Tag wie im Portal
+1. Aufbau wie „Mein Tag“ im Telemaster-Portal, aber in der Farbe der Hausverwaltung: dunkler Kopf mit Gruß, Datum, KW, Blättern und „x von y erledigt“.
+2. Drei Spalten: links Termine & To-dos als Zeitleiste mit JETZT-Linie und „To-dos ohne Uhrzeit“, Mitte „Heute zu tun“ (Überfällig, Fristen, Hinweise) und die nächsten 7 Tage, rechts Kacheln, offene Aufträge und Vorlagen. Am Handy untereinander, Kacheln oben.
+3. Neues To-do mit einer Zeile, mehr (Termin, Tag, Uhrzeit, Erinnerung, Wiederholen) unter „Termin, Tag, Uhrzeit …“. Bearbeiten auf eigener, einfacher Seite.
+Keine Migration. Selbsttest: tag:selbsttest
+
 ## Mein Tag: eine Seite statt drei Reiter
 1. „Mein Tag“, „Kalender“ und „Aufträge“ sind jetzt eine Seite: oben Neuer Eintrag, darunter Heute (mit Überfälligem), die nächsten 7 Tage und die offenen Aufträge. Keine Umschaltung Tag/Woche mehr.
 2. Einfacher: weniger Kacheln oben, nur Hinweise, die nicht schon in der Liste stehen; Erledigt-Kreis, Bearbeiten-Stift und „diesen Tag auslassen“ direkt in der Zeile.
