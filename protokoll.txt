@@ -1,18 +1,17 @@
-Ergebnis: OK (02.11.2026 23:17)
+Ergebnis: OK (08.11.2026 09:27)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    51f8207 Merge pull request #18 from Loqmanbaris/ccr-ef75b8df-4kmjqe
+Ziel:    14f5c30 Mein Tag: eine Seite statt Reiter Mein Tag / Kalender / Aufträge
 
-=================== 02.11.2026 23:17:02 ===================
+=================== 08.11.2026 09:27:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Merge pull request #18 from Loqmanbaris/ccr-ef75b8df-4kmjqe
-  - Kontoabruf als Paket 48 kennzeichnen (Paket 47 ist der Beleg-Scanner)
+  - Mein Tag: eine Seite statt Reiter Mein Tag / Kalender / Aufträge
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-02-2317.bkp (7,7 MB, 90 Tabellen, 1095 Zeilen)
+Sicherung erstellt: sicherung-2026-11-08-0927.bkp (8,8 MB, 90 Tabellen, 1130 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -67,4 +66,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 51f8207 – Merge pull request #18 from Loqmanbaris/ccr-ef75b8df-4kmjqe ist online.
+FERTIG: Neuer Stand 14f5c30 – Mein Tag: eine Seite statt Reiter Mein Tag / Kalender / Aufträge ist online.
