@@ -1,23 +1,27 @@
-Ergebnis: OK (08.11.2026 16:42)
+Ergebnis: FEHLER (08.11.2026 17:07)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    c7970f5 Mein Tag: Abhaken ohne Neuladen, Aufträge in der Zeitleiste, Mieteingang, Verschieben
+Ziel:    1428825 Mitteilungen aufs Handy, Wochenüberblick Mo 07:30, Mieten abhaken, Mein Tag als Startseite
 
-=================== 08.11.2026 16:42:02 ===================
+=================== 08.11.2026 17:07:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Mein Tag: Abhaken ohne Neuladen, Aufträge in der Zeitleiste, Mieteingang, Verschieben
+  - Mitteilungen aufs Handy, Wochenüberblick Mo 07:30, Mieten abhaken, Mein Tag als Startseite
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-08-1642.bkp (8,8 MB, 90 Tabellen, 1133 Zeilen)
+Sicherung erstellt: sicherung-2026-11-08-1707.bkp (8,9 MB, 90 Tabellen, 1135 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
+Programmbibliotheken aktualisieren ...
+exec php8.4-cli "$HOME/bin/composer.phar" "$@"
 Datenbank umstellen ...
 
-   INFO  Nothing to migrate.  
+   INFO  Running migrations.  
+
+  2026_11_21_000001_create_push_and_week_overview ............... 56.31ms DONE
 
 
 Selbsttests ...
@@ -55,7 +59,19 @@ Selbsttests ...
   OK      seite:selbsttest
   OK      serie:selbsttest
   OK      steuer:selbsttest
-  OK      tag:selbsttest
+  FEHLER  tag:selbsttest
+          Selbsttest Paket 42 (Mein Tag)
+            [OK]     Tabelle und Spalte
+            [OK]     Uhrzeit prüfen
+            [OK]     Erinnerung mit Uhrzeit
+            [OK]     Erinnerung ohne Uhrzeit: am Morgen
+            [OK]     Alarm im Kalender-Abo
+            [OK]     ICS mit Alarm und Ende
+            [OK]     Seiten
+            [OK]     Ansicht
+            [FEHLER] Mitteilungen und Wochenüberblick
+            [OK]     Wochenbeginn
+          1 Prüfung(en) fehlgeschlagen.
   OK      technik:selbsttest
   OK      uebergabe:selbsttest
   OK      uebersicht:selbsttest
@@ -66,4 +82,9 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand c7970f5 – Mein Tag: Abhaken ohne Neuladen, Aufträge in der Zeitleiste, Mieteingang, Verschieben ist online.
+!!! Selbsttest fehlgeschlagen: tag:selbsttest
+Stelle den alten Programmstand wieder her ...
+exec php8.4-cli "$HOME/bin/composer.phar" "$@"
+Alter Stand ist wieder aktiv, die Seite ist online.
+Datenbank-Änderungen wurden NICHT zurückgedreht (Sicherung liegt vor).
+Bitte die ganze Ausgabe an Claude schicken.
