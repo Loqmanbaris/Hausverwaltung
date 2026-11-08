@@ -1,18 +1,19 @@
-Ergebnis: FEHLER (08.11.2026 17:12)
+Ergebnis: OK (08.11.2026 17:17)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    fd74337 Einspielen: composer auch über Shell-Wrapper aufrufen (Schritt 1)
+Ziel:    70e495b Selbsttest Mein Tag: Push-Bibliothek in Schritt 1 noch nicht verlangen
 
-=================== 08.11.2026 17:12:02 ===================
+=================== 08.11.2026 17:17:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
+  - Selbsttest Mein Tag: Push-Bibliothek in Schritt 1 noch nicht verlangen
   - Einspielen: composer auch über Shell-Wrapper aufrufen (Schritt 1)
   - Mitteilungen aufs Handy, Wochenüberblick Mo 07:30, Mieten abhaken, Mein Tag als Startseite
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-08-1712.bkp (8,9 MB, 92 Tabellen, 1137 Zeilen)
+Sicherung erstellt: sicherung-2026-11-08-1717.bkp (8,9 MB, 92 Tabellen, 1138 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -56,19 +57,7 @@ Selbsttests ...
   OK      seite:selbsttest
   OK      serie:selbsttest
   OK      steuer:selbsttest
-  FEHLER  tag:selbsttest
-          Selbsttest Paket 42 (Mein Tag)
-            [OK]     Tabelle und Spalte
-            [OK]     Uhrzeit prüfen
-            [OK]     Erinnerung mit Uhrzeit
-            [OK]     Erinnerung ohne Uhrzeit: am Morgen
-            [OK]     Alarm im Kalender-Abo
-            [OK]     ICS mit Alarm und Ende
-            [OK]     Seiten
-            [OK]     Ansicht
-            [FEHLER] Mitteilungen und Wochenüberblick
-            [OK]     Wochenbeginn
-          1 Prüfung(en) fehlgeschlagen.
+  OK      tag:selbsttest
   OK      technik:selbsttest
   OK      uebergabe:selbsttest
   OK      uebersicht:selbsttest
@@ -79,8 +68,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-!!! Selbsttest fehlgeschlagen: tag:selbsttest
-Stelle den alten Programmstand wieder her ...
-Alter Stand ist wieder aktiv, die Seite ist online.
-Datenbank-Änderungen wurden NICHT zurückgedreht (Sicherung liegt vor).
-Bitte die ganze Ausgabe an Claude schicken.
+FERTIG: Neuer Stand 70e495b – Selbsttest Mein Tag: Push-Bibliothek in Schritt 1 noch nicht verlangen ist online.
