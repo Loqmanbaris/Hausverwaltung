@@ -39,7 +39,7 @@ class TagSelbsttest extends Command
             'Ansicht' => view()->exists('tag.index') && view()->exists('tag.week'),
             'Mitteilungen und Wochenüberblick' => Schema::hasTable('push_subscriptions') && Schema::hasTable('tag_notifications') && Schema::hasColumn('users', 'week_mail')
                 && Route::has('push.subscribe') && Route::has('push.test') && Route::has('tag.week') && Route::has('tag.weekmail')
-                && array_key_exists('tag:takt', \Illuminate\Support\Facades\Artisan::all()),
+                && class_exists(\Minishlink\WebPush\WebPush::class) && array_key_exists('tag:takt', \Illuminate\Support\Facades\Artisan::all()),
             'Wochenbeginn' => \App\Support\Tag\Woche::monday('2026-11-08') === '2026-11-02' && \App\Support\Tag\Woche::monday('2026-11-09') === '2026-11-09',
         ];
         $this->line('Selbsttest Paket 42 (Mein Tag)');
