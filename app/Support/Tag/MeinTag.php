@@ -459,6 +459,68 @@ class MeinTag
         ];
     }
 
+    /**
+     * Mieteingang des laufenden Monats: wie viele Mieten bezahlt sind, was noch offen ist, ob heute etwas fällig ist.
+     *
+     * @return array{total: int, paid: int, open: int, open_sum: float, due_today: int, late: int}|null null ohne Mieten
+     */
+    public static function rentStatus(User $user, string $today): ?array
+    {
+        try {
+            \App\Support\Rent\RentLedger::syncAllIfStale();
+            $period = substr($today, 0, 7).'-01';
+            $charges = \App\Models\RentCharge::visibleTo($user)->where('rent_charges.kind', 'miete')->whereDate('period', $period)
+                ->get(['rent_charges.id', 'total', 'paid_amount', 'due_date']);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return null;
+        }
+        if ($charges->isEmpty()) {
+            return null;
+        }
+        $open = $charges->filter(fn ($c) => (float) $c->paid_amount + 0.004 < (float) $c->total);
+
+        return [
+            'total' => $charges->count(),
+            'paid' => $charges->count() - $open->count(),
+            'open' => $open->count(),
+            'open_sum' => round((float) $open->sum(fn ($c) => (float) $c->total - (float) $c->paid_amount), 2),
+            'due_today' => $charges->filter(fn ($c) => $c->due_date && $c->due_date->format('Y-m-d') === $today)->count(),
+            'late' => $open->filter(fn ($c) => $c->due_date && $c->due_date->format('Y-m-d') < $today)->count(),
+        ];
+    }
+
+    /**
+     * Offene Aufträge mit Termin als Zeilen für die Zeitleiste (gleiche Form wie entries()).
+     *
+     * @return array<string, array<int, array>> Datum => Zeilen
+     */
+    public static function orderRows(User $user, string $from, string $to): array
+    {
+        $out = [];
+        try {
+            $orders = \App\Models\WorkOrder::visibleTo($user)->whereIn('status', \App\Models\WorkOrder::OPEN)->whereNotNull('appointment_at')
+                ->whereBetween('appointment_at', [$from.' 00:00:00', $to.' 23:59:59'])->with(['property', 'unit', 'vendor'])->orderBy('appointment_at')->get();
+        } catch (\Throwable $e) {
+            report($e);
+
+            return [];
+        }
+        foreach ($orders as $o) {
+            $at = $o->appointment_at->copy()->timezone('Europe/Berlin');
+            $time = $at->format('H:i');
+            $out[$at->format('Y-m-d')][] = [
+                'source' => 'auftrag', 'id' => $o->id, 'date' => $at->format('Y-m-d'), 'kind' => 'auftrag', 'title' => $o->title,
+                'detail' => collect([$o->vendor?->name, $o->property?->name, $o->unit?->label])->filter()->implode(' · '),
+                'time' => $time === '00:00' ? null : $time, 'end' => null, 'done' => false, 'recurring' => false,
+                'url' => route('workorders.show', $o), 'tone' => in_array($o->priority, ['notfall', 'dringend'], true) ? 'warn' : '',
+            ];
+        }
+
+        return $out;
+    }
+
     // ------------------------------------------------------------------ E-Mail am Morgen
 
     public static function dayMailBody(User $user, string $today): ?string

@@ -2,6 +2,15 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Mein Tag: Verbesserungen
+1. Abhaken ohne Neuladen: Haken wird sofort grün, Zahlen und Balken zählen mit, die Seite springt nicht mehr nach oben.
+2. Aufträge mit Termin stehen in der Zeitleiste und in den nächsten 7 Tagen (statt als „Handwerker … Uhr“-Frist).
+3. Mieteingang: „x von y Mieten bezahlt, noch offen …“ unter „Heute zu tun“, sobald Mieten fällig oder überfällig sind; Kachel „Mieten offen“.
+4. Überfälliges mit „→ auf heute“ oder „morgen“ verschieben, ohne die Bearbeiten-Seite.
+5. Kacheln mit Aussage (Überfällig, Mieten offen, Kontoumsätze, ungelesene E-Mails, Aufträge), nur wenn etwas offen ist. Kopf mit Fortschrittsbalken und „Alles erledigt 🎉“.
+6. Vorlagen unter „Vorlage übernehmen …“ beim neuen Eintrag, erledigte To-dos zugeklappt, Kopf am Handy kompakter.
+Keine Migration. Selbsttest: tag:selbsttest
+
 ## Mein Tag wie im Portal
 1. Aufbau wie „Mein Tag“ im Telemaster-Portal, aber in der Farbe der Hausverwaltung: dunkler Kopf mit Gruß, Datum, KW, Blättern und „x von y erledigt“.
 2. Drei Spalten: links Termine & To-dos als Zeitleiste mit JETZT-Linie und „To-dos ohne Uhrzeit“, Mitte „Heute zu tun“ (Überfällig, Fristen, Hinweise) und die nächsten 7 Tage, rechts Kacheln, offene Aufträge und Vorlagen. Am Handy untereinander, Kacheln oben.

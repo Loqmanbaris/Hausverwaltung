@@ -26,6 +26,16 @@ class TagController extends Controller
         $last = date('Y-m-d', strtotime($date.' +7 days'));
 
         $all = MeinTag::entries($user, $date, $last);
+        // Aufträge mit Termin gehören in die Zeitleiste und die nächsten Tage
+        // (ersetzt die Kalender-Einträge „Handwerker … Uhr“ derselben Aufträge, damit nichts doppelt steht)
+        $orderUrl = rtrim(route('workorders.index'), '/').'/';
+        foreach ($all as $d => $rows) {
+            $all[$d] = array_values(array_filter($rows, fn ($r) => ! ($r['source'] === 'frist' && str_starts_with((string) ($r['url'] ?? ''), $orderUrl))));
+        }
+        foreach (MeinTag::orderRows($user, $date, $last) as $d => $rows) {
+            $all[$d] = array_merge($all[$d] ?? [], $rows);
+            usort($all[$d], fn ($a, $b) => strcmp($a['time'] ?? '99', $b['time'] ?? '99'));
+        }
         $upcoming = array_filter(array_diff_key($all, [$date => true]), fn ($rows) => $rows !== []);
         ksort($upcoming);
 
@@ -43,7 +53,7 @@ class TagController extends Controller
         }
 
         // Nur Hinweise, die nicht schon in der Liste stehen, und nur wenn etwas offen ist
-        $skip = ['Termine heute', 'To-dos offen', 'Fristen diese Woche', 'Schäden gemeldet'];
+        $skip = ['Termine heute', 'To-dos offen', 'Fristen diese Woche', 'Schäden gemeldet', 'Kontoumsätze offen'];
         $alerts = array_values(array_filter(MeinTag::tiles($user, $today), fn ($t) => $t['count'] > 0 && ! in_array($t['label'], $skip, true)));
 
         return view('tag.index', [
@@ -59,6 +69,9 @@ class TagController extends Controller
             'item' => null,
             'greeting' => MeinTag::greeting(),
             'templates' => Vorlagen::TEMPLATES,
+            'rent' => MeinTag::rentStatus($user, $today),
+            'bankOpen' => \App\Support\Bank\BankService::openCountFor($user),
+            'mailUnread' => $this->safe(fn () => \App\Models\ReceivedEmail::unreadCountFor($user)),
         ]);
     }
 
@@ -101,11 +114,37 @@ class TagController extends Controller
                 PersonalItemMark::query()->updateOrCreate(['personal_item_id' => $row->id, 'on_date' => $day], ['kind' => 'done']);
             }
 
-            return redirect()->back();
+            return $request->wantsJson() ? response()->json(['done' => ! ($mark !== null && $mark->kind === 'done')]) : redirect()->back();
         }
         $row->update(['done_at' => $row->done_at === null ? now() : null]);
 
-        return redirect()->back();
+        return $request->wantsJson() ? response()->json(['done' => $row->done_at !== null]) : redirect()->back();
+    }
+
+    /** Überfälliges To-do auf heute oder morgen legen (nur einmalige Einträge). */
+    public function move(Request $request, int $item)
+    {
+        $row = $this->own($request, $item);
+        abort_if(MeinTag::isRecurring($row), 404);
+        $today = (new DateTimeImmutable('now', MeinTag::tz()))->format('Y-m-d');
+        $to = $request->input('auf') === 'morgen' ? date('Y-m-d', strtotime($today.' +1 day')) : $today;
+        $row->update(['due_on' => $to]);
+        if ($request->wantsJson()) {
+            return response()->json(['due_on' => $to]);
+        }
+
+        return redirect()->back()->with('status', '„'.$row->title.'“ liegt jetzt auf '.($to === $today ? 'heute' : 'morgen').'.');
+    }
+
+    private function safe(callable $f): int
+    {
+        try {
+            return (int) $f();
+        } catch (\Throwable $e) {
+            report($e);
+
+            return 0;
+        }
     }
 
     /** Einen einzelnen Tag einer Serie auslassen. */
