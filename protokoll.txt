@@ -1,17 +1,17 @@
-Ergebnis: OK (08.11.2026 10:07)
+Ergebnis: OK (08.11.2026 16:42)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    b8f5522 Mein Tag wie im Portal: dunkler Kopf, drei Spalten, Zeitleiste
+Ziel:    c7970f5 Mein Tag: Abhaken ohne Neuladen, Aufträge in der Zeitleiste, Mieteingang, Verschieben
 
-=================== 08.11.2026 10:07:03 ===================
+=================== 08.11.2026 16:42:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Mein Tag wie im Portal: dunkler Kopf, drei Spalten, Zeitleiste
+  - Mein Tag: Abhaken ohne Neuladen, Aufträge in der Zeitleiste, Mieteingang, Verschieben
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-08-1007.bkp (8,8 MB, 90 Tabellen, 1132 Zeilen)
+Sicherung erstellt: sicherung-2026-11-08-1642.bkp (8,8 MB, 90 Tabellen, 1133 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -66,4 +66,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand b8f5522 – Mein Tag wie im Portal: dunkler Kopf, drei Spalten, Zeitleiste ist online.
+FERTIG: Neuer Stand c7970f5 – Mein Tag: Abhaken ohne Neuladen, Aufträge in der Zeitleiste, Mieteingang, Verschieben ist online.
