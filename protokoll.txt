@@ -1,17 +1,17 @@
-Ergebnis: OK (08.11.2026 17:57)
+Ergebnis: OK (09.11.2026 08:07)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    1c16eff Mein Tag: überfällige Miete mit einem Tipp anmahnen, Vertragsende und Indexmiete vorher zeigen
+Ziel:    4b93e38 E-Mail: Mitarbeiter sehen auch E-Mails ohne Eigentümer-Zuordnung
 
-=================== 08.11.2026 17:57:03 ===================
+=================== 09.11.2026 08:07:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Mein Tag: überfällige Miete mit einem Tipp anmahnen, Vertragsende und Indexmiete vorher zeigen
+  - E-Mail: Mitarbeiter sehen auch E-Mails ohne Eigentümer-Zuordnung
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-08-1757.bkp (8,9 MB, 92 Tabellen, 1140 Zeilen)
+Sicherung erstellt: sicherung-2026-11-09-0807.bkp (8,9 MB, 92 Tabellen, 1163 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
@@ -66,4 +66,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 1c16eff – Mein Tag: überfällige Miete mit einem Tipp anmahnen, Vertragsende und Indexmiete vorher zeigen ist online.
+FERTIG: Neuer Stand 4b93e38 – E-Mail: Mitarbeiter sehen auch E-Mails ohne Eigentümer-Zuordnung ist online.
