@@ -57,8 +57,8 @@ class SentEmail extends Model
     /** Mitarbeiter sehen nur E-Mails ihrer Eigentümer; E-Mails ohne Eigentümer nur der Administrator. */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        // Mitarbeiter: E-Mails ihrer Eigentümer und alle, die (noch) keinem Eigentümer zugeordnet sind (gemeinsames Postfach)
-        return $user->isAdmin() ? $query : $query->where(fn ($w) => $w->whereNull('sent_emails.owner_id')
+        // Administrator und Recht „Alle E-Mails“: alles. Sonst: E-Mails ihrer Eigentümer und alle, die (noch) keinem Eigentümer zugeordnet sind (gemeinsames Postfach)
+        return $user->isAdmin() || $user->mail_all ? $query : $query->where(fn ($w) => $w->whereNull('sent_emails.owner_id')
             ->orWhereIn('sent_emails.owner_id', Owner::visibleTo($user)->select('owners.id')));
     }
 

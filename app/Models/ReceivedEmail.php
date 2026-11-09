@@ -49,8 +49,8 @@ class ReceivedEmail extends Model
     /** Wie bei den gesendeten E-Mails: Mitarbeiter sehen nur E-Mails ihrer Eigentümer, alles andere nur der Administrator. */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        // Mitarbeiter: E-Mails ihrer Eigentümer und alle, die (noch) keinem Eigentümer zugeordnet sind (gemeinsames Postfach)
-        return $user->isAdmin() ? $query : $query->where(fn ($w) => $w->whereNull('received_emails.owner_id')
+        // Administrator und Recht „Alle E-Mails“: alles. Sonst: E-Mails ihrer Eigentümer und alle, die (noch) keinem Eigentümer zugeordnet sind (gemeinsames Postfach)
+        return $user->isAdmin() || $user->mail_all ? $query : $query->where(fn ($w) => $w->whereNull('received_emails.owner_id')
             ->orWhereIn('received_emails.owner_id', Owner::visibleTo($user)->select('owners.id')));
     }
 

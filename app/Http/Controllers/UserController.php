@@ -54,6 +54,15 @@ class UserController extends Controller
         ]);
     }
 
+    /** Recht „Alle E-Mails“ für einen Mitarbeiter ein- oder ausschalten. */
+    public function toggleMailAll(User $user): RedirectResponse
+    {
+        $user->forceFill(['mail_all' => ! $user->mail_all])->save();
+        Audit::log('user.mail_all', ($user->mail_all ? 'Darf alle E-Mails sehen: ' : 'Sieht nur E-Mails seiner Eigentümer: ').$user->email, $user);
+
+        return back()->with('status', $user->name.($user->mail_all ? ' sieht jetzt alle E-Mails.' : ' sieht jetzt nur noch E-Mails ohne Zuordnung und die seiner Eigentümer.'));
+    }
+
     public function toggle(Request $request, User $user): RedirectResponse
     {
         if ($user->is($request->user())) {

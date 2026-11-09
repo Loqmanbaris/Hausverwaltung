@@ -29,6 +29,7 @@ class AuditLog extends Model
         'password.reset' => 'Passwort zurückgesetzt',
         'user.created' => 'Benutzer angelegt',
         'user.blocked' => 'Benutzer gesperrt',
+        'user.mail_all' => 'Recht „Alle E-Mails“ geändert',
         'user.unblocked' => 'Benutzer entsperrt',
         'owner.viewed' => 'Eigentümer geöffnet',
         'owner.created' => 'Eigentümer angelegt',

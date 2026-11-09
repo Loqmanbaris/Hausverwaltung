@@ -44,6 +44,12 @@ class User extends Authenticatable
         ];
     }
 
+    /** Darf alle E-Mails im Postfach sehen (Administrator oder Recht „Alle E-Mails“). */
+    public function seesAllMail(): bool
+    {
+        return $this->isAdmin() || (bool) $this->mail_all;
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;

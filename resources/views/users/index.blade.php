@@ -55,6 +55,12 @@
                 @csrf
                 <button class="btn small {{ $u->is_active ? 'danger' : '' }}" type="submit">{{ $u->is_active ? 'Sperren' : 'Entsperren' }}</button>
               </form>
+              @unless ($u->isAdmin())
+                <form method="POST" action="{{ route('users.mail-all', $u) }}">
+                  @csrf
+                  <button class="btn small" type="submit" title="Alle E-Mails im Postfach sehen">{{ $u->mail_all ? '✉ Alle E-Mails: an' : '✉ Alle E-Mails: aus' }}</button>
+                </form>
+              @endunless
               <form method="POST" action="{{ route('users.reset-password', $u) }}" onsubmit="return confirm('Neues vorläufiges Passwort vergeben? Der Benutzer wird abgemeldet.')">
                 @csrf
                 <button class="btn small" type="submit">Neues Passwort</button>
