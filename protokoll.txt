@@ -1,23 +1,25 @@
-Ergebnis: OK (09.11.2026 08:07)
+Ergebnis: OK (09.11.2026 08:12)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    4b93e38 E-Mail: Mitarbeiter sehen auch E-Mails ohne Eigentümer-Zuordnung
+Ziel:    8e393c5 E-Mail: Recht „Alle E-Mails“ je Mitarbeiter, für Gillian eingeschaltet
 
-=================== 09.11.2026 08:07:03 ===================
+=================== 09.11.2026 08:12:02 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - E-Mail: Mitarbeiter sehen auch E-Mails ohne Eigentümer-Zuordnung
+  - E-Mail: Recht „Alle E-Mails“ je Mitarbeiter, für Gillian eingeschaltet
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-09-0807.bkp (8,9 MB, 92 Tabellen, 1163 Zeilen)
+Sicherung erstellt: sicherung-2026-11-09-0812.bkp (8,9 MB, 92 Tabellen, 1164 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
 Datenbank umstellen ...
 
-   INFO  Nothing to migrate.  
+   INFO  Running migrations.  
+
+  2026_11_22_000001_add_mail_all_to_users ....................... 10.29ms DONE
 
 
 Selbsttests ...
@@ -66,4 +68,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 4b93e38 – E-Mail: Mitarbeiter sehen auch E-Mails ohne Eigentümer-Zuordnung ist online.
+FERTIG: Neuer Stand 8e393c5 – E-Mail: Recht „Alle E-Mails“ je Mitarbeiter, für Gillian eingeschaltet ist online.
