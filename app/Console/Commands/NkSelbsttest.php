@@ -30,6 +30,8 @@ class NkSelbsttest extends Command
         foreach (['nk.index', 'nk.show', 'nk.print', 'nk.settings', 'nk.meters'] as $v) {
             $this->check('Vorlage '.$v, view()->exists($v));
         }
+        $this->check('Zählerarten Strom und Gas', isset(\App\Models\Meter::KINDS['strom'], \App\Models\Meter::KINDS['gas'], \App\Models\Meter::UNITS['strom'], \App\Models\Meter::UNITS['gas'])
+            && ! in_array('strom', \App\Models\Meter::HEAT_KINDS, true) && ! in_array('gas', \App\Models\Meter::HEAT_KINDS, true));
 
         // Rechenbeispiel: 2 Wohnungen (60 und 40 m²), eine halbes Jahr leer, Gewerbe mit Vorwegabzug, Heizung 70/30
         $units = [

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-/** Ein Zähler (Kaltwasser, Warmwasser, Wärmemengenzähler, Heizkostenverteiler). */
+/** Ein Zähler (Kaltwasser, Warmwasser, Wärmemengenzähler, Heizkostenverteiler, Strom, Gas). */
 class Meter extends Model
 {
     use SoftDeletes;
@@ -17,15 +17,17 @@ class Meter extends Model
         'warmwasser' => 'Warmwasser',
         'waerme' => 'Wärmemengenzähler',
         'hkv' => 'Heizkostenverteiler',
+        'strom' => 'Stromzähler',
+        'gas' => 'Gaszähler',
     ];
 
-    public const UNITS = ['wasser' => 'm³', 'warmwasser' => 'm³', 'waerme' => 'kWh', 'hkv' => 'Striche'];
+    public const UNITS = ['wasser' => 'm³', 'warmwasser' => 'm³', 'waerme' => 'kWh', 'hkv' => 'Striche', 'strom' => 'kWh', 'gas' => 'm³'];
 
     /** Zähler, die unter die Heizkostenverordnung fallen (Fernablesbarkeit bis 31.12.2026). */
     public const HEAT_KINDS = ['warmwasser', 'waerme', 'hkv'];
 
     /** Eichfrist in Jahren (Heizkostenverteiler sind nicht eichpflichtig). */
-    public const CALIBRATION_YEARS = ['wasser' => 6, 'warmwasser' => 5, 'waerme' => 5];
+    public const CALIBRATION_YEARS = ['wasser' => 6, 'warmwasser' => 5, 'waerme' => 5, 'strom' => 8, 'gas' => 8];
 
     protected $fillable = ['property_id', 'unit_id', 'kind', 'label', 'number', 'factor', 'active', 'remote', 'calibrated_until'];
 

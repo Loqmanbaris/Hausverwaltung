@@ -396,7 +396,8 @@ class NkService
             $kinds = match ($m->kind) {
                 'wasser' => ['wasser'],
                 'warmwasser' => ['wasser', 'warmwasser'],
-                default => ['heizung'],
+                'waerme', 'hkv' => ['heizung'],
+                default => [],   // Strom- und Gaszähler: nur Stände, fließen nicht in Wasser/Heizung ein
             };
             if ($start === null || $end === null || $end < $start) {
                 foreach ($kinds as $k) {
