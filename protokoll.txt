@@ -1,23 +1,25 @@
-Ergebnis: OK (19.11.2026 10:02)
+Ergebnis: OK (19.11.2026 10:42)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    5ab4666 Zähler: Arten Stromzähler (kWh) und Gaszähler (m³) ergänzt
+Ziel:    2203c92 Benutzer: Recht „Alle Objekte“ je Mitarbeiter, für Gillian eingeschaltet
 
-=================== 19.11.2026 10:02:03 ===================
+=================== 19.11.2026 10:42:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - Zähler: Arten Stromzähler (kWh) und Gaszähler (m³) ergänzt
+  - Benutzer: Recht „Alle Objekte“ je Mitarbeiter, für Gillian eingeschaltet
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-19-1002.bkp (9,4 MB, 92 Tabellen, 1614 Zeilen)
+Sicherung erstellt: sicherung-2026-11-19-1042.bkp (9,4 MB, 92 Tabellen, 1663 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
 Datenbank umstellen ...
 
-   INFO  Nothing to migrate.  
+   INFO  Running migrations.  
+
+  2026_11_23_000001_add_owners_all_to_users ..................... 14.88ms DONE
 
 
 Selbsttests ...
@@ -66,4 +68,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 5ab4666 – Zähler: Arten Stromzähler (kWh) und Gaszähler (m³) ergänzt ist online.
+FERTIG: Neuer Stand 2203c92 – Benutzer: Recht „Alle Objekte“ je Mitarbeiter, für Gillian eingeschaltet ist online.
