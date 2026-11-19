@@ -60,6 +60,10 @@
                   @csrf
                   <button class="btn small" type="submit" title="Alle E-Mails im Postfach sehen">{{ $u->mail_all ? '✉ Alle E-Mails: an' : '✉ Alle E-Mails: aus' }}</button>
                 </form>
+                <form method="POST" action="{{ route('users.owners-all', $u) }}">
+                  @csrf
+                  <button class="btn small" type="submit" title="Alle Eigentümer, Objekte, Mieter und Nebenkosten sehen">{{ $u->owners_all ? '🏢 Alle Objekte: an' : '🏢 Alle Objekte: aus' }}</button>
+                </form>
               @endunless
               <form method="POST" action="{{ route('users.reset-password', $u) }}" onsubmit="return confirm('Neues vorläufiges Passwort vergeben? Der Benutzer wird abgemeldet.')">
                 @csrf

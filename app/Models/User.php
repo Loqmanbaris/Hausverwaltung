@@ -50,6 +50,12 @@ class User extends Authenticatable
         return $this->isAdmin() || (bool) $this->mail_all;
     }
 
+    /** Darf alle Eigentümer, Objekte, Mieter, Nebenkosten usw. sehen (Administrator oder Recht „Alle Objekte“). Verwaltungsfunktionen bleiben beim Administrator. */
+    public function seesAllOwners(): bool
+    {
+        return $this->isAdmin() || (bool) ($this->owners_all ?? false);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;

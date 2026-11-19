@@ -38,7 +38,7 @@ class IssuedInvoice extends Model
 
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        return $user->isAdmin() ? $query : $query->whereIn('issued_invoices.owner_id', Owner::visibleTo($user)->select('owners.id'));
+        return $user->seesAllOwners() ? $query : $query->whereIn('issued_invoices.owner_id', Owner::visibleTo($user)->select('owners.id'));
     }
 
     public function isCredit(): bool

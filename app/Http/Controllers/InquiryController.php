@@ -55,7 +55,7 @@ class InquiryController extends Controller
 
     private function access(Inquiry $inquiry): void
     {
-        if (! $this->me()->isAdmin()) {
+        if (! $this->me()->seesAllOwners()) {
             abort_if($inquiry->owner_id === null, 404);
             $this->assertOwnerAccess((int) $inquiry->owner_id);
         }

@@ -30,6 +30,7 @@ class AuditLog extends Model
         'user.created' => 'Benutzer angelegt',
         'user.blocked' => 'Benutzer gesperrt',
         'user.mail_all' => 'Recht „Alle E-Mails“ geändert',
+        'user.owners_all' => 'Recht „Alle Objekte“ geändert',
         'user.unblocked' => 'Benutzer entsperrt',
         'owner.viewed' => 'Eigentümer geöffnet',
         'owner.created' => 'Eigentümer angelegt',

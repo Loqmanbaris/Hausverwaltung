@@ -31,7 +31,7 @@ class Unit extends Model
 
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        if ($user->isAdmin()) {
+        if ($user->seesAllOwners()) {
             return $query;
         }
 

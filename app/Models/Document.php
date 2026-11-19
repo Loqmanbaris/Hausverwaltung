@@ -32,7 +32,7 @@ class Document extends Model
 
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        return $user->isAdmin() ? $query : $query->whereIn('documents.owner_id', Owner::visibleTo($user)->select('owners.id'));
+        return $user->seesAllOwners() ? $query : $query->whereIn('documents.owner_id', Owner::visibleTo($user)->select('owners.id'));
     }
 
     public function scopeFor(Builder $query, string $type, int $id): Builder

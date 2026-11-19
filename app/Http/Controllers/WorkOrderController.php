@@ -28,7 +28,7 @@ class WorkOrderController extends Controller
     private function access(WorkOrder $o): void
     {
         if ($o->owner_id === null) {
-            abort_unless($this->me()->isAdmin(), 404);
+            abort_unless($this->me()->seesAllOwners(), 404);
 
             return;
         }

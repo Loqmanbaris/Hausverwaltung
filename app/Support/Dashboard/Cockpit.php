@@ -158,7 +158,7 @@ class Cockpit
         [$soll, $ist] = self::monthSums($user, $ownerId, $from, $to);
 
         $received = (float) RentPayment::query()
-            ->when(! $user->isAdmin(), fn ($q) => $q->whereIn('rent_payments.owner_id', \App\Models\Owner::visibleTo($user)->select('owners.id')))
+            ->when(! $user->seesAllOwners(), fn ($q) => $q->whereIn('rent_payments.owner_id', \App\Models\Owner::visibleTo($user)->select('owners.id')))
             ->when($ownerId, fn ($q) => $q->where('rent_payments.owner_id', $ownerId))
             ->whereBetween('paid_on', [$from, $to])
             ->whereNotIn('source', ['import', 'nk', 'co2'])

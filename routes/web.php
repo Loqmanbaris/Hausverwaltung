@@ -51,6 +51,7 @@ Route::middleware(SecurityHeaders::class)->group(function () {
             Route::post('/benutzer', [UserController::class, 'store'])->name('users.store');
             Route::post('/benutzer/{user}/sperren', [UserController::class, 'toggle'])->name('users.toggle');
             Route::post('/benutzer/{user}/alle-mails', [UserController::class, 'toggleMailAll'])->name('users.mail-all');
+            Route::post('/benutzer/{user}/alle-objekte', [UserController::class, 'toggleOwnersAll'])->name('users.owners-all');
             Route::post('/benutzer/{user}/zwei-faktor-zuruecksetzen', [UserController::class, 'resetTwoFactor'])->name('users.reset-two-factor');
             Route::post('/benutzer/{user}/passwort-zuruecksetzen', [UserController::class, 'resetPassword'])->name('users.reset-password');
 

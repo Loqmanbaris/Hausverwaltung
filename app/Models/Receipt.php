@@ -65,7 +65,7 @@ class Receipt extends Model
     /** Admin sieht alle Belege, Mitarbeiter nur die der freigegebenen Eigentümer. */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        if ($user->isAdmin()) {
+        if ($user->seesAllOwners()) {
             return $query;
         }
 

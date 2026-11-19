@@ -81,7 +81,7 @@ class WorkOrder extends Model
     /** Ohne Eigentümer (z. B. Meldung über die Webseite, Objekt noch unklar) sieht sie nur der Administrator. */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        return $user->isAdmin() ? $query : $query->whereIn('work_orders.owner_id', Owner::visibleTo($user)->select('owners.id'));
+        return $user->seesAllOwners() ? $query : $query->whereIn('work_orders.owner_id', Owner::visibleTo($user)->select('owners.id'));
     }
 
     public function scopeOpen(Builder $query): Builder

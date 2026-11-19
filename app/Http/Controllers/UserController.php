@@ -63,6 +63,15 @@ class UserController extends Controller
         return back()->with('status', $user->name.($user->mail_all ? ' sieht jetzt alle E-Mails.' : ' sieht jetzt nur noch E-Mails ohne Zuordnung und die seiner Eigentümer.'));
     }
 
+    /** Recht „Alle Objekte“ für einen Mitarbeiter ein- oder ausschalten. */
+    public function toggleOwnersAll(User $user): RedirectResponse
+    {
+        $user->forceFill(['owners_all' => ! $user->owners_all])->save();
+        Audit::log('user.owners_all', ($user->owners_all ? 'Darf alle Objekte sehen: ' : 'Sieht nur freigegebene Eigentümer: ').$user->email, $user);
+
+        return back()->with('status', $user->name.($user->owners_all ? ' sieht jetzt alle Eigentümer und Objekte.' : ' sieht jetzt nur noch die freigegebenen Eigentümer.'));
+    }
+
     public function toggle(Request $request, User $user): RedirectResponse
     {
         if ($user->is($request->user())) {

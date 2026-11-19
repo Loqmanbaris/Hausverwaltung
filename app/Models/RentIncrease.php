@@ -70,7 +70,7 @@ class RentIncrease extends Model
 
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        return $user->isAdmin() ? $query : $query->whereIn('rent_increases.owner_id', Owner::visibleTo($user)->select('owners.id'));
+        return $user->seesAllOwners() ? $query : $query->whereIn('rent_increases.owner_id', Owner::visibleTo($user)->select('owners.id'));
     }
 
     public function kindLabel(): string

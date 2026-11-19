@@ -2,6 +2,11 @@
 
 Neueste Pakete zuerst. Die Beschreibung steht auch im CRM beim jeweiligen Paket.
 
+## Recht „Alle Objekte“ und Strom-/Gaszähler
+1. Neues Recht „Alle Objekte“ je Mitarbeiter (Einstellungen → Benutzer → „🏢 Alle Objekte: an/aus“): sieht alle Eigentümer, Objekte, Mieter, Mieten, Belege, Bank, Nebenkosten, Zähler usw. wie der Administrator. Verwaltung (Benutzer, Einstellungen, DATEV, Sicherungen, Löschfristen) bleibt beim Administrator. Für Gillian eingeschaltet.
+2. Zählerarten Stromzähler (kWh) und Gaszähler (m³); sie fließen nicht in die Wasser-/Heizkostenverteilung ein.
+Migration 2026_11_23_000001_add_owners_all_to_users. Selbsttest: anpassen:selbsttest, nk:selbsttest
+
 ## Mein Tag: Erinnern und Vertragsdaten
 1. Überfällige Miete in „Mein Tag“ mit einem Tipp anmahnen: „✉ Erinnern“ (bzw. Mahnung/Letzte Mahnung je nach Stand) erstellt über das Mahnwesen das Schreiben und öffnet es zum Drucken. Läuft schon eine Frist, steht „gemahnt · Frist …“ da.
 2. „Heute zu tun“ zeigt 30 Tage vorher auslaufende Mietverträge und mögliche Indexmieterhöhungen, mit Link zum Vertrag bzw. zur Mieterhöhung.

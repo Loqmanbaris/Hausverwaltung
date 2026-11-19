@@ -39,6 +39,8 @@ class AnpassenSelbsttest extends Command
             'Ansichten' => collect($views)->every(fn ($v) => view()->exists($v)),
             'Schnellzugriff-Ziele' => collect(Layout::QUICK)->every(fn ($q) => Route::has($q[1])),
             'Einstellungen lesen' => $ok,
+            'Rechte „Alle E-Mails“ und „Alle Objekte“' => Schema::hasColumn('users', 'mail_all') && Schema::hasColumn('users', 'owners_all')
+                && Route::has('users.mail-all') && Route::has('users.owners-all') && method_exists(\App\Models\User::class, 'seesAllOwners'),
         ];
         $this->line('Selbsttest Paket 19 (Übersicht anpassen)');
         $failed = 0;

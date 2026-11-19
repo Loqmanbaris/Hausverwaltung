@@ -66,7 +66,7 @@ class Outbox
 
     private static function access(?int $ownerId, User $user): void
     {
-        if ($user->isAdmin()) {
+        if ($user->seesAllOwners()) {
             return;
         }
         abort_if($ownerId === null || ! Owner::visibleTo($user)->whereKey($ownerId)->exists(), 404);

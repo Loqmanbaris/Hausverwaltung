@@ -30,7 +30,7 @@ class Inquiry extends Model
     /** Admin sieht alles; Mitarbeiter Anfragen zu freigegebenen Eigentümern und allgemeine Anfragen nicht. */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        if ($user->isAdmin()) {
+        if ($user->seesAllOwners()) {
             return $query;
         }
 

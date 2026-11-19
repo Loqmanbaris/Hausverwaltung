@@ -47,7 +47,7 @@ class Owner extends Model
     /** Admin sieht alle Eigentümer, Mitarbeiter nur die freigegebenen. */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        if ($user->isAdmin()) {
+        if ($user->seesAllOwners()) {
             return $query;
         }
 

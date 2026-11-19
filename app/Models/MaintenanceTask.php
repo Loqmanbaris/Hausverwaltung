@@ -40,7 +40,7 @@ class MaintenanceTask extends Model
 
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        return $user->isAdmin() ? $query : $query->whereIn('maintenance_tasks.owner_id', Owner::visibleTo($user)->select('owners.id'));
+        return $user->seesAllOwners() ? $query : $query->whereIn('maintenance_tasks.owner_id', Owner::visibleTo($user)->select('owners.id'));
     }
 
     /** ueberfaellig | bald | ok */

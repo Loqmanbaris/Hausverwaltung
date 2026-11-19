@@ -36,7 +36,7 @@ class InstallmentPlan extends Model
 
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        return $user->isAdmin() ? $query : $query->whereIn('installment_plans.owner_id', Owner::visibleTo($user)->select('owners.id'));
+        return $user->seesAllOwners() ? $query : $query->whereIn('installment_plans.owner_id', Owner::visibleTo($user)->select('owners.id'));
     }
 
     public function statusLabel(): string

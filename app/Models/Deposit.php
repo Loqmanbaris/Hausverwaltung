@@ -38,7 +38,7 @@ class Deposit extends Model
 
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        return $user->isAdmin() ? $query : $query->whereIn('deposits.owner_id', Owner::visibleTo($user)->select('owners.id'));
+        return $user->seesAllOwners() ? $query : $query->whereIn('deposits.owner_id', Owner::visibleTo($user)->select('owners.id'));
     }
 
     public function formLabel(): string
