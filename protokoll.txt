@@ -1,25 +1,23 @@
-Ergebnis: OK (09.11.2026 08:12)
+Ergebnis: OK (19.11.2026 10:02)
 Server:  /kunden/homepages/30/d765185880/htdocs/hausverwaltung/app
 Zweig:   main
-Ziel:    8e393c5 E-Mail: Recht „Alle E-Mails“ je Mitarbeiter, für Gillian eingeschaltet
+Ziel:    5ab4666 Zähler: Arten Stromzähler (kWh) und Gaszähler (m³) ergänzt
 
-=================== 09.11.2026 08:12:02 ===================
+=================== 19.11.2026 10:02:03 ===================
 Zweig: main
 Hole Stand von GitHub ...
 
 Neu auf GitHub:
-  - E-Mail: Recht „Alle E-Mails“ je Mitarbeiter, für Gillian eingeschaltet
+  - Zähler: Arten Stromzähler (kWh) und Gaszähler (m³) ergänzt
 
 Sicherung der Datenbank ...
-Sicherung erstellt: sicherung-2026-11-09-0812.bkp (8,9 MB, 92 Tabellen, 1164 Zeilen)
+Sicherung erstellt: sicherung-2026-11-19-1002.bkp (9,4 MB, 92 Tabellen, 1614 Zeilen)
 
 Wartungsmodus an ...
 Code übernehmen ...
 Datenbank umstellen ...
 
-   INFO  Running migrations.  
-
-  2026_11_22_000001_add_mail_all_to_users ....................... 10.29ms DONE
+   INFO  Nothing to migrate.  
 
 
 Selbsttests ...
@@ -68,4 +66,4 @@ Selbsttests ...
   OK      webseite:selbsttest
   OK      zinsen:selbsttest
 
-FERTIG: Neuer Stand 8e393c5 – E-Mail: Recht „Alle E-Mails“ je Mitarbeiter, für Gillian eingeschaltet ist online.
+FERTIG: Neuer Stand 5ab4666 – Zähler: Arten Stromzähler (kWh) und Gaszähler (m³) ergänzt ist online.
